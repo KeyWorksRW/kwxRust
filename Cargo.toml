@@ -1,0 +1,27 @@
+# kwxRust - Rust bindings for wxWidgets via wxFFI
+#
+# This workspace contains:
+# - kwxrust-sys: Raw FFI bindings (extern "C" declarations)
+# - kwxrust: Safe Rust wrappers with RAII and builders
+# - samples/minimal: Port of the wxWidgets minimal sample
+
+[workspace]
+resolver = "2"
+members = [
+    "crates/kwxrust-sys",
+    "crates/kwxrust",
+    "samples/minimal",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/KeyWorksRW/kwxRust"
+description = "Rust bindings for wxWidgets via wxFFI"
+keywords = ["wxwidgets", "gui", "ffi", "cross-platform"]
+categories = ["gui", "api-bindings"]
+
+[workspace.dependencies]
+# Shared dependencies across crates
+libc = "0.2"

@@ -1,0 +1,8 @@
+{
+    "command":     "generate",
+    "headers_dir": "../kwxffi/include",
+    "defs_file":   "../kwxffi/src/kwx_defs.cpp",
+
+    "lang":        "rust",
+    "out_path":    "./wx/"
+}

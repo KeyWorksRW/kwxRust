@@ -1,0 +1,23 @@
+wxFFI/
+.private/
+.vscode/
+
+build/
+lib/
+bin/
+build-shared/
+
+# Rust
+/target/
+**/*.rs.bk
+Cargo.lock
+
+# IDE
+*.swp
+*.swo
+*~
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

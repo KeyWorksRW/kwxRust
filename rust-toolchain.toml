@@ -1,0 +1,11 @@
+# The native libraries (kwxFFI, wxWidgets) are built by CMake with the clang64
+# (LLVM-MinGW) toolchain, so Rust must use the matching ABI.
+#
+# We pin the gnullvm-*hosted* toolchain rather than cross-compiling from the
+# default MSVC-hosted one: when the requested target differs from the host, cargo
+# writes artifacts to target/<triple>/debug and target/<triple>/release. With a
+# native gnullvm host there is no target triple in play, so the usual
+# target/debug and target/release directories are used.
+[toolchain]
+channel = "stable-x86_64-pc-windows-gnullvm"
+components = ["rustfmt", "clippy"]

@@ -1,0 +1,11 @@
+[package]
+# The folder is `samples/minimal`; cargo derives the binary name from the
+# package name, so this builds `target/<profile>/minimal.exe`.
+name = "minimal"
+version = "0.1.0"
+edition = "2021"
+description = "Port of the wxWidgets minimal sample (samples/minimal/minimal.cpp)"
+publish = false
+
+[dependencies]
+kwxrust = { path = "../../crates/kwxrust" }

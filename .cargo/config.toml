@@ -1,0 +1,7 @@
+# The native libraries (kwxFFI, wxWidgets) are built by CMake with the clang64
+# (LLVM-MinGW) toolchain, so Rust must use the matching ABI. That is now supplied
+# by rust-toolchain.toml, which pins the gnullvm-hosted toolchain.
+#
+# Do not set `[build] target` here: naming a target triple that differs from the
+# host makes cargo build into target/<triple>/debug and target/<triple>/release
+# instead of target/debug and target/release.
