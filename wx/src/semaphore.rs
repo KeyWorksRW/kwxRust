@@ -16,6 +16,13 @@ impl Semaphore {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for Semaphore {
     }
 }
 
+impl WxSemaphore for Semaphore {}
 impl Semaphore {
     pub fn new(initial: i32, max_count: i32) -> Self {
         let ptr = unsafe { sys::wxSemaphore_Create(initial as c_int, max_count as c_int) };
@@ -46,6 +54,13 @@ impl Semaphore {
         let ptr = unsafe { sys::wxSemaphore_Create(initial as c_int, max_count as c_int) };
         assert!(!ptr.is_null(), "wxSemaphore_Create returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxSemaphore_Delete(self.as_ptr()) }
     }
 
     pub fn wait(&self) -> i32 {

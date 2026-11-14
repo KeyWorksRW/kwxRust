@@ -16,6 +16,13 @@ impl ListItem {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for ListItem {
     }
 }
 
+impl WxListItem for ListItem {}
 
 use crate::support::WxStr;
 use crate::support::take_string;
@@ -60,6 +68,13 @@ impl ListItem {
         Self::from_raw(ptr)
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxListItem_Delete(self.as_ptr()) }
+    }
+
     pub fn get_align(&self) -> i32 {
         unsafe { sys::wxListItem_GetAlign(self.as_ptr()) as i32 }
     }
@@ -68,7 +83,7 @@ impl ListItem {
         unsafe { sys::wxListItem_GetAttributes(self.as_ptr()) }
     }
 
-    pub fn get_background_colour(&self, ref_: &impl WxObject) {
+    pub fn get_background_colour(&self, ref_: &impl WxColour) {
         unsafe { sys::wxListItem_GetBackgroundColour(self.as_ptr(), ref_.as_ptr()) }
     }
 
@@ -80,7 +95,7 @@ impl ListItem {
         unsafe { sys::wxListItem_GetData(self.as_ptr()) as i32 }
     }
 
-    pub fn get_font(&self, ref_: &impl WxObject) {
+    pub fn get_font(&self, ref_: &impl WxFont) {
         unsafe { sys::wxListItem_GetFont(self.as_ptr(), ref_.as_ptr()) }
     }
 
@@ -104,7 +119,7 @@ impl ListItem {
         take_string(unsafe { sys::wxListItem_GetText(self.as_ptr()) })
     }
 
-    pub fn get_text_colour(&self, ref_: &impl WxObject) {
+    pub fn get_text_colour(&self, ref_: &impl WxColour) {
         unsafe { sys::wxListItem_GetTextColour(self.as_ptr(), ref_.as_ptr()) }
     }
 
@@ -120,7 +135,7 @@ impl ListItem {
         unsafe { sys::wxListItem_SetAlign(self.as_ptr(), align as c_int) }
     }
 
-    pub fn set_background_colour(&self, col_back: &impl WxObject) {
+    pub fn set_background_colour(&self, col_back: &impl WxColour) {
         unsafe { sys::wxListItem_SetBackgroundColour(self.as_ptr(), col_back.as_ptr()) }
     }
 
@@ -136,7 +151,7 @@ impl ListItem {
         unsafe { sys::wxListItem_SetDataPointer(self.as_ptr(), data) }
     }
 
-    pub fn set_font(&self, font: &impl WxObject) {
+    pub fn set_font(&self, font: &impl WxFont) {
         unsafe { sys::wxListItem_SetFont(self.as_ptr(), font.as_ptr()) }
     }
 
@@ -165,7 +180,7 @@ impl ListItem {
         unsafe { sys::wxListItem_SetText(self.as_ptr(), text_wx.as_ptr()) }
     }
 
-    pub fn set_text_colour(&self, col_text: &impl WxObject) {
+    pub fn set_text_colour(&self, col_text: &impl WxColour) {
         unsafe { sys::wxListItem_SetTextColour(self.as_ptr(), col_text.as_ptr()) }
     }
 

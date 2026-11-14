@@ -16,6 +16,13 @@ impl InputSink {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for InputSink {
     }
 }
 
+impl WxInputSink for InputSink {}
 impl InputSink {
     pub fn new(input: &impl WxInputStream, evt_handler: &impl WxEvtHandler, buffer_len: i32) -> Self {
         let ptr = unsafe { sys::wxInputSink_Create(input.as_ptr(), evt_handler.as_ptr(), buffer_len as c_int) };

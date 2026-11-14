@@ -16,6 +16,13 @@ impl TopLevelWindow {
         Self(Window::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -68,7 +75,7 @@ impl TopLevelWindow {
         unsafe { sys::wxTopLevelWindow_GetContentProtection(self.as_ptr()) as i32 }
     }
 
-    pub fn get_default_size(&self) -> Option<crate::size::Size> {
+    pub fn get_default_size() -> Option<crate::size::Size> {
         let ptr = unsafe { sys::wxTopLevelWindow_GetDefaultSize() };
         if ptr.is_null() {
             None
@@ -148,12 +155,12 @@ impl TopLevelWindow {
         unsafe { sys::wxTopLevelWindow_SetDefaultItem(self.as_ptr(), p_but.as_ptr()) }
     }
 
-    pub fn set_icon(&self, p_icon: &impl WxObject) {
+    pub fn set_icon(&self, p_icon: &impl WxIcon) {
         unsafe { sys::wxTopLevelWindow_SetIcon(self.as_ptr(), p_icon.as_ptr()) }
     }
 
-    pub fn set_icons(&self, icons: *mut c_void) {
-        unsafe { sys::wxTopLevelWindow_SetIcons(self.as_ptr(), icons) }
+    pub fn set_icons(&self, icons: &impl WxIconBundle) {
+        unsafe { sys::wxTopLevelWindow_SetIcons(self.as_ptr(), icons.as_ptr()) }
     }
 
     pub fn set_max_size(&self, size: Size) {

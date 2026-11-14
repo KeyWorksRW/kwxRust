@@ -16,6 +16,13 @@ impl AuiPaneInfo {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for AuiPaneInfo {
     }
 }
 
+impl WxAuiPaneInfo for AuiPaneInfo {}
 use crate::support::Point;
 use crate::support::Size;
 use crate::support::WxStr;
@@ -46,6 +54,13 @@ impl AuiPaneInfo {
         let ptr = unsafe { sys::wxAuiPaneInfo_CreateDefault() };
         assert!(!ptr.is_null(), "wxAuiPaneInfo_CreateDefault returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxAuiPaneInfo_Delete(self.as_ptr()) }
     }
 
     pub fn get_name(&self) -> String {
@@ -111,7 +126,7 @@ impl AuiPaneInfo {
         unsafe { sys::wxAuiPaneInfo_IsMaximized(self.as_ptr()) != 0 }
     }
 
-    pub fn floating_client_size(&self, size: &impl WxObject) -> Option<AuiPaneInfo> {
+    pub fn floating_client_size(&self, size: &impl WxSize) -> Option<AuiPaneInfo> {
         let ptr = unsafe { sys::wxAuiPaneInfo_FloatingClientSize(self.as_ptr(), size.as_ptr()) };
         if ptr.is_null() {
             None
@@ -120,7 +135,7 @@ impl AuiPaneInfo {
         }
     }
 
-    pub fn icon_min(&self, b: &impl WxObject) -> Option<AuiPaneInfo> {
+    pub fn icon_min(&self, b: &impl WxBitmapBundle) -> Option<AuiPaneInfo> {
         let ptr = unsafe { sys::wxAuiPaneInfo_IconMin(self.as_ptr(), b.as_ptr()) };
         if ptr.is_null() {
             None
@@ -129,13 +144,13 @@ impl AuiPaneInfo {
         }
     }
 
-    pub fn new(source: &impl WxObject) -> Self {
+    pub fn new(source: &impl WxAuiPaneInfo) -> Self {
         let ptr = unsafe { sys::wxAuiPaneInfo_Create(source.as_ptr()) };
         assert!(!ptr.is_null(), "wxAuiPaneInfo_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(source: &impl WxObject) -> Self {
+    pub fn new_full(source: &impl WxAuiPaneInfo) -> Self {
         let ptr = unsafe { sys::wxAuiPaneInfo_Create(source.as_ptr()) };
         assert!(!ptr.is_null(), "wxAuiPaneInfo_Create returned null");
         Self::from_raw(ptr)
@@ -523,7 +538,7 @@ impl AuiPaneInfo {
         }
     }
 
-    pub fn safe_set(&self, source: &impl WxObject) {
+    pub fn safe_set(&self, source: &impl WxAuiPaneInfo) {
         unsafe { sys::wxAuiPaneInfo_SafeSet(self.as_ptr(), source.as_ptr()) }
     }
 
@@ -581,7 +596,7 @@ impl AuiPaneInfo {
         }
     }
 
-    pub fn copy(&self, source: &impl WxObject) -> Option<AuiPaneInfo> {
+    pub fn copy(&self, source: &impl WxAuiPaneInfo) -> Option<AuiPaneInfo> {
         let ptr = unsafe { sys::wxAuiPaneInfo_Copy(self.as_ptr(), source.as_ptr()) };
         if ptr.is_null() {
             None

@@ -16,6 +16,13 @@ impl RibbonArtProvider {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for RibbonArtProvider {
     }
 }
 
+impl WxRibbonArtProvider for RibbonArtProvider {}
 use crate::colour::Colour;
 use crate::font::Font;
 
@@ -61,12 +69,19 @@ impl RibbonArtProvider {
         unsafe { sys::wxRibbonArtProvider_GetColourScheme(self.as_ptr(), primary, secondary, tertiary) }
     }
 
-    pub fn set_color(&self, id: i32, color: &impl WxObject) {
+    pub fn set_color(&self, id: i32, color: &impl WxColour) {
         unsafe { sys::wxRibbonArtProvider_SetColor(self.as_ptr(), id as c_int, color.as_ptr()) }
     }
 
-    pub fn set_colour_scheme(&self, primary: &impl WxObject, secondary: &impl WxObject, tertiary: &impl WxObject) {
+    pub fn set_colour_scheme(&self, primary: &impl WxColour, secondary: &impl WxColour, tertiary: &impl WxColour) {
         unsafe { sys::wxRibbonArtProvider_SetColourScheme(self.as_ptr(), primary.as_ptr(), secondary.as_ptr(), tertiary.as_ptr()) }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxRibbonArtProvider_Delete(self.as_ptr()) }
     }
 
     pub fn get_colour(&self, id: i32) -> Option<Colour> {
@@ -87,11 +102,11 @@ impl RibbonArtProvider {
         }
     }
 
-    pub fn set_colour(&self, id: i32, colour: &impl WxObject) {
+    pub fn set_colour(&self, id: i32, colour: &impl WxColour) {
         unsafe { sys::wxRibbonArtProvider_SetColour(self.as_ptr(), id as c_int, colour.as_ptr()) }
     }
 
-    pub fn set_font(&self, id: i32, font: &impl WxObject) {
+    pub fn set_font(&self, id: i32, font: &impl WxFont) {
         unsafe { sys::wxRibbonArtProvider_SetFont(self.as_ptr(), id as c_int, font.as_ptr()) }
     }
 

@@ -16,6 +16,13 @@ impl PGProperty {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,12 +45,26 @@ impl WxObject for PGProperty {
 impl WxPGProperty for PGProperty {}
 
 use crate::pg_cell::PGCell;
+use crate::pg_choices::PGChoices;
 use crate::property_grid::PropertyGrid;
 use crate::support::WxStr;
 use crate::support::take_string;
 use crate::variant::Variant;
 
 impl PGProperty {
+    pub fn set_choices(&self, choices: &impl WxPGChoices) -> bool {
+        unsafe { sys::wxPGProperty_SetChoices(self.as_ptr(), choices.as_ptr()) != 0 }
+    }
+
+    pub fn get_choices(&self) -> Option<PGChoices> {
+        let ptr = unsafe { sys::wxPGProperty_GetChoices(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(PGChoices::from_raw(ptr))
+        }
+    }
+
     pub fn get_base_name(&self) -> String {
         take_string(unsafe { sys::wxPGProperty_GetBaseName(self.as_ptr()) })
     }
@@ -115,7 +136,7 @@ impl PGProperty {
         unsafe { sys::wxPGProperty_RefreshEditor(self.as_ptr()) }
     }
 
-    pub fn set_attribute(&self, name: impl AsRef<str>, value: &impl WxObject) {
+    pub fn set_attribute(&self, name: impl AsRef<str>, value: &impl WxVariant) {
         let name_wx = WxStr::new(name.as_ref());
         unsafe { sys::wxPGProperty_SetAttribute(self.as_ptr(), name_wx.as_ptr(), value.as_ptr()) }
     }
@@ -245,7 +266,7 @@ impl PGProperty {
         unsafe { sys::wxPGProperty_SetHelpString(self.as_ptr(), help_string_wx.as_ptr()) }
     }
 
-    pub fn new(p_object: *mut c_void, label: impl AsRef<str>, name: impl AsRef<str>, value: &impl WxObject) -> Self {
+    pub fn new(p_object: *mut c_void, label: impl AsRef<str>, name: impl AsRef<str>, value: &impl WxVariant) -> Self {
         let label_wx = WxStr::new(label.as_ref());
         let name_wx = WxStr::new(name.as_ref());
         let ptr = unsafe { sys::kwxPGProperty_Create(p_object, label_wx.as_ptr(), name_wx.as_ptr(), value.as_ptr()) };
@@ -253,12 +274,19 @@ impl PGProperty {
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(p_object: *mut c_void, label: impl AsRef<str>, name: impl AsRef<str>, value: &impl WxObject) -> Self {
+    pub fn new_full(p_object: *mut c_void, label: impl AsRef<str>, name: impl AsRef<str>, value: &impl WxVariant) -> Self {
         let label_wx = WxStr::new(label.as_ref());
         let name_wx = WxStr::new(name.as_ref());
         let ptr = unsafe { sys::kwxPGProperty_Create(p_object, label_wx.as_ptr(), name_wx.as_ptr(), value.as_ptr()) };
         assert!(!ptr.is_null(), "kwxPGProperty_Create returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::kwxPGProperty_Delete(self.as_ptr()) }
     }
 
     pub fn set_on_child_changed(&self, p_function: *mut c_void) {
@@ -289,11 +317,11 @@ impl PGProperty {
         unsafe { sys::kwxPGProperty_SetOnValidateValue(self.as_ptr(), p_function) }
     }
 
-    pub fn set_child_changed_result(&self, value: &impl WxObject) {
+    pub fn set_child_changed_result(&self, value: &impl WxVariant) {
         unsafe { sys::kwxPGProperty_SetChildChangedResult(self.as_ptr(), value.as_ptr()) }
     }
 
-    pub fn set_do_get_value_result(&self, value: &impl WxObject) {
+    pub fn set_do_get_value_result(&self, value: &impl WxVariant) {
         unsafe { sys::kwxPGProperty_SetDoGetValueResult(self.as_ptr(), value.as_ptr()) }
     }
 

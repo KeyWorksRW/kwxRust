@@ -16,6 +16,13 @@ impl AuiToolBar {
         Self(Control::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,6 +45,7 @@ impl WxObject for AuiToolBar {
 impl WxControl for AuiToolBar {}
 impl WxWindow for AuiToolBar {}
 impl WxEvtHandler for AuiToolBar {}
+impl WxAuiToolBar for AuiToolBar {}
 
 use crate::aui_tool_bar_art::AuiToolBarArt;
 use crate::aui_tool_bar_item::AuiToolBarItem;
@@ -69,6 +77,13 @@ impl AuiToolBar {
         unsafe { sys::wxAuiToolBar_CreateFromDefault(self.as_ptr(), parent.as_ptr(), id as c_int, point.x as c_int, point.y as c_int, size.width as c_int, size.height as c_int, style as c_long) != 0 }
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxAuiToolBar_Delete(self.as_ptr()) }
+    }
+
     pub fn set_window_style_flag(&self, style: i32) {
         unsafe { sys::wxAuiToolBar_SetWindowStyleFlag(self.as_ptr(), style as c_long) }
     }
@@ -90,7 +105,7 @@ impl AuiToolBar {
         }
     }
 
-    pub fn set_font(&self, font: &impl WxObject) -> bool {
+    pub fn set_font(&self, font: &impl WxFont) -> bool {
         unsafe { sys::wxAuiToolBar_SetFont(self.as_ptr(), font.as_ptr()) != 0 }
     }
 
@@ -412,7 +427,7 @@ impl AuiToolBar {
         unsafe { sys::wxAuiToolBar_SetToolLongHelp(self.as_ptr(), tool_id as c_int, help_string_wx.as_ptr()) }
     }
 
-    pub fn set_custom_overflow_items(&self, prepend: &impl WxObject, append: &impl WxObject) {
+    pub fn set_custom_overflow_items(&self, prepend: &impl WxAuiToolBarItemArray, append: &impl WxAuiToolBarItemArray) {
         unsafe { sys::wxAuiToolBar_SetCustomOverflowItems(self.as_ptr(), prepend.as_ptr(), append.as_ptr()) }
     }
 
@@ -425,7 +440,7 @@ impl AuiToolBar {
         }
     }
 
-    pub fn is_pane_valid(&self, pane: &impl WxObject) -> bool {
+    pub fn is_pane_valid(&self, pane: &impl WxAuiPaneInfo) -> bool {
         unsafe { sys::wxAuiToolBar_IsPaneValid(self.as_ptr(), pane.as_ptr()) != 0 }
     }
 

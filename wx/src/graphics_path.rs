@@ -16,6 +16,13 @@ impl GraphicsPath {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for GraphicsPath {
     }
 }
 
+impl WxGraphicsPath for GraphicsPath {}
 impl GraphicsPath {
     pub fn add_arc(&self, x: f64, y: f64, r: f64, start_angle: f64, end_angle: f64, clockwise: bool) {
         unsafe { sys::wxGraphicsPath_AddArc(self.as_ptr(), x as c_double, y as c_double, r as c_double, start_angle as c_double, end_angle as c_double, clockwise as c_int) }
@@ -60,7 +68,7 @@ impl GraphicsPath {
         unsafe { sys::wxGraphicsPath_AddLineToPoint(self.as_ptr(), x as c_double, y as c_double) }
     }
 
-    pub fn add_path(&self, path: &impl WxObject) {
+    pub fn add_path(&self, path: &impl WxGraphicsPath) {
         unsafe { sys::wxGraphicsPath_AddPath(self.as_ptr(), path.as_ptr()) }
     }
 
@@ -84,6 +92,13 @@ impl GraphicsPath {
         unsafe { sys::wxGraphicsPath_Contains(self.as_ptr(), x as c_double, y as c_double, fill_style as c_int) }
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxGraphicsPath_Delete(self.as_ptr()) }
+    }
+
     pub fn get_box(&self, x: *mut f64, y: *mut f64, width: *mut f64, height: *mut f64) {
         unsafe { sys::wxGraphicsPath_GetBox(self.as_ptr(), x as *mut c_double, y as *mut c_double, width as *mut c_double, height as *mut c_double) }
     }
@@ -100,7 +115,7 @@ impl GraphicsPath {
         unsafe { sys::wxGraphicsPath_MoveToPoint(self.as_ptr(), x as c_double, y as c_double) }
     }
 
-    pub fn transform(&self, matrix: &impl WxObject) {
+    pub fn transform(&self, matrix: &impl WxGraphicsMatrix) {
         unsafe { sys::wxGraphicsPath_Transform(self.as_ptr(), matrix.as_ptr()) }
     }
 

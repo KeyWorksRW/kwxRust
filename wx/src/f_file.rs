@@ -16,6 +16,13 @@ impl FFile {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,12 +42,13 @@ impl WxObject for FFile {
     }
 }
 
+impl WxFFile for FFile {}
 impl FFile {
     pub fn is_opened(&self) -> bool {
         unsafe { sys::wxFFile_IsOpened(self.as_ptr()) != 0 }
     }
 
-    pub fn read_all(&self, str: *mut c_void, conv: &impl WxObject) -> bool {
+    pub fn read_all(&self, str: *mut c_void, conv: &impl WxMBConv) -> bool {
         unsafe { sys::wxFFile_ReadAll(self.as_ptr(), str, conv.as_ptr()) != 0 }
     }
 

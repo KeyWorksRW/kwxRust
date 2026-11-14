@@ -16,6 +16,13 @@ impl RichTextImage {
         Self(RichTextObject::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -36,6 +43,7 @@ impl WxObject for RichTextImage {
 }
 
 impl WxRichTextObject for RichTextImage {}
+impl WxRichTextImage for RichTextImage {}
 
 use crate::rich_text_image_block::RichTextImageBlock;
 use crate::support::Size;
@@ -53,16 +61,23 @@ impl RichTextImage {
         Self::from_raw(ptr)
     }
 
-    pub fn create_from_image(image: &impl WxObject, parent: &impl WxRichTextObject, char_style: &impl WxObject) -> Self {
+    pub fn create_from_image(image: &impl WxImage, parent: &impl WxRichTextObject, char_style: &impl WxRichTextAttr) -> Self {
         let ptr = unsafe { sys::wxRichTextImage_CreateFromImage(image.as_ptr(), parent.as_ptr(), char_style.as_ptr()) };
         assert!(!ptr.is_null(), "wxRichTextImage_CreateFromImage returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn create_from_image_block(image_block: &impl WxObject, parent: &impl WxRichTextObject, char_style: &impl WxObject) -> Self {
+    pub fn create_from_image_block(image_block: &impl WxRichTextImageBlock, parent: &impl WxRichTextObject, char_style: &impl WxRichTextAttr) -> Self {
         let ptr = unsafe { sys::wxRichTextImage_CreateFromImageBlock(image_block.as_ptr(), parent.as_ptr(), char_style.as_ptr()) };
         assert!(!ptr.is_null(), "wxRichTextImage_CreateFromImageBlock returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxRichTextImage_Delete(self.as_ptr()) }
     }
 
     pub fn get_image_cache(&self, bitmap: &impl WxBitmap) {

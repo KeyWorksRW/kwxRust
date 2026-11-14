@@ -16,6 +16,13 @@ impl RearrangeDialog {
         Self(Dialog::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,6 +46,7 @@ impl WxDialog for RearrangeDialog {}
 impl WxTopLevelWindow for RearrangeDialog {}
 impl WxWindow for RearrangeDialog {}
 impl WxEvtHandler for RearrangeDialog {}
+impl WxRearrangeDialog for RearrangeDialog {}
 
 use crate::array_int::ArrayInt;
 use crate::rearrange_list::RearrangeList;
@@ -46,7 +54,7 @@ use crate::support::Point;
 use crate::support::WxStr;
 
 impl RearrangeDialog {
-    pub fn new(parent: &impl WxWindow, message: impl AsRef<str>, title: impl AsRef<str>, order: &impl WxObject, items: &impl WxObject, point: Point) -> Self {
+    pub fn new(parent: &impl WxWindow, message: impl AsRef<str>, title: impl AsRef<str>, order: &impl WxArrayInt, items: &impl WxArrayString, point: Point) -> Self {
         let message_wx = WxStr::new(message.as_ref());
         let title_wx = WxStr::new(title.as_ref());
         let ptr = unsafe { sys::wxRearrangeDialog_Create(parent.as_ptr(), message_wx.as_ptr(), title_wx.as_ptr(), order.as_ptr(), items.as_ptr(), point.x as c_int, point.y as c_int) };
@@ -54,7 +62,7 @@ impl RearrangeDialog {
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(parent: &impl WxWindow, message: impl AsRef<str>, title: impl AsRef<str>, order: &impl WxObject, items: &impl WxObject, point: Point) -> Self {
+    pub fn new_full(parent: &impl WxWindow, message: impl AsRef<str>, title: impl AsRef<str>, order: &impl WxArrayInt, items: &impl WxArrayString, point: Point) -> Self {
         let message_wx = WxStr::new(message.as_ref());
         let title_wx = WxStr::new(title.as_ref());
         let ptr = unsafe { sys::wxRearrangeDialog_Create(parent.as_ptr(), message_wx.as_ptr(), title_wx.as_ptr(), order.as_ptr(), items.as_ptr(), point.x as c_int, point.y as c_int) };
@@ -82,6 +90,13 @@ impl RearrangeDialog {
 
     pub fn add_extra_controls(&self, win: &impl WxWindow) {
         unsafe { sys::wxRearrangeDialog_AddExtraControls(self.as_ptr(), win.as_ptr()) }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxRearrangeDialog_Delete(self.as_ptr()) }
     }
 
 }

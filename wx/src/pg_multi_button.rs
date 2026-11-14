@@ -16,6 +16,13 @@ impl PGMultiButton {
         Self(Window::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -37,22 +44,30 @@ impl WxObject for PGMultiButton {
 
 impl WxWindow for PGMultiButton {}
 impl WxEvtHandler for PGMultiButton {}
+impl WxPGMultiButton for PGMultiButton {}
 
 use crate::support::Point;
 use crate::support::Size;
 use crate::support::WxStr;
 
 impl PGMultiButton {
-    pub fn new(propgrid: &impl WxObject, size: Size) -> Self {
+    pub fn new(propgrid: &impl WxPropertyGrid, size: Size) -> Self {
         let ptr = unsafe { sys::wxPGMultiButton_Create(propgrid.as_ptr(), size.width as c_int, size.height as c_int) };
         assert!(!ptr.is_null(), "wxPGMultiButton_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(propgrid: &impl WxObject, size: Size) -> Self {
+    pub fn new_full(propgrid: &impl WxPropertyGrid, size: Size) -> Self {
         let ptr = unsafe { sys::wxPGMultiButton_Create(propgrid.as_ptr(), size.width as c_int, size.height as c_int) };
         assert!(!ptr.is_null(), "wxPGMultiButton_Create returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxPGMultiButton_Delete(self.as_ptr()) }
     }
 
     pub fn get_button(&self, index: u32) -> Option<Window> {
@@ -77,7 +92,7 @@ impl PGMultiButton {
         unsafe { sys::wxPGMultiButton_Add(self.as_ptr(), label_wx.as_ptr(), id as c_int) }
     }
 
-    pub fn add_bitmap(&self, bitmap: &impl WxObject, id: i32) {
+    pub fn add_bitmap(&self, bitmap: &impl WxBitmapBundle, id: i32) {
         unsafe { sys::wxPGMultiButton_AddBitmap(self.as_ptr(), bitmap.as_ptr(), id as c_int) }
     }
 
@@ -90,7 +105,7 @@ impl PGMultiButton {
         }
     }
 
-    pub fn finalize(&self, propgrid: &impl WxObject, point: Point) {
+    pub fn finalize(&self, propgrid: &impl WxPropertyGrid, point: Point) {
         unsafe { sys::wxPGMultiButton_Finalize(self.as_ptr(), propgrid.as_ptr(), point.x as c_int, point.y as c_int) }
     }
 

@@ -16,6 +16,13 @@ impl ArchiveClassFactory {
         Self(FilterClassFactoryBase::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -36,6 +43,7 @@ impl WxObject for ArchiveClassFactory {
 }
 
 impl WxFilterClassFactoryBase for ArchiveClassFactory {}
+impl WxArchiveClassFactory for ArchiveClassFactory {}
 
 use crate::archive_entry::ArchiveEntry;
 use crate::archive_input_stream::ArchiveInputStream;
@@ -76,7 +84,7 @@ impl ArchiveClassFactory {
         take_string(unsafe { sys::wxArchiveClassFactory_GetInternalName(self.as_ptr(), name_wx.as_ptr(), format as c_int) })
     }
 
-    pub fn find(&self, protocol: impl AsRef<str>, type_: i32) -> Option<ArchiveClassFactory> {
+    pub fn find(protocol: impl AsRef<str>, type_: i32) -> Option<ArchiveClassFactory> {
         let protocol_wx = WxStr::new(protocol.as_ref());
         let ptr = unsafe { sys::wxArchiveClassFactory_Find(protocol_wx.as_ptr(), type_ as c_int) };
         if ptr.is_null() {
@@ -86,7 +94,7 @@ impl ArchiveClassFactory {
         }
     }
 
-    pub fn get_first(&self) -> Option<ArchiveClassFactory> {
+    pub fn get_first() -> Option<ArchiveClassFactory> {
         let ptr = unsafe { sys::wxArchiveClassFactory_GetFirst() };
         if ptr.is_null() {
             None

@@ -16,6 +16,13 @@ impl RibbonButtonBar {
         Self(RibbonControl::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,6 +46,7 @@ impl WxRibbonControl for RibbonButtonBar {}
 impl WxControl for RibbonButtonBar {}
 impl WxWindow for RibbonButtonBar {}
 impl WxEvtHandler for RibbonButtonBar {}
+impl WxRibbonButtonBar for RibbonButtonBar {}
 
 use crate::ribbon_art_provider::RibbonArtProvider;
 use crate::ribbon_button_bar_button_base::RibbonButtonBarButtonBase;
@@ -224,7 +232,7 @@ impl RibbonButtonBar {
         }
     }
 
-    pub fn get_item_id(&self, button: &impl WxObject) -> i32 {
+    pub fn get_item_id(&self, button: &impl WxRibbonButtonBarButtonBase) -> i32 {
         unsafe { sys::wxRibbonButtonBar_GetItemId(self.as_ptr(), button.as_ptr()) as i32 }
     }
 
@@ -250,11 +258,11 @@ impl RibbonButtonBar {
         }
     }
 
-    pub fn set_item_client_data(&self, item: &impl WxObject, data: *mut c_void) {
+    pub fn set_item_client_data(&self, item: &impl WxRibbonButtonBarButtonBase, data: *mut c_void) {
         unsafe { sys::wxRibbonButtonBar_SetItemClientData(self.as_ptr(), item.as_ptr(), data) }
     }
 
-    pub fn get_item_client_data(&self, item: &impl WxObject) -> *mut c_void {
+    pub fn get_item_client_data(&self, item: &impl WxRibbonButtonBarButtonBase) -> *mut c_void {
         unsafe { sys::wxRibbonButtonBar_GetItemClientData(self.as_ptr(), item.as_ptr()) }
     }
 
@@ -270,7 +278,7 @@ impl RibbonButtonBar {
         unsafe { sys::wxRibbonButtonBar_Realize(self.as_ptr()) != 0 }
     }
 
-    pub fn set_art_provider(&self, art: &impl WxObject) {
+    pub fn set_art_provider(&self, art: &impl WxRibbonArtProvider) {
         unsafe { sys::wxRibbonButtonBar_SetArtProvider(self.as_ptr(), art.as_ptr()) }
     }
 

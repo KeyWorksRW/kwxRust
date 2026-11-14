@@ -16,6 +16,13 @@ impl DataObjectComposite {
         Self(DataObject::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -36,6 +43,7 @@ impl WxObject for DataObjectComposite {
 }
 
 impl WxDataObject for DataObjectComposite {}
+impl WxDataObjectComposite for DataObjectComposite {}
 
 impl DataObjectComposite {
     pub fn add(&self, data: *mut c_void, preferred: i32) {
@@ -52,6 +60,13 @@ impl DataObjectComposite {
         let ptr = unsafe { sys::wxDataObjectComposite_Create() };
         assert!(!ptr.is_null(), "wxDataObjectComposite_Create returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxDataObjectComposite_Delete(self.as_ptr()) }
     }
 
 }

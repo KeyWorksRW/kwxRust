@@ -16,6 +16,13 @@ impl PlatformInfo {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for PlatformInfo {
     }
 }
 
+impl WxPlatformInfo for PlatformInfo {}
 use crate::support::WxStr;
 use crate::support::take_string;
 
@@ -51,7 +59,14 @@ impl PlatformInfo {
         Self::from_raw(ptr)
     }
 
-    pub fn get(&self) -> Option<PlatformInfo> {
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxPlatformInfo_Delete(self.as_ptr()) }
+    }
+
+    pub fn get() -> Option<PlatformInfo> {
         let ptr = unsafe { sys::wxPlatformInfo_Get() };
         if ptr.is_null() {
             None
@@ -60,7 +75,7 @@ impl PlatformInfo {
         }
     }
 
-    pub fn get_current(&self) -> Option<PlatformInfo> {
+    pub fn get_current() -> Option<PlatformInfo> {
         let ptr = unsafe { sys::wxPlatformInfo_GetCurrent() };
         if ptr.is_null() {
             None
@@ -69,51 +84,51 @@ impl PlatformInfo {
         }
     }
 
-    pub fn get_operating_system_id_from_name(&self, name: impl AsRef<str>) -> i32 {
+    pub fn get_operating_system_id_from_name(name: impl AsRef<str>) -> i32 {
         let name_wx = WxStr::new(name.as_ref());
         unsafe { sys::wxPlatformInfo_GetOperatingSystemIdFromName(name_wx.as_ptr()) as i32 }
     }
 
-    pub fn get_port_id_from_name(&self, port_name: impl AsRef<str>) -> i32 {
+    pub fn get_port_id_from_name(port_name: impl AsRef<str>) -> i32 {
         let port_name_wx = WxStr::new(port_name.as_ref());
         unsafe { sys::wxPlatformInfo_GetPortIdFromName(port_name_wx.as_ptr()) as i32 }
     }
 
-    pub fn get_bitness_from_name(&self, bitness: impl AsRef<str>) -> i32 {
+    pub fn get_bitness_from_name(bitness: impl AsRef<str>) -> i32 {
         let bitness_wx = WxStr::new(bitness.as_ref());
         unsafe { sys::wxPlatformInfo_GetBitnessFromName(bitness_wx.as_ptr()) as i32 }
     }
 
-    pub fn get_endianness_from_name(&self, endianness: impl AsRef<str>) -> i32 {
+    pub fn get_endianness_from_name(endianness: impl AsRef<str>) -> i32 {
         let endianness_wx = WxStr::new(endianness.as_ref());
         unsafe { sys::wxPlatformInfo_GetEndiannessFromName(endianness_wx.as_ptr()) as i32 }
     }
 
-    pub fn get_operating_system_family_name_from_id(&self, os_id: i32) -> String {
+    pub fn get_operating_system_family_name_from_id(os_id: i32) -> String {
         take_string(unsafe { sys::wxPlatformInfo_GetOperatingSystemFamilyNameFromId(os_id as c_int) })
     }
 
-    pub fn get_operating_system_id_name_from_id(&self, os_id: i32) -> String {
+    pub fn get_operating_system_id_name_from_id(os_id: i32) -> String {
         take_string(unsafe { sys::wxPlatformInfo_GetOperatingSystemIdNameFromId(os_id as c_int) })
     }
 
-    pub fn get_port_id_name_from_values(&self, port_id: i32, using_universal: bool) -> String {
+    pub fn get_port_id_name_from_values(port_id: i32, using_universal: bool) -> String {
         take_string(unsafe { sys::wxPlatformInfo_GetPortIdNameFromValues(port_id as c_int, using_universal as c_int) })
     }
 
-    pub fn get_port_id_short_name_from_values(&self, port_id: i32, using_universal: bool) -> String {
+    pub fn get_port_id_short_name_from_values(port_id: i32, using_universal: bool) -> String {
         take_string(unsafe { sys::wxPlatformInfo_GetPortIdShortNameFromValues(port_id as c_int, using_universal as c_int) })
     }
 
-    pub fn get_bitness_name_from_value(&self, bitness: i32) -> String {
+    pub fn get_bitness_name_from_value(bitness: i32) -> String {
         take_string(unsafe { sys::wxPlatformInfo_GetBitnessNameFromValue(bitness as c_int) })
     }
 
-    pub fn get_endianness_name_from_value(&self, endianness: i32) -> String {
+    pub fn get_endianness_name_from_value(endianness: i32) -> String {
         take_string(unsafe { sys::wxPlatformInfo_GetEndiannessNameFromValue(endianness as c_int) })
     }
 
-    pub fn get_operating_system_directory(&self) -> String {
+    pub fn get_operating_system_directory() -> String {
         take_string(unsafe { sys::wxPlatformInfo_GetOperatingSystemDirectory() })
     }
 

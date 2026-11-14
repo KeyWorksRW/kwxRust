@@ -16,6 +16,13 @@ impl TreeItemData {
         Self(ClientData::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -36,6 +43,7 @@ impl WxObject for TreeItemData {
 }
 
 impl WxClientData for TreeItemData {}
+impl WxTreeItemData for TreeItemData {}
 
 use crate::closure::Closure;
 use crate::tree_item_id::TreeItemId;
@@ -53,6 +61,13 @@ impl TreeItemData {
         Self::from_raw(ptr)
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxTreeItemData_Delete(self.as_ptr()) }
+    }
+
     pub fn get_id(&self) -> Option<TreeItemId> {
         let ptr = unsafe { sys::wxTreeItemData_GetId(self.as_ptr()) };
         if ptr.is_null() {
@@ -62,8 +77,16 @@ impl TreeItemData {
         }
     }
 
-    pub fn set_id(&self, id: &impl WxObject) {
+    pub fn set_id(&self, id: &impl WxTreeItemId) {
         unsafe { sys::wxTreeItemData_SetId(self.as_ptr(), id.as_ptr()) }
+    }
+
+    /// Alternative constructor wrapping `kwxTreeItemData_Create`; takes every
+    /// declared parameter.  `new`/`new_full` wrap the wxWidgets-own constructor.
+    pub fn new_with_state(closure: &impl WxClosure) -> Self {
+        let ptr = unsafe { sys::kwxTreeItemData_Create(closure.as_ptr()) };
+        assert!(!ptr.is_null(), "kwxTreeItemData_Create returned null");
+        Self::from_raw(ptr)
     }
 
     pub fn get_client_closure(&self) -> Option<Closure> {
@@ -75,7 +98,7 @@ impl TreeItemData {
         }
     }
 
-    pub fn set_client_closure(&self, closure: &impl WxObject) {
+    pub fn set_client_closure(&self, closure: &impl WxClosure) {
         unsafe { sys::kwxTreeItemData_SetClientClosure(self.as_ptr(), closure.as_ptr()) }
     }
 

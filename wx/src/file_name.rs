@@ -16,6 +16,13 @@ impl FileName {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for FileName {
     }
 }
 
+impl WxFileName for FileName {}
 use crate::date_time::DateTime;
 use crate::support::WxStr;
 use crate::support::take_string;
@@ -52,7 +60,7 @@ impl FileName {
         Self::from_raw(ptr)
     }
 
-    pub fn split_path(&self, fullpath: impl AsRef<str>, volume: *mut c_void, path: *mut c_void, name: *mut c_void, ext: *mut c_void, has_ext: *mut i32, format: i32) {
+    pub fn split_path(fullpath: impl AsRef<str>, volume: *mut c_void, path: *mut c_void, name: *mut c_void, ext: *mut c_void, has_ext: *mut i32, format: i32) {
         let fullpath_wx = WxStr::new(fullpath.as_ref());
         unsafe { sys::wxFileName_SplitPath(fullpath_wx.as_ptr(), volume, path, name, ext, has_ext as *mut c_int, format as c_int) }
     }
@@ -91,7 +99,14 @@ impl FileName {
         Self::from_raw(ptr)
     }
 
-    pub fn dir_name(&self, dir: impl AsRef<str>, format: i32) -> Option<FileName> {
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxFileName_Delete(self.as_ptr()) }
+    }
+
+    pub fn dir_name(dir: impl AsRef<str>, format: i32) -> Option<FileName> {
         let dir_wx = WxStr::new(dir.as_ref());
         let ptr = unsafe { sys::wxFileName_DirName(dir_wx.as_ptr(), format as c_int) };
         if ptr.is_null() {
@@ -101,7 +116,7 @@ impl FileName {
         }
     }
 
-    pub fn file_name(&self, file: impl AsRef<str>, format: i32) -> Option<FileName> {
+    pub fn file_name(file: impl AsRef<str>, format: i32) -> Option<FileName> {
         let file_wx = WxStr::new(file.as_ref());
         let ptr = unsafe { sys::wxFileName_FileName(file_wx.as_ptr(), format as c_int) };
         if ptr.is_null() {
@@ -111,7 +126,7 @@ impl FileName {
         }
     }
 
-    pub fn url_to_file_name(&self, url: impl AsRef<str>) -> Option<FileName> {
+    pub fn url_to_file_name(url: impl AsRef<str>) -> Option<FileName> {
         let url_wx = WxStr::new(url.as_ref());
         let ptr = unsafe { sys::wxFileName_URLToFileName(url_wx.as_ptr()) };
         if ptr.is_null() {
@@ -263,7 +278,7 @@ impl FileName {
         unsafe { sys::wxFileName_MakeRelativeTo(self.as_ptr(), path_base_wx.as_ptr(), format as c_int) != 0 }
     }
 
-    pub fn make_safe_relative_path(&self, path: impl AsRef<str>, format: i32) -> String {
+    pub fn make_safe_relative_path(path: impl AsRef<str>, format: i32) -> String {
         let path_wx = WxStr::new(path.as_ref());
         take_string(unsafe { sys::wxFileName_MakeSafeRelativePath(path_wx.as_ptr(), format as c_int) })
     }
@@ -331,7 +346,7 @@ impl FileName {
         unsafe { sys::wxFileName_IsDirWritable(self.as_ptr()) != 0 }
     }
 
-    pub fn same_as(&self, other: &impl WxObject, format: i32) -> bool {
+    pub fn same_as(&self, other: &impl WxFileName, format: i32) -> bool {
         unsafe { sys::wxFileName_SameAs(self.as_ptr(), other.as_ptr(), format as c_int) != 0 }
     }
 
@@ -368,7 +383,7 @@ impl FileName {
         unsafe { sys::wxFileName_Touch(self.as_ptr()) != 0 }
     }
 
-    pub fn get_times(&self, access_time: &impl WxObject, mod_time: &impl WxObject, create_time: &impl WxObject) -> bool {
+    pub fn get_times(&self, access_time: &impl WxDateTime, mod_time: &impl WxDateTime, create_time: &impl WxDateTime) -> bool {
         unsafe { sys::wxFileName_GetTimes(self.as_ptr(), access_time.as_ptr(), mod_time.as_ptr(), create_time.as_ptr()) != 0 }
     }
 
@@ -394,89 +409,89 @@ impl FileName {
         take_string(unsafe { sys::wxFileName_FileNameToURL(self.as_ptr()) })
     }
 
-    pub fn file_exists_for_path(&self, file: impl AsRef<str>) -> bool {
+    pub fn file_exists_for_path(file: impl AsRef<str>) -> bool {
         let file_wx = WxStr::new(file.as_ref());
         unsafe { sys::wxFileName_FileExistsForPath(file_wx.as_ptr()) != 0 }
     }
 
-    pub fn dir_exists_for_path(&self, dir: impl AsRef<str>) -> bool {
+    pub fn dir_exists_for_path(dir: impl AsRef<str>) -> bool {
         let dir_wx = WxStr::new(dir.as_ref());
         unsafe { sys::wxFileName_DirExistsForPath(dir_wx.as_ptr()) != 0 }
     }
 
-    pub fn exists_for_path(&self, path: impl AsRef<str>, flags: i32) -> bool {
+    pub fn exists_for_path(path: impl AsRef<str>, flags: i32) -> bool {
         let path_wx = WxStr::new(path.as_ref());
         unsafe { sys::wxFileName_ExistsForPath(path_wx.as_ptr(), flags as c_int) != 0 }
     }
 
-    pub fn is_file_readable_for_path(&self, file: impl AsRef<str>) -> bool {
+    pub fn is_file_readable_for_path(file: impl AsRef<str>) -> bool {
         let file_wx = WxStr::new(file.as_ref());
         unsafe { sys::wxFileName_IsFileReadableForPath(file_wx.as_ptr()) != 0 }
     }
 
-    pub fn is_file_writable_for_path(&self, file: impl AsRef<str>) -> bool {
+    pub fn is_file_writable_for_path(file: impl AsRef<str>) -> bool {
         let file_wx = WxStr::new(file.as_ref());
         unsafe { sys::wxFileName_IsFileWritableForPath(file_wx.as_ptr()) != 0 }
     }
 
-    pub fn is_file_executable_for_path(&self, file: impl AsRef<str>) -> bool {
+    pub fn is_file_executable_for_path(file: impl AsRef<str>) -> bool {
         let file_wx = WxStr::new(file.as_ref());
         unsafe { sys::wxFileName_IsFileExecutableForPath(file_wx.as_ptr()) != 0 }
     }
 
-    pub fn is_dir_readable_for_path(&self, dir: impl AsRef<str>) -> bool {
+    pub fn is_dir_readable_for_path(dir: impl AsRef<str>) -> bool {
         let dir_wx = WxStr::new(dir.as_ref());
         unsafe { sys::wxFileName_IsDirReadableForPath(dir_wx.as_ptr()) != 0 }
     }
 
-    pub fn is_dir_writable_for_path(&self, dir: impl AsRef<str>) -> bool {
+    pub fn is_dir_writable_for_path(dir: impl AsRef<str>) -> bool {
         let dir_wx = WxStr::new(dir.as_ref());
         unsafe { sys::wxFileName_IsDirWritableForPath(dir_wx.as_ptr()) != 0 }
     }
 
-    pub fn mkdir_for_path(&self, dir: impl AsRef<str>, perm: i32, flags: i32) -> bool {
+    pub fn mkdir_for_path(dir: impl AsRef<str>, perm: i32, flags: i32) -> bool {
         let dir_wx = WxStr::new(dir.as_ref());
         unsafe { sys::wxFileName_MkdirForPath(dir_wx.as_ptr(), perm as c_int, flags as c_int) != 0 }
     }
 
-    pub fn rmdir_for_path(&self, dir: impl AsRef<str>, flags: i32) -> bool {
+    pub fn rmdir_for_path(dir: impl AsRef<str>, flags: i32) -> bool {
         let dir_wx = WxStr::new(dir.as_ref());
         unsafe { sys::wxFileName_RmdirForPath(dir_wx.as_ptr(), flags as c_int) != 0 }
     }
 
-    pub fn set_cwd_for_path(&self, cwd: impl AsRef<str>) -> bool {
+    pub fn set_cwd_for_path(cwd: impl AsRef<str>) -> bool {
         let cwd_wx = WxStr::new(cwd.as_ref());
         unsafe { sys::wxFileName_SetCwdForPath(cwd_wx.as_ptr()) != 0 }
     }
 
-    pub fn get_cwd(&self, volume: impl AsRef<str>) -> String {
+    pub fn get_cwd(volume: impl AsRef<str>) -> String {
         let volume_wx = WxStr::new(volume.as_ref());
         take_string(unsafe { sys::wxFileName_GetCwd(volume_wx.as_ptr()) })
     }
 
-    pub fn get_home_dir(&self) -> String {
+    pub fn get_home_dir() -> String {
         take_string(unsafe { sys::wxFileName_GetHomeDir() })
     }
 
-    pub fn get_temp_dir(&self) -> String {
+    pub fn get_temp_dir() -> String {
         take_string(unsafe { sys::wxFileName_GetTempDir() })
     }
 
-    pub fn get_temp_file_name(&self, prefix: impl AsRef<str>) -> String {
+    pub fn get_temp_file_name(prefix: impl AsRef<str>) -> String {
         let prefix_wx = WxStr::new(prefix.as_ref());
         take_string(unsafe { sys::wxFileName_GetTempFileName(prefix_wx.as_ptr()) })
     }
 
-    pub fn get_forbidden_chars(&self, format: i32) -> String {
+    pub fn get_forbidden_chars(format: i32) -> String {
         take_string(unsafe { sys::wxFileName_GetForbiddenChars(format as c_int) })
     }
 
-    pub fn strip_extension(&self, full_name: impl AsRef<str>) -> String {
+    pub fn strip_extension(full_name: impl AsRef<str>) -> String {
         let full_name_wx = WxStr::new(full_name.as_ref());
         take_string(unsafe { sys::wxFileName_StripExtension(full_name_wx.as_ptr()) })
     }
 
-    pub fn is_case_sensitive(&self, format: i32) -> bool {
+    pub fn is_case_sensitive(format: i32) -> bool {
         unsafe { sys::wxFileName_IsCaseSensitive(format as c_int) != 0 }
     }
 

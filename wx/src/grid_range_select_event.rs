@@ -16,6 +16,13 @@ impl GridRangeSelectEvent {
         Self(NotifyEvent::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,6 +45,7 @@ impl WxObject for GridRangeSelectEvent {
 impl WxNotifyEvent for GridRangeSelectEvent {}
 impl WxCommandEvent for GridRangeSelectEvent {}
 impl WxEvent for GridRangeSelectEvent {}
+impl WxGridRangeSelectEvent for GridRangeSelectEvent {}
 
 impl GridRangeSelectEvent {
     pub fn get_top_left_coords(&self, col: *mut c_void, row: *mut c_void) {

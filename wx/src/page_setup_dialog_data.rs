@@ -16,6 +16,13 @@ impl PageSetupDialogData {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,16 +42,17 @@ impl WxObject for PageSetupDialogData {
     }
 }
 
+impl WxPageSetupDialogData for PageSetupDialogData {}
 
 use crate::support::Point;
 use crate::support::Size;
 
 impl PageSetupDialogData {
-    pub fn assign(&self, data: &impl WxObject) {
+    pub fn assign(&self, data: &impl WxPageSetupDialogData) {
         unsafe { sys::wxPageSetupDialogData_Assign(self.as_ptr(), data.as_ptr()) }
     }
 
-    pub fn assign_data(&self, print_data: &impl WxObject) {
+    pub fn assign_data(&self, print_data: &impl WxPrintData) {
         unsafe { sys::wxPageSetupDialogData_AssignData(self.as_ptr(), print_data.as_ptr()) }
     }
 
@@ -68,10 +76,17 @@ impl PageSetupDialogData {
         Self::from_raw(ptr)
     }
 
-    pub fn create_from_data(print_data: &impl WxObject) -> Self {
+    pub fn create_from_data(print_data: &impl WxPrintData) -> Self {
         let ptr = unsafe { sys::wxPageSetupDialogData_CreateFromData(print_data.as_ptr()) };
         assert!(!ptr.is_null(), "wxPageSetupDialogData_CreateFromData returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxPageSetupDialogData_Delete(self.as_ptr()) }
     }
 
     pub fn enable_help(&self, flag: bool) {
@@ -171,7 +186,7 @@ impl PageSetupDialogData {
         }
     }
 
-    pub fn get_print_data(&self, ref_: &impl WxObject) {
+    pub fn get_print_data(&self, ref_: &impl WxPrintData) {
         unsafe { sys::wxPageSetupDialogData_GetPrintData(self.as_ptr(), ref_.as_ptr()) }
     }
 
@@ -211,7 +226,7 @@ impl PageSetupDialogData {
         unsafe { sys::wxPageSetupDialogData_SetPaperSizeId(self.as_ptr(), id as c_int) }
     }
 
-    pub fn set_print_data(&self, print_data: &impl WxObject) {
+    pub fn set_print_data(&self, print_data: &impl WxPrintData) {
         unsafe { sys::wxPageSetupDialogData_SetPrintData(self.as_ptr(), print_data.as_ptr()) }
     }
 

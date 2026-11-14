@@ -16,6 +16,13 @@ impl RichTextProperties {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,4 +42,122 @@ impl WxObject for RichTextProperties {
     }
 }
 
+impl WxRichTextProperties for RichTextProperties {}
+
+use crate::array_string::ArrayString;
+use crate::support::WxStr;
+use crate::support::take_string;
+
+impl RichTextProperties {
+    pub fn new() -> Self {
+        let ptr = unsafe { sys::wxRichTextProperties_Create() };
+        assert!(!ptr.is_null(), "wxRichTextProperties_Create returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn new_full() -> Self {
+        let ptr = unsafe { sys::wxRichTextProperties_Create() };
+        assert!(!ptr.is_null(), "wxRichTextProperties_Create returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn create_copy(props: &impl WxRichTextProperties) -> Self {
+        let ptr = unsafe { sys::wxRichTextProperties_CreateCopy(props.as_ptr()) };
+        assert!(!ptr.is_null(), "wxRichTextProperties_CreateCopy returned null");
+        Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxRichTextProperties_Delete(self.as_ptr()) }
+    }
+
+    pub fn copy(&self, props: &impl WxRichTextProperties) {
+        unsafe { sys::wxRichTextProperties_Copy(self.as_ptr(), props.as_ptr()) }
+    }
+
+    pub fn clear(&self) {
+        unsafe { sys::wxRichTextProperties_Clear(self.as_ptr()) }
+    }
+
+    pub fn get_count(&self) -> usize {
+        unsafe { sys::wxRichTextProperties_GetCount(self.as_ptr()) as usize }
+    }
+
+    pub fn has_property(&self, name: impl AsRef<str>) -> bool {
+        let name_wx = WxStr::new(name.as_ref());
+        unsafe { sys::wxRichTextProperties_HasProperty(self.as_ptr(), name_wx.as_ptr()) != 0 }
+    }
+
+    pub fn find(&self, name: impl AsRef<str>) -> i32 {
+        let name_wx = WxStr::new(name.as_ref());
+        unsafe { sys::wxRichTextProperties_Find(self.as_ptr(), name_wx.as_ptr()) as i32 }
+    }
+
+    pub fn remove(&self, name: impl AsRef<str>) -> bool {
+        let name_wx = WxStr::new(name.as_ref());
+        unsafe { sys::wxRichTextProperties_Remove(self.as_ptr(), name_wx.as_ptr()) != 0 }
+    }
+
+    pub fn get_property_string(&self, name: impl AsRef<str>) -> String {
+        let name_wx = WxStr::new(name.as_ref());
+        take_string(unsafe { sys::wxRichTextProperties_GetPropertyString(self.as_ptr(), name_wx.as_ptr()) })
+    }
+
+    pub fn get_property_long(&self, name: impl AsRef<str>) -> i64 {
+        let name_wx = WxStr::new(name.as_ref());
+        unsafe { sys::wxRichTextProperties_GetPropertyLong(self.as_ptr(), name_wx.as_ptr()) as i64 }
+    }
+
+    pub fn get_property_bool(&self, name: impl AsRef<str>) -> bool {
+        let name_wx = WxStr::new(name.as_ref());
+        unsafe { sys::wxRichTextProperties_GetPropertyBool(self.as_ptr(), name_wx.as_ptr()) != 0 }
+    }
+
+    pub fn get_property_double(&self, name: impl AsRef<str>) -> f64 {
+        let name_wx = WxStr::new(name.as_ref());
+        unsafe { sys::wxRichTextProperties_GetPropertyDouble(self.as_ptr(), name_wx.as_ptr()) as f64 }
+    }
+
+    pub fn set_property_string(&self, name: impl AsRef<str>, value: impl AsRef<str>) {
+        let name_wx = WxStr::new(name.as_ref());
+        let value_wx = WxStr::new(value.as_ref());
+        unsafe { sys::wxRichTextProperties_SetPropertyString(self.as_ptr(), name_wx.as_ptr(), value_wx.as_ptr()) }
+    }
+
+    pub fn set_property_long(&self, name: impl AsRef<str>, value: i32) {
+        let name_wx = WxStr::new(name.as_ref());
+        unsafe { sys::wxRichTextProperties_SetPropertyLong(self.as_ptr(), name_wx.as_ptr(), value as c_long) }
+    }
+
+    pub fn set_property_bool(&self, name: impl AsRef<str>, value: bool) {
+        let name_wx = WxStr::new(name.as_ref());
+        unsafe { sys::wxRichTextProperties_SetPropertyBool(self.as_ptr(), name_wx.as_ptr(), value as c_int) }
+    }
+
+    pub fn set_property_double(&self, name: impl AsRef<str>, value: f64) {
+        let name_wx = WxStr::new(name.as_ref());
+        unsafe { sys::wxRichTextProperties_SetPropertyDouble(self.as_ptr(), name_wx.as_ptr(), value as c_double) }
+    }
+
+    pub fn get_property_names(&self) -> Option<ArrayString> {
+        let ptr = unsafe { sys::wxRichTextProperties_GetPropertyNames(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(ArrayString::from_raw(ptr))
+        }
+    }
+
+    pub fn remove_properties(&self, props: &impl WxRichTextProperties) {
+        unsafe { sys::wxRichTextProperties_RemoveProperties(self.as_ptr(), props.as_ptr()) }
+    }
+
+    pub fn merge_properties(&self, props: &impl WxRichTextProperties) {
+        unsafe { sys::wxRichTextProperties_MergeProperties(self.as_ptr(), props.as_ptr()) }
+    }
+
+}
 

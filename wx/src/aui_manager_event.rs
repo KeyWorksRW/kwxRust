@@ -16,6 +16,13 @@ impl AuiManagerEvent {
         Self(EvtHandler::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -36,6 +43,7 @@ impl WxObject for AuiManagerEvent {
 }
 
 impl WxEvtHandler for AuiManagerEvent {}
+impl WxAuiManagerEvent for AuiManagerEvent {}
 
 use crate::aui_manager::AuiManager;
 use crate::aui_pane_info::AuiPaneInfo;
@@ -105,11 +113,11 @@ impl AuiManagerEvent {
         unsafe { sys::wxAuiManagerEvent_SetDC(self.as_ptr(), paint_dc.as_ptr()) }
     }
 
-    pub fn set_manager(&self, manager: &impl WxObject) {
+    pub fn set_manager(&self, manager: &impl WxAuiManager) {
         unsafe { sys::wxAuiManagerEvent_SetManager(self.as_ptr(), manager.as_ptr()) }
     }
 
-    pub fn set_pane(&self, pane: &impl WxObject) {
+    pub fn set_pane(&self, pane: &impl WxAuiPaneInfo) {
         unsafe { sys::wxAuiManagerEvent_SetPane(self.as_ptr(), pane.as_ptr()) }
     }
 

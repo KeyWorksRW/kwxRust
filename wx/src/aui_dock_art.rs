@@ -16,6 +16,13 @@ impl AuiDockArt {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,12 +42,13 @@ impl WxObject for AuiDockArt {
     }
 }
 
+impl WxAuiDockArt for AuiDockArt {}
 use crate::colour::Colour;
 use crate::font::Font;
 use crate::support::WxStr;
 
 impl AuiDockArt {
-    pub fn draw_background(&self, dc: &impl WxDC, window: &impl WxWindow, orientation: i32, rect: &impl WxObject) {
+    pub fn draw_background(&self, dc: &impl WxDC, window: &impl WxWindow, orientation: i32, rect: &impl WxRect) {
         unsafe { sys::wxAuiDockArt_DrawBackground(self.as_ptr(), dc.as_ptr(), window.as_ptr(), orientation as c_int, rect.as_ptr()) }
     }
 
@@ -57,28 +65,28 @@ impl AuiDockArt {
         unsafe { sys::wxAuiDockArt_GetMetricForWindow(self.as_ptr(), id as c_int, window) as i32 }
     }
 
-    pub fn set_color(&self, id: i32, color: &impl WxObject) {
+    pub fn set_color(&self, id: i32, color: &impl WxColour) {
         unsafe { sys::wxAuiDockArt_SetColor(self.as_ptr(), id as c_int, color.as_ptr()) }
     }
 
-    pub fn draw_border(&self, dc: &impl WxDC, window: &impl WxWindow, rect: &impl WxObject, pane: &impl WxObject) {
+    pub fn draw_border(&self, dc: &impl WxDC, window: &impl WxWindow, rect: &impl WxRect, pane: &impl WxAuiPaneInfo) {
         unsafe { sys::wxAuiDockArt_DrawBorder(self.as_ptr(), dc.as_ptr(), window.as_ptr(), rect.as_ptr(), pane.as_ptr()) }
     }
 
-    pub fn draw_caption(&self, dc: &impl WxDC, window: &impl WxWindow, text: impl AsRef<str>, rect: &impl WxObject, pane: &impl WxObject) {
+    pub fn draw_caption(&self, dc: &impl WxDC, window: &impl WxWindow, text: impl AsRef<str>, rect: &impl WxRect, pane: &impl WxAuiPaneInfo) {
         let text_wx = WxStr::new(text.as_ref());
         unsafe { sys::wxAuiDockArt_DrawCaption(self.as_ptr(), dc.as_ptr(), window.as_ptr(), text_wx.as_ptr(), rect.as_ptr(), pane.as_ptr()) }
     }
 
-    pub fn draw_gripper(&self, dc: &impl WxDC, window: &impl WxWindow, rect: &impl WxObject, pane: &impl WxObject) {
+    pub fn draw_gripper(&self, dc: &impl WxDC, window: &impl WxWindow, rect: &impl WxRect, pane: &impl WxAuiPaneInfo) {
         unsafe { sys::wxAuiDockArt_DrawGripper(self.as_ptr(), dc.as_ptr(), window.as_ptr(), rect.as_ptr(), pane.as_ptr()) }
     }
 
-    pub fn draw_pane_button(&self, dc: &impl WxDC, window: &impl WxWindow, button: i32, button_state: i32, rect: &impl WxObject, pane: &impl WxObject) {
+    pub fn draw_pane_button(&self, dc: &impl WxDC, window: &impl WxWindow, button: i32, button_state: i32, rect: &impl WxRect, pane: &impl WxAuiPaneInfo) {
         unsafe { sys::wxAuiDockArt_DrawPaneButton(self.as_ptr(), dc.as_ptr(), window.as_ptr(), button as c_int, button_state as c_int, rect.as_ptr(), pane.as_ptr()) }
     }
 
-    pub fn draw_sash(&self, dc: &impl WxDC, window: &impl WxWindow, orientation: i32, rect: &impl WxObject) {
+    pub fn draw_sash(&self, dc: &impl WxDC, window: &impl WxWindow, orientation: i32, rect: &impl WxRect) {
         unsafe { sys::wxAuiDockArt_DrawSash(self.as_ptr(), dc.as_ptr(), window.as_ptr(), orientation as c_int, rect.as_ptr()) }
     }
 
@@ -104,11 +112,11 @@ impl AuiDockArt {
         unsafe { sys::wxAuiDockArt_GetMetric(self.as_ptr(), id as c_int) as i32 }
     }
 
-    pub fn set_colour(&self, id: i32, colour: &impl WxObject) {
+    pub fn set_colour(&self, id: i32, colour: &impl WxColour) {
         unsafe { sys::wxAuiDockArt_SetColour(self.as_ptr(), id as c_int, colour.as_ptr()) }
     }
 
-    pub fn set_font(&self, id: i32, font: &impl WxObject) {
+    pub fn set_font(&self, id: i32, font: &impl WxFont) {
         unsafe { sys::wxAuiDockArt_SetFont(self.as_ptr(), id as c_int, font.as_ptr()) }
     }
 

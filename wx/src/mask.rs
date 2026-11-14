@@ -16,6 +16,13 @@ impl Mask {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for Mask {
     }
 }
 
+impl WxMask for Mask {}
 
 impl Mask {
     pub fn new(bitmap: &impl WxBitmap) -> Self {
@@ -49,7 +57,7 @@ impl Mask {
         Self::from_raw(ptr)
     }
 
-    pub fn create_coloured(bitmap: &impl WxBitmap, colour: &impl WxObject) -> Self {
+    pub fn create_coloured(bitmap: &impl WxBitmap, colour: &impl WxColour) -> Self {
         let ptr = unsafe { sys::wxMask_CreateColoured(bitmap.as_ptr(), colour.as_ptr()) };
         assert!(!ptr.is_null(), "wxMask_CreateColoured returned null");
         Self::from_raw(ptr)

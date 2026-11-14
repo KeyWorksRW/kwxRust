@@ -16,6 +16,13 @@ impl FileType {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,9 +42,17 @@ impl WxObject for FileType {
     }
 }
 
+impl WxFileType for FileType {}
 use crate::support::take_string;
 
 impl FileType {
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxFileType_Delete(self.as_ptr()) }
+    }
+
     pub fn expand_command(&self, command: *mut c_void, params: *mut c_void) -> String {
         take_string(unsafe { sys::wxFileType_ExpandCommand(self.as_ptr(), command, params) })
     }
@@ -50,7 +65,7 @@ impl FileType {
         unsafe { sys::wxFileType_GetExtensions(self.as_ptr(), list.as_ptr()) as i32 }
     }
 
-    pub fn get_icon(&self, icon: &impl WxObject) -> i32 {
+    pub fn get_icon(&self, icon: &impl WxIcon) -> i32 {
         unsafe { sys::wxFileType_GetIcon(self.as_ptr(), icon.as_ptr()) as i32 }
     }
 

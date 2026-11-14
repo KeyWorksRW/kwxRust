@@ -16,6 +16,13 @@ impl SocketBase {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -42,6 +49,13 @@ use crate::evt_handler::EvtHandler;
 impl SocketBase {
     pub fn close(&self) -> bool {
         unsafe { sys::wxSocketBase_Close(self.as_ptr()) != 0 }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxSocketBase_Delete(self.as_ptr()) }
     }
 
     pub fn destroy(&self) -> bool {
@@ -156,7 +170,7 @@ impl SocketBase {
         unsafe { sys::wxSocketBase_SetFlags(self.as_ptr(), flags as c_int) }
     }
 
-    pub fn set_local(&self, local: &impl WxObject) -> bool {
+    pub fn set_local(&self, local: &impl WxIPV4address) -> bool {
         unsafe { sys::wxSocketBase_SetLocal(self.as_ptr(), local.as_ptr()) != 0 }
     }
 
@@ -260,15 +274,15 @@ impl SocketBase {
         }
     }
 
-    pub fn initialize(&self) -> bool {
+    pub fn initialize() -> bool {
         unsafe { sys::wxSocketBase_Initialize() != 0 }
     }
 
-    pub fn shutdown(&self) {
+    pub fn shutdown() {
         unsafe { sys::wxSocketBase_Shutdown() }
     }
 
-    pub fn is_initialized(&self) -> bool {
+    pub fn is_initialized() -> bool {
         unsafe { sys::wxSocketBase_IsInitialized() != 0 }
     }
 

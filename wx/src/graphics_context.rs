@@ -16,6 +16,13 @@ impl GraphicsContext {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for GraphicsContext {
     }
 }
 
+impl WxGraphicsContext for GraphicsContext {}
 use crate::graphics_bitmap::GraphicsBitmap;
 use crate::graphics_brush::GraphicsBrush;
 use crate::graphics_font::GraphicsFont;
@@ -44,7 +52,7 @@ use crate::graphics_pen::GraphicsPen;
 use crate::support::WxStr;
 
 impl GraphicsContext {
-    pub fn clip(&self, region: &impl WxObject) {
+    pub fn clip(&self, region: &impl WxRegion) {
         unsafe { sys::wxGraphicsContext_Clip(self.as_ptr(), region.as_ptr()) }
     }
 
@@ -61,7 +69,7 @@ impl GraphicsContext {
         }
     }
 
-    pub fn create_bitmap_from_image(&self, image: &impl WxObject) -> Option<GraphicsBitmap> {
+    pub fn create_bitmap_from_image(&self, image: &impl WxImage) -> Option<GraphicsBitmap> {
         let ptr = unsafe { sys::wxGraphicsContext_CreateBitmapFromImage(self.as_ptr(), image.as_ptr()) };
         if ptr.is_null() {
             None
@@ -70,7 +78,7 @@ impl GraphicsContext {
         }
     }
 
-    pub fn create_font(&self, font: &impl WxObject, col: &impl WxObject) -> Option<GraphicsFont> {
+    pub fn create_font(&self, font: &impl WxFont, col: &impl WxColour) -> Option<GraphicsFont> {
         let ptr = unsafe { sys::wxGraphicsContext_CreateFont(self.as_ptr(), font.as_ptr(), col.as_ptr()) };
         if ptr.is_null() {
             None
@@ -85,7 +93,7 @@ impl GraphicsContext {
         Self::from_raw(ptr)
     }
 
-    pub fn create_linear_gradient_brush(&self, x1: f64, y1: f64, x2: f64, y2: f64, c1: &impl WxObject, c2: &impl WxObject, matrix: &impl WxObject) -> Option<GraphicsBrush> {
+    pub fn create_linear_gradient_brush(&self, x1: f64, y1: f64, x2: f64, y2: f64, c1: &impl WxColour, c2: &impl WxColour, matrix: &impl WxGraphicsMatrix) -> Option<GraphicsBrush> {
         let ptr = unsafe { sys::wxGraphicsContext_CreateLinearGradientBrush(self.as_ptr(), x1 as c_double, y1 as c_double, x2 as c_double, y2 as c_double, c1.as_ptr(), c2.as_ptr(), matrix.as_ptr()) };
         if ptr.is_null() {
             None
@@ -94,7 +102,7 @@ impl GraphicsContext {
         }
     }
 
-    pub fn create_pen(&self, pen: &impl WxObject) -> Option<GraphicsPen> {
+    pub fn create_pen(&self, pen: &impl WxPen) -> Option<GraphicsPen> {
         let ptr = unsafe { sys::wxGraphicsContext_CreatePen(self.as_ptr(), pen.as_ptr()) };
         if ptr.is_null() {
             None
@@ -103,7 +111,7 @@ impl GraphicsContext {
         }
     }
 
-    pub fn create_radial_gradient_brush(&self, start_x: f64, start_y: f64, end_x: f64, end_y: f64, radius: f64, o_color: &impl WxObject, c_color: &impl WxObject, matrix: &impl WxObject) -> Option<GraphicsBrush> {
+    pub fn create_radial_gradient_brush(&self, start_x: f64, start_y: f64, end_x: f64, end_y: f64, radius: f64, o_color: &impl WxColour, c_color: &impl WxColour, matrix: &impl WxGraphicsMatrix) -> Option<GraphicsBrush> {
         let ptr = unsafe { sys::wxGraphicsContext_CreateRadialGradientBrush(self.as_ptr(), start_x as c_double, start_y as c_double, end_x as c_double, end_y as c_double, radius as c_double, o_color.as_ptr(), c_color.as_ptr(), matrix.as_ptr()) };
         if ptr.is_null() {
             None
@@ -112,7 +120,7 @@ impl GraphicsContext {
         }
     }
 
-    pub fn create_sub_bitmap(&self, bitmap: &impl WxObject, x: f64, y: f64, w: f64, h: f64) -> Option<GraphicsBitmap> {
+    pub fn create_sub_bitmap(&self, bitmap: &impl WxGraphicsBitmap, x: f64, y: f64, w: f64, h: f64) -> Option<GraphicsBitmap> {
         let ptr = unsafe { sys::wxGraphicsContext_CreateSubBitmap(self.as_ptr(), bitmap.as_ptr(), x as c_double, y as c_double, w as c_double, h as c_double) };
         if ptr.is_null() {
             None
@@ -125,7 +133,7 @@ impl GraphicsContext {
         unsafe { sys::wxGraphicsContext_EndLayer(self.as_ptr()) }
     }
 
-    pub fn from_dip(&self, sz: &impl WxObject) -> Option<crate::size::Size> {
+    pub fn from_dip(&self, sz: &impl WxSize) -> Option<crate::size::Size> {
         let ptr = unsafe { sys::wxGraphicsContext_FromDIP(self.as_ptr(), sz.as_ptr()) };
         if ptr.is_null() {
             None
@@ -146,7 +154,7 @@ impl GraphicsContext {
         unsafe { sys::wxGraphicsContext_ClipByRectangle(self.as_ptr(), x as c_double, y as c_double, width as c_double, height as c_double) }
     }
 
-    pub fn concat_transform(&self, matrix: &impl WxObject) {
+    pub fn concat_transform(&self, matrix: &impl WxGraphicsMatrix) {
         unsafe { sys::wxGraphicsContext_ConcatTransform(self.as_ptr(), matrix.as_ptr()) }
     }
 
@@ -171,7 +179,7 @@ impl GraphicsContext {
         }
     }
 
-    pub fn create_from_memory(dc: &impl WxObject) -> Self {
+    pub fn create_from_memory(dc: &impl WxMemoryDC) -> Self {
         let ptr = unsafe { sys::wxGraphicsContext_CreateFromMemory(dc.as_ptr()) };
         assert!(!ptr.is_null(), "wxGraphicsContext_CreateFromMemory returned null");
         Self::from_raw(ptr)
@@ -189,7 +197,7 @@ impl GraphicsContext {
         Self::from_raw(ptr)
     }
 
-    pub fn create_from_printer(dc: &impl WxObject) -> Self {
+    pub fn create_from_printer(dc: &impl WxPrinterDC) -> Self {
         let ptr = unsafe { sys::wxGraphicsContext_CreateFromPrinter(dc.as_ptr()) };
         assert!(!ptr.is_null(), "wxGraphicsContext_CreateFromPrinter returned null");
         Self::from_raw(ptr)
@@ -219,6 +227,13 @@ impl GraphicsContext {
         }
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxGraphicsContext_Delete(self.as_ptr()) }
+    }
+
     pub fn draw_bitmap(&self, bmp: &impl WxBitmap, x: f64, y: f64, width: f64, height: f64) {
         unsafe { sys::wxGraphicsContext_DrawBitmap(self.as_ptr(), bmp.as_ptr(), x as c_double, y as c_double, width as c_double, height as c_double) }
     }
@@ -227,7 +242,7 @@ impl GraphicsContext {
         unsafe { sys::wxGraphicsContext_DrawEllipse(self.as_ptr(), x as c_double, y as c_double, width as c_double, height as c_double) }
     }
 
-    pub fn draw_icon(&self, icon: &impl WxObject, x: f64, y: f64, width: f64, height: f64) {
+    pub fn draw_icon(&self, icon: &impl WxIcon, x: f64, y: f64, width: f64, height: f64) {
         unsafe { sys::wxGraphicsContext_DrawIcon(self.as_ptr(), icon.as_ptr(), x as c_double, y as c_double, width as c_double, height as c_double) }
     }
 
@@ -235,7 +250,7 @@ impl GraphicsContext {
         unsafe { sys::wxGraphicsContext_DrawLines(self.as_ptr(), count, x, y, fill_style as c_int) }
     }
 
-    pub fn draw_path(&self, path: &impl WxObject, fill_style: i32) {
+    pub fn draw_path(&self, path: &impl WxGraphicsPath, fill_style: i32) {
         unsafe { sys::wxGraphicsContext_DrawPath(self.as_ptr(), path.as_ptr(), fill_style as c_int) }
     }
 
@@ -257,7 +272,7 @@ impl GraphicsContext {
         unsafe { sys::wxGraphicsContext_DrawTextWithAngle(self.as_ptr(), str_wx.as_ptr(), x as c_double, y as c_double, angle as c_double) }
     }
 
-    pub fn fill_path(&self, path: &impl WxObject, fill_style: i32) {
+    pub fn fill_path(&self, path: &impl WxGraphicsPath, fill_style: i32) {
         unsafe { sys::wxGraphicsContext_FillPath(self.as_ptr(), path.as_ptr(), fill_style as c_int) }
     }
 
@@ -295,31 +310,31 @@ impl GraphicsContext {
         unsafe { sys::wxGraphicsContext_Scale(self.as_ptr(), x_scale as c_double, y_scale as c_double) }
     }
 
-    pub fn set_brush(&self, brush: &impl WxObject) {
+    pub fn set_brush(&self, brush: &impl WxBrush) {
         unsafe { sys::wxGraphicsContext_SetBrush(self.as_ptr(), brush.as_ptr()) }
     }
 
-    pub fn set_font(&self, font: &impl WxObject, colour: &impl WxObject) {
+    pub fn set_font(&self, font: &impl WxFont, colour: &impl WxColour) {
         unsafe { sys::wxGraphicsContext_SetFont(self.as_ptr(), font.as_ptr(), colour.as_ptr()) }
     }
 
-    pub fn set_graphics_brush(&self, brush: &impl WxObject) {
+    pub fn set_graphics_brush(&self, brush: &impl WxGraphicsBrush) {
         unsafe { sys::wxGraphicsContext_SetGraphicsBrush(self.as_ptr(), brush.as_ptr()) }
     }
 
-    pub fn set_graphics_font(&self, font: &impl WxObject) {
+    pub fn set_graphics_font(&self, font: &impl WxGraphicsFont) {
         unsafe { sys::wxGraphicsContext_SetGraphicsFont(self.as_ptr(), font.as_ptr()) }
     }
 
-    pub fn set_graphics_pen(&self, pen: &impl WxObject) {
+    pub fn set_graphics_pen(&self, pen: &impl WxGraphicsPen) {
         unsafe { sys::wxGraphicsContext_SetGraphicsPen(self.as_ptr(), pen.as_ptr()) }
     }
 
-    pub fn set_pen(&self, pen: &impl WxObject) {
+    pub fn set_pen(&self, pen: &impl WxPen) {
         unsafe { sys::wxGraphicsContext_SetPen(self.as_ptr(), pen.as_ptr()) }
     }
 
-    pub fn set_transform(&self, matrix: &impl WxObject) {
+    pub fn set_transform(&self, matrix: &impl WxGraphicsMatrix) {
         unsafe { sys::wxGraphicsContext_SetTransform(self.as_ptr(), matrix.as_ptr()) }
     }
 
@@ -331,11 +346,11 @@ impl GraphicsContext {
         unsafe { sys::wxGraphicsContext_StrokeLines(self.as_ptr(), count, x, y, fill_style as c_int) }
     }
 
-    pub fn stroke_lines_start_and_end(&self, count: usize, begin_points: &impl WxObject, end_points: &impl WxObject) {
+    pub fn stroke_lines_start_and_end(&self, count: usize, begin_points: &impl WxPoint2DDouble, end_points: &impl WxPoint2DDouble) {
         unsafe { sys::wxGraphicsContext_StrokeLinesStartAndEnd(self.as_ptr(), count, begin_points.as_ptr(), end_points.as_ptr()) }
     }
 
-    pub fn stroke_path(&self, path: &impl WxObject) {
+    pub fn stroke_path(&self, path: &impl WxGraphicsPath) {
         unsafe { sys::wxGraphicsContext_StrokePath(self.as_ptr(), path.as_ptr()) }
     }
 

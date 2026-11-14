@@ -16,6 +16,13 @@ impl GridBagSizer {
         Self(GridSizer::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -37,6 +44,7 @@ impl WxObject for GridBagSizer {
 
 impl WxGridSizer for GridBagSizer {}
 impl WxSizer for GridBagSizer {}
+impl WxGridBagSizer for GridBagSizer {}
 
 use crate::sizer_item::SizerItem;
 use crate::support::Point;
@@ -183,11 +191,11 @@ impl GridBagSizer {
         }
     }
 
-    pub fn check_for_intersection(&self, item: &impl WxObject, exclude_item: &impl WxObject) -> bool {
+    pub fn check_for_intersection(&self, item: &impl WxGBSizerItem, exclude_item: &impl WxGBSizerItem) -> bool {
         unsafe { sys::wxGridBagSizer_CheckForIntersection(self.as_ptr(), item.as_ptr(), exclude_item.as_ptr()) != 0 }
     }
 
-    pub fn check_for_intersection_pos(&self, row: i32, col: i32, rowspan: i32, colspan: i32, exclude_item: &impl WxObject) -> bool {
+    pub fn check_for_intersection_pos(&self, row: i32, col: i32, rowspan: i32, colspan: i32, exclude_item: &impl WxGBSizerItem) -> bool {
         unsafe { sys::wxGridBagSizer_CheckForIntersectionPos(self.as_ptr(), row as c_int, col as c_int, rowspan as c_int, colspan as c_int, exclude_item.as_ptr()) != 0 }
     }
 

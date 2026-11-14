@@ -16,6 +16,13 @@ impl Process {
         Self(EvtHandler::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -65,15 +72,15 @@ impl Process {
         unsafe { sys::wxProcess_GetPriority(self.as_ptr()) as u32 }
     }
 
-    pub fn kill(&self, pid: i32, sig: i32, flags: i32, rc: *mut i32) -> i32 {
+    pub fn kill(pid: i32, sig: i32, flags: i32, rc: *mut i32) -> i32 {
         unsafe { sys::wxProcess_Kill(pid as c_int, sig as c_int, flags as c_int, rc as *mut c_int) as i32 }
     }
 
-    pub fn exists(&self, pid: i32) -> bool {
+    pub fn exists(pid: i32) -> bool {
         unsafe { sys::wxProcess_Exists(pid as c_int) != 0 }
     }
 
-    pub fn open(&self, cmd: impl AsRef<str>, flags: i32) -> Option<Process> {
+    pub fn open(cmd: impl AsRef<str>, flags: i32) -> Option<Process> {
         let cmd_wx = WxStr::new(cmd.as_ref());
         let ptr = unsafe { sys::wxProcess_Open(cmd_wx.as_ptr(), flags as c_int) };
         if ptr.is_null() {
@@ -109,6 +116,13 @@ impl Process {
         let ptr = unsafe { sys::wxProcess_CreateRedirect(parent.as_ptr(), redirect as c_int) };
         assert!(!ptr.is_null(), "wxProcess_CreateRedirect returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxProcess_Delete(self.as_ptr()) }
     }
 
     pub fn detach(&self) {

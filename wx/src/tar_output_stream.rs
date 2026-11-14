@@ -16,6 +16,13 @@ impl TarOutputStream {
         Self(ArchiveOutputStream::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,6 +46,7 @@ impl WxArchiveOutputStream for TarOutputStream {}
 impl WxFilterOutputStream for TarOutputStream {}
 impl WxOutputStream for TarOutputStream {}
 impl WxStreamBase for TarOutputStream {}
+impl WxTarOutputStream for TarOutputStream {}
 
 use crate::support::WxStr;
 
@@ -55,12 +63,19 @@ impl TarOutputStream {
         Self::from_raw(ptr)
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxTarOutputStream_Delete(self.as_ptr()) }
+    }
+
     pub fn put_next_entry(&self, entry_name: impl AsRef<str>, size: i32) -> bool {
         let entry_name_wx = WxStr::new(entry_name.as_ref());
         unsafe { sys::wxTarOutputStream_PutNextEntry(self.as_ptr(), entry_name_wx.as_ptr(), size as c_int) != 0 }
     }
 
-    pub fn put_next_entry_date(&self, entry_name: impl AsRef<str>, dt: &impl WxObject, size: i32) -> bool {
+    pub fn put_next_entry_date(&self, entry_name: impl AsRef<str>, dt: &impl WxDateTime, size: i32) -> bool {
         let entry_name_wx = WxStr::new(entry_name.as_ref());
         unsafe { sys::wxTarOutputStream_PutNextEntryDate(self.as_ptr(), entry_name_wx.as_ptr(), dt.as_ptr(), size as c_int) != 0 }
     }
@@ -70,20 +85,20 @@ impl TarOutputStream {
         unsafe { sys::wxTarOutputStream_PutNextDirEntry(self.as_ptr(), entry_name_wx.as_ptr()) != 0 }
     }
 
-    pub fn put_next_dir_entry_date(&self, entry_name: impl AsRef<str>, dt: &impl WxObject) -> bool {
+    pub fn put_next_dir_entry_date(&self, entry_name: impl AsRef<str>, dt: &impl WxDateTime) -> bool {
         let entry_name_wx = WxStr::new(entry_name.as_ref());
         unsafe { sys::wxTarOutputStream_PutNextDirEntryDate(self.as_ptr(), entry_name_wx.as_ptr(), dt.as_ptr()) != 0 }
     }
 
-    pub fn put_entry(&self, entry: &impl WxObject) -> bool {
+    pub fn put_entry(&self, entry: &impl WxTarEntry) -> bool {
         unsafe { sys::wxTarOutputStream_PutEntry(self.as_ptr(), entry.as_ptr()) != 0 }
     }
 
-    pub fn copy_entry(&self, entry: &impl WxObject, input_stream: &impl WxObject) -> bool {
+    pub fn copy_entry(&self, entry: &impl WxTarEntry, input_stream: &impl WxTarInputStream) -> bool {
         unsafe { sys::wxTarOutputStream_CopyEntry(self.as_ptr(), entry.as_ptr(), input_stream.as_ptr()) != 0 }
     }
 
-    pub fn copy_archive_meta_data(&self, input_stream: &impl WxObject) -> bool {
+    pub fn copy_archive_meta_data(&self, input_stream: &impl WxTarInputStream) -> bool {
         unsafe { sys::wxTarOutputStream_CopyArchiveMetaData(self.as_ptr(), input_stream.as_ptr()) != 0 }
     }
 

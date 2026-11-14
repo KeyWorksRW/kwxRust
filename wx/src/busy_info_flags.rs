@@ -16,6 +16,13 @@ impl BusyInfoFlags {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for BusyInfoFlags {
     }
 }
 
+impl WxBusyInfoFlags for BusyInfoFlags {}
 use crate::support::WxStr;
 
 impl BusyInfoFlags {
@@ -54,7 +62,7 @@ impl BusyInfoFlags {
         unsafe { sys::wxBusyInfoFlags_SetParent(self.as_ptr(), parent.as_ptr()) }
     }
 
-    pub fn set_icon(&self, icon: &impl WxObject) {
+    pub fn set_icon(&self, icon: &impl WxBitmapBundle) {
         unsafe { sys::wxBusyInfoFlags_SetIcon(self.as_ptr(), icon.as_ptr()) }
     }
 
@@ -68,16 +76,23 @@ impl BusyInfoFlags {
         unsafe { sys::wxBusyInfoFlags_SetText(self.as_ptr(), text_wx.as_ptr()) }
     }
 
-    pub fn set_foreground(&self, colour: &impl WxObject) {
+    pub fn set_foreground(&self, colour: &impl WxColour) {
         unsafe { sys::wxBusyInfoFlags_SetForeground(self.as_ptr(), colour.as_ptr()) }
     }
 
-    pub fn set_background(&self, colour: &impl WxObject) {
+    pub fn set_background(&self, colour: &impl WxColour) {
         unsafe { sys::wxBusyInfoFlags_SetBackground(self.as_ptr(), colour.as_ptr()) }
     }
 
     pub fn set_transparency(&self, alpha: u8) {
         unsafe { sys::wxBusyInfoFlags_SetTransparency(self.as_ptr(), alpha) }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxBusyInfoFlags_Delete(self.as_ptr()) }
     }
 
 }

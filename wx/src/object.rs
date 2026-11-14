@@ -4,39 +4,89 @@
 
 use std::os::raw::*;
 
-use crate::object::Object;
 use crate::sys;
 use crate::traits::*;
 
+/// Non-owning handle to a wxWidgets object.
 #[derive(Copy, Clone)]
-pub struct Object(pub(crate) Object);
+pub struct Object(*mut c_void);
 
 impl Object {
     pub(crate) const fn from_raw(ptr: *mut c_void) -> Self {
-        Self(Object::from_raw(ptr))
+        Self(ptr)
+    }
+
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
     }
 
     pub fn as_ptr(&self) -> *mut c_void {
-        self.0.as_ptr()
+        self.0
     }
-}
 
-impl std::ops::Deref for Object {
-    type Target = Object;
-
-    fn deref(&self) -> &Object {
-        &self.0
+    pub fn is_null(&self) -> bool {
+        self.0.is_null()
     }
 }
 
 impl WxObject for Object {
     fn as_ptr(&self) -> *mut c_void {
-        self.0.as_ptr()
+        self.0
     }
 }
 
+use crate::class_info::ClassInfo;
+use crate::closure::Closure;
 
 impl Object {
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxObject_Delete(self.as_ptr()) }
+    }
+
+    pub fn is_same_as(&self, o: &impl WxObject) -> bool {
+        unsafe { sys::wxObject_IsSameAs(self.as_ptr(), o.as_ptr()) != 0 }
+    }
+
+    pub fn get_class_info(&self) -> Option<ClassInfo> {
+        let ptr = unsafe { sys::wxObject_GetClassInfo(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(ClassInfo::from_raw(ptr))
+        }
+    }
+
+    pub fn get_client_closure(&self) -> Option<Closure> {
+        let ptr = unsafe { sys::wxObject_GetClientClosure(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(Closure::from_raw(ptr))
+        }
+    }
+
+    pub fn is_kind_of(&self, class_info: &impl WxClassInfo) -> bool {
+        unsafe { sys::wxObject_IsKindOf(self.as_ptr(), class_info.as_ptr()) != 0 }
+    }
+
+    pub fn is_scrolled_window(&self) -> bool {
+        unsafe { sys::wxObject_IsScrolledWindow(self.as_ptr()) != 0 }
+    }
+
+    pub fn set_client_closure(&self, closure: &impl WxClosure) {
+        unsafe { sys::wxObject_SetClientClosure(self.as_ptr(), closure.as_ptr()) }
+    }
+
+    pub fn set_on_get_class_info(&self, p_function: *mut c_void) {
+        unsafe { sys::wxObject_SetOnGetClassInfo(self.as_ptr(), p_function) }
+    }
+
     pub fn new(p_object: *mut c_void) -> Self {
         let ptr = unsafe { sys::kwxObject_Create(p_object) };
         assert!(!ptr.is_null(), "kwxObject_Create returned null");
@@ -47,10 +97,6 @@ impl Object {
         let ptr = unsafe { sys::kwxObject_Create(p_object) };
         assert!(!ptr.is_null(), "kwxObject_Create returned null");
         Self::from_raw(ptr)
-    }
-
-    pub fn set_on_get_class_info(&self, p_function: *mut c_void) {
-        unsafe { sys::kwxObject_SetOnGetClassInfo(self.as_ptr(), p_function) }
     }
 
 }

@@ -16,6 +16,13 @@ impl GBSizerItem {
         Self(SizerItem::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -36,6 +43,7 @@ impl WxObject for GBSizerItem {
 }
 
 impl WxSizerItem for GBSizerItem {}
+impl WxGBSizerItem for GBSizerItem {}
 
 use crate::grid_bag_sizer::GridBagSizer;
 
@@ -58,6 +66,13 @@ impl GBSizerItem {
         Self::from_raw(ptr)
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxGBSizerItem_Delete(self.as_ptr()) }
+    }
+
     pub fn get_pos(&self, row: *mut i32, col: *mut i32) {
         unsafe { sys::wxGBSizerItem_GetPos(self.as_ptr(), row as *mut c_int, col as *mut c_int) }
     }
@@ -74,7 +89,7 @@ impl GBSizerItem {
         unsafe { sys::wxGBSizerItem_SetSpan(self.as_ptr(), rowspan as c_int, colspan as c_int) != 0 }
     }
 
-    pub fn intersects(&self, other: &impl WxObject) -> bool {
+    pub fn intersects(&self, other: &impl WxGBSizerItem) -> bool {
         unsafe { sys::wxGBSizerItem_Intersects(self.as_ptr(), other.as_ptr()) != 0 }
     }
 
@@ -95,7 +110,7 @@ impl GBSizerItem {
         }
     }
 
-    pub fn set_gb_sizer(&self, sizer: &impl WxObject) {
+    pub fn set_gb_sizer(&self, sizer: &impl WxGridBagSizer) {
         unsafe { sys::wxGBSizerItem_SetGBSizer(self.as_ptr(), sizer.as_ptr()) }
     }
 

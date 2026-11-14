@@ -16,6 +16,13 @@ impl ToolTip {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for ToolTip {
     }
 }
 
+impl WxToolTip for ToolTip {}
 
 use crate::support::WxStr;
 use crate::support::take_string;
@@ -54,7 +62,7 @@ impl ToolTip {
         Self::from_raw(ptr)
     }
 
-    pub fn enable(&self, flag: bool) {
+    pub fn enable(flag: bool) {
         unsafe { sys::wxToolTip_Enable(flag as c_int) }
     }
 
@@ -66,19 +74,19 @@ impl ToolTip {
         unsafe { sys::wxToolTip_GetWindow(self.as_ptr()) }
     }
 
-    pub fn set_auto_pop(&self, milliseconds: i32) {
+    pub fn set_auto_pop(milliseconds: i32) {
         unsafe { sys::wxToolTip_SetAutoPop(milliseconds as c_long) }
     }
 
-    pub fn set_delay(&self, milliseconds: i32) {
+    pub fn set_delay(milliseconds: i32) {
         unsafe { sys::wxToolTip_SetDelay(milliseconds as c_long) }
     }
 
-    pub fn set_max_width(&self, width: i32) {
+    pub fn set_max_width(width: i32) {
         unsafe { sys::wxToolTip_SetMaxWidth(width as c_int) }
     }
 
-    pub fn set_reshow(&self, milliseconds: i32) {
+    pub fn set_reshow(milliseconds: i32) {
         unsafe { sys::wxToolTip_SetReshow(milliseconds as c_long) }
     }
 

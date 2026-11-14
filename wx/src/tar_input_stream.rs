@@ -16,6 +16,13 @@ impl TarInputStream {
         Self(ArchiveInputStream::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,6 +46,7 @@ impl WxArchiveInputStream for TarInputStream {}
 impl WxFilterInputStream for TarInputStream {}
 impl WxInputStream for TarInputStream {}
 impl WxStreamBase for TarInputStream {}
+impl WxTarInputStream for TarInputStream {}
 
 use crate::tar_entry::TarEntry;
 
@@ -55,6 +63,13 @@ impl TarInputStream {
         Self::from_raw(ptr)
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxTarInputStream_Delete(self.as_ptr()) }
+    }
+
     pub fn get_next_entry(&self) -> Option<TarEntry> {
         let ptr = unsafe { sys::wxTarInputStream_GetNextEntry(self.as_ptr()) };
         if ptr.is_null() {
@@ -64,7 +79,7 @@ impl TarInputStream {
         }
     }
 
-    pub fn open_entry(&self, entry: &impl WxObject) -> bool {
+    pub fn open_entry(&self, entry: &impl WxTarEntry) -> bool {
         unsafe { sys::wxTarInputStream_OpenEntry(self.as_ptr(), entry.as_ptr()) != 0 }
     }
 
@@ -76,11 +91,11 @@ impl TarInputStream {
         unsafe { sys::wxTarInputStream_GetLength(self.as_ptr()) as i32 }
     }
 
-    pub fn get_max_extended_header_size(&self) -> i32 {
+    pub fn get_max_extended_header_size() -> i32 {
         unsafe { sys::wxTarInputStream_GetMaxExtendedHeaderSize() as i32 }
     }
 
-    pub fn set_max_extended_header_size(&self, size: i32) {
+    pub fn set_max_extended_header_size(size: i32) {
         unsafe { sys::wxTarInputStream_SetMaxExtendedHeaderSize(size as c_int) }
     }
 

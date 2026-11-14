@@ -4,16 +4,23 @@
 
 use std::os::raw::*;
 
-use crate::object::Object;
+use crate::control::Control;
 use crate::sys;
 use crate::traits::*;
 
 #[derive(Copy, Clone)]
-pub struct AnimationCtrl(pub(crate) Object);
+pub struct AnimationCtrl(pub(crate) Control);
 
 impl AnimationCtrl {
     pub(crate) const fn from_raw(ptr: *mut c_void) -> Self {
-        Self(Object::from_raw(ptr))
+        Self(Control::from_raw(ptr))
+    }
+
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
     }
 
     pub fn as_ptr(&self) -> *mut c_void {
@@ -22,9 +29,9 @@ impl AnimationCtrl {
 }
 
 impl std::ops::Deref for AnimationCtrl {
-    type Target = Object;
+    type Target = Control;
 
-    fn deref(&self) -> &Object {
+    fn deref(&self) -> &Control {
         &self.0
     }
 }
@@ -34,6 +41,11 @@ impl WxObject for AnimationCtrl {
         self.0.as_ptr()
     }
 }
+
+impl WxControl for AnimationCtrl {}
+impl WxWindow for AnimationCtrl {}
+impl WxEvtHandler for AnimationCtrl {}
+impl WxAnimationCtrl for AnimationCtrl {}
 
 use crate::support::WxStr;
 
@@ -50,13 +62,13 @@ impl AnimationCtrl {
         Self::from_raw(ptr)
     }
 
-    pub fn create_with_animation(parent: &impl WxWindow, id: i32, anim: &impl WxObject, x: i32, y: i32, width: i32, height: i32, style: i32) -> Self {
+    pub fn create_with_animation(parent: &impl WxWindow, id: i32, anim: &impl WxAnimation, x: i32, y: i32, width: i32, height: i32, style: i32) -> Self {
         let ptr = unsafe { sys::wxAnimationCtrl_CreateWithAnimation(parent.as_ptr(), id as c_int, anim.as_ptr(), x as c_int, y as c_int, width as c_int, height as c_int, style as c_int) };
         assert!(!ptr.is_null(), "wxAnimationCtrl_CreateWithAnimation returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn get_animation(&self, anim: &impl WxObject) {
+    pub fn get_animation(&self, anim: &impl WxAnimation) {
         unsafe { sys::wxAnimationCtrl_GetAnimation(self.as_ptr(), anim.as_ptr()) }
     }
 
@@ -81,7 +93,7 @@ impl AnimationCtrl {
         unsafe { sys::wxAnimationCtrl_Play(self.as_ptr()) != 0 }
     }
 
-    pub fn set_animation(&self, anim: &impl WxObject) {
+    pub fn set_animation(&self, anim: &impl WxAnimation) {
         unsafe { sys::wxAnimationCtrl_SetAnimation(self.as_ptr(), anim.as_ptr()) }
     }
 
@@ -93,15 +105,15 @@ impl AnimationCtrl {
         unsafe { sys::wxAnimationCtrl_Stop(self.as_ptr()) }
     }
 
-    pub fn create_animation(&self, anim: &impl WxObject) {
+    pub fn create_animation(&self, anim: &impl WxAnimation) {
         unsafe { sys::wxAnimationCtrl_CreateAnimation(self.as_ptr(), anim.as_ptr()) }
     }
 
-    pub fn get_compatible_animation(&self, anim: &impl WxObject) {
+    pub fn get_compatible_animation(anim: &impl WxAnimation) {
         unsafe { sys::wxAnimationCtrl_GetCompatibleAnimation(anim.as_ptr()) }
     }
 
-    pub fn set_animation_bundle(&self, bundle: &impl WxObject) {
+    pub fn set_animation_bundle(&self, bundle: &impl WxAnimationBundle) {
         unsafe { sys::wxAnimationCtrl_SetAnimationBundle(self.as_ptr(), bundle.as_ptr()) }
     }
 

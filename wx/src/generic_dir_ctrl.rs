@@ -16,6 +16,13 @@ impl GenericDirCtrl {
         Self(Control::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,6 +45,7 @@ impl WxObject for GenericDirCtrl {
 impl WxControl for GenericDirCtrl {}
 impl WxWindow for GenericDirCtrl {}
 impl WxEvtHandler for GenericDirCtrl {}
+impl WxGenericDirCtrl for GenericDirCtrl {}
 
 use crate::support::WxStr;
 use crate::support::take_string;
@@ -81,7 +89,7 @@ impl GenericDirCtrl {
         take_string(unsafe { sys::wxGenericDirCtrl_GetFilePath(self.as_ptr()) })
     }
 
-    pub fn get_file_paths(&self, paths: &impl WxObject) {
+    pub fn get_file_paths(&self, paths: &impl WxArrayString) {
         unsafe { sys::wxGenericDirCtrl_GetFilePaths(self.as_ptr(), paths.as_ptr()) }
     }
 
@@ -101,7 +109,7 @@ impl GenericDirCtrl {
         take_string(unsafe { sys::wxGenericDirCtrl_GetPath(self.as_ptr()) })
     }
 
-    pub fn get_paths(&self, paths: &impl WxObject) {
+    pub fn get_paths(&self, paths: &impl WxArrayString) {
         unsafe { sys::wxGenericDirCtrl_GetPaths(self.as_ptr(), paths.as_ptr()) }
     }
 
@@ -118,7 +126,7 @@ impl GenericDirCtrl {
         unsafe { sys::wxGenericDirCtrl_SelectPath(self.as_ptr(), path_wx.as_ptr(), select as c_int) }
     }
 
-    pub fn select_paths(&self, paths: &impl WxObject) {
+    pub fn select_paths(&self, paths: &impl WxArrayString) {
         unsafe { sys::wxGenericDirCtrl_SelectPaths(self.as_ptr(), paths.as_ptr()) }
     }
 
@@ -147,6 +155,10 @@ impl GenericDirCtrl {
 
     pub fn unselect_all(&self) {
         unsafe { sys::wxGenericDirCtrl_UnselectAll(self.as_ptr()) }
+    }
+
+    pub fn get_path_for_item(&self, item: &impl WxTreeItemId) -> String {
+        take_string(unsafe { sys::wxGenericDirCtrl_GetPathForItem(self.as_ptr(), item.as_ptr()) })
     }
 
 }

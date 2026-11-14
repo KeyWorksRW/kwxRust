@@ -16,6 +16,13 @@ impl AuiFlatTabArt {
         Self(AuiTabArt::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -36,6 +43,7 @@ impl WxObject for AuiFlatTabArt {
 }
 
 impl WxAuiTabArt for AuiFlatTabArt {}
+impl WxAuiFlatTabArt for AuiFlatTabArt {}
 
 impl AuiFlatTabArt {
     pub fn new() -> Self {
@@ -59,11 +67,11 @@ impl AuiFlatTabArt {
         }
     }
 
-    pub fn set_colour(&self, colour: &impl WxObject) {
+    pub fn set_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxAuiFlatTabArt_SetColour(self.as_ptr(), colour.as_ptr()) }
     }
 
-    pub fn set_active_colour(&self, colour: &impl WxObject) {
+    pub fn set_active_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxAuiFlatTabArt_SetActiveColour(self.as_ptr(), colour.as_ptr()) }
     }
 

@@ -16,6 +16,13 @@ impl RichTextEvent {
         Self(NotifyEvent::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,6 +45,7 @@ impl WxObject for RichTextEvent {
 impl WxNotifyEvent for RichTextEvent {}
 impl WxCommandEvent for RichTextEvent {}
 impl WxEvent for RichTextEvent {}
+impl WxRichTextEvent for RichTextEvent {}
 
 use crate::rich_text_paragraph_layout_box::RichTextParagraphLayoutBox;
 use crate::rich_text_style_sheet::RichTextStyleSheet;
@@ -68,7 +76,7 @@ impl RichTextEvent {
         }
     }
 
-    pub fn set_old_style_sheet(&self, sheet: &impl WxObject) {
+    pub fn set_old_style_sheet(&self, sheet: &impl WxRichTextStyleSheet) {
         unsafe { sys::wxRichTextEvent_SetOldStyleSheet(self.as_ptr(), sheet.as_ptr()) }
     }
 
@@ -81,7 +89,7 @@ impl RichTextEvent {
         }
     }
 
-    pub fn set_new_style_sheet(&self, sheet: &impl WxObject) {
+    pub fn set_new_style_sheet(&self, sheet: &impl WxRichTextStyleSheet) {
         unsafe { sys::wxRichTextEvent_SetNewStyleSheet(self.as_ptr(), sheet.as_ptr()) }
     }
 

@@ -16,6 +16,13 @@ impl AuiFloatingFrame {
         Self(Frame::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,20 +46,28 @@ impl WxFrame for AuiFloatingFrame {}
 impl WxTopLevelWindow for AuiFloatingFrame {}
 impl WxWindow for AuiFloatingFrame {}
 impl WxEvtHandler for AuiFloatingFrame {}
+impl WxAuiFloatingFrame for AuiFloatingFrame {}
 
 use crate::aui_manager::AuiManager;
 
 impl AuiFloatingFrame {
-    pub fn new(parent: &impl WxWindow, owner_mgr: &impl WxObject, pane: &impl WxObject) -> Self {
+    pub fn new(parent: &impl WxWindow, owner_mgr: &impl WxAuiManager, pane: &impl WxAuiPaneInfo) -> Self {
         let ptr = unsafe { sys::wxAuiFloatingFrame_Create(parent.as_ptr(), owner_mgr.as_ptr(), pane.as_ptr(), -1, 0) };
         assert!(!ptr.is_null(), "wxAuiFloatingFrame_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(parent: &impl WxWindow, owner_mgr: &impl WxObject, pane: &impl WxObject, id: i32, style: i32) -> Self {
+    pub fn new_full(parent: &impl WxWindow, owner_mgr: &impl WxAuiManager, pane: &impl WxAuiPaneInfo, id: i32, style: i32) -> Self {
         let ptr = unsafe { sys::wxAuiFloatingFrame_Create(parent.as_ptr(), owner_mgr.as_ptr(), pane.as_ptr(), id as c_int, style as c_int) };
         assert!(!ptr.is_null(), "wxAuiFloatingFrame_Create returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxAuiFloatingFrame_Delete(self.as_ptr()) }
     }
 
     pub fn get_owner_manager(&self) -> Option<AuiManager> {

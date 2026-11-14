@@ -16,6 +16,13 @@ impl StaticBitmap {
         Self(Control::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,6 +45,7 @@ impl WxObject for StaticBitmap {
 impl WxControl for StaticBitmap {}
 impl WxWindow for StaticBitmap {}
 impl WxEvtHandler for StaticBitmap {}
+impl WxStaticBitmap for StaticBitmap {}
 
 use crate::support::Rect;
 
@@ -54,11 +62,18 @@ impl StaticBitmap {
         Self::from_raw(ptr)
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxStaticBitmap_Delete(self.as_ptr()) }
+    }
+
     pub fn get_bitmap(&self, ref_: &impl WxBitmap) {
         unsafe { sys::wxStaticBitmap_GetBitmap(self.as_ptr(), ref_.as_ptr()) }
     }
 
-    pub fn get_icon(&self, ref_: &impl WxObject) {
+    pub fn get_icon(&self, ref_: &impl WxIcon) {
         unsafe { sys::wxStaticBitmap_GetIcon(self.as_ptr(), ref_.as_ptr()) }
     }
 
@@ -66,8 +81,16 @@ impl StaticBitmap {
         unsafe { sys::wxStaticBitmap_SetBitmap(self.as_ptr(), bitmap.as_ptr()) }
     }
 
-    pub fn set_icon(&self, icon: &impl WxObject) {
+    pub fn set_icon(&self, icon: &impl WxIcon) {
         unsafe { sys::wxStaticBitmap_SetIcon(self.as_ptr(), icon.as_ptr()) }
+    }
+
+    pub fn set_scale_mode(&self, scale_mode: i32) {
+        unsafe { sys::wxStaticBitmap_SetScaleMode(self.as_ptr(), scale_mode as c_int) }
+    }
+
+    pub fn get_scale_mode(&self) -> i32 {
+        unsafe { sys::wxStaticBitmap_GetScaleMode(self.as_ptr()) as i32 }
     }
 
 }

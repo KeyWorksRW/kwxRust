@@ -16,6 +16,13 @@ impl MultiChoiceDialog {
         Self(Dialog::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,6 +46,7 @@ impl WxDialog for MultiChoiceDialog {}
 impl WxTopLevelWindow for MultiChoiceDialog {}
 impl WxWindow for MultiChoiceDialog {}
 impl WxEvtHandler for MultiChoiceDialog {}
+impl WxMultiChoiceDialog for MultiChoiceDialog {}
 
 use crate::support::Point;
 use crate::support::WxStr;
@@ -60,16 +68,23 @@ impl MultiChoiceDialog {
         Self::from_raw(ptr)
     }
 
-    pub fn get_selections(&self, selections: &impl WxObject) {
+    pub fn get_selections(&self, selections: &impl WxArrayInt) {
         unsafe { sys::wxMultiChoiceDialog_GetSelections(self.as_ptr(), selections.as_ptr()) }
     }
 
-    pub fn set_selections(&self, selections: &impl WxObject) {
+    pub fn set_selections(&self, selections: &impl WxArrayInt) {
         unsafe { sys::wxMultiChoiceDialog_SetSelections(self.as_ptr(), selections.as_ptr()) }
     }
 
     pub fn show_modal(&self) -> i32 {
         unsafe { sys::wxMultiChoiceDialog_ShowModal(self.as_ptr()) as i32 }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxMultiChoiceDialog_Delete(self.as_ptr()) }
     }
 
 }

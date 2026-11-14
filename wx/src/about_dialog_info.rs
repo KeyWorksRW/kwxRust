@@ -16,6 +16,13 @@ impl AboutDialogInfo {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for AboutDialogInfo {
     }
 }
 
+impl WxAboutDialogInfo for AboutDialogInfo {}
 use crate::support::WxStr;
 use crate::support::take_string;
 
@@ -44,7 +52,7 @@ impl AboutDialogInfo {
         unsafe { sys::wxAboutDialogInfo_AddArtist(self.as_ptr(), artist_wx.as_ptr()) }
     }
 
-    pub fn set_doc_writers(&self, docwriters: &impl WxObject) {
+    pub fn set_doc_writers(&self, docwriters: &impl WxArrayString) {
         unsafe { sys::wxAboutDialogInfo_SetDocWriters(self.as_ptr(), docwriters.as_ptr()) }
     }
 
@@ -73,6 +81,13 @@ impl AboutDialogInfo {
         let ptr = unsafe { sys::wxAboutDialogInfo_Create() };
         assert!(!ptr.is_null(), "wxAboutDialogInfo_Create returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxAboutDialogInfo_Delete(self.as_ptr()) }
     }
 
     pub fn get_copyright(&self) -> String {
@@ -145,7 +160,7 @@ impl AboutDialogInfo {
         unsafe { sys::wxAboutDialogInfo_SetDescription(self.as_ptr(), desc_wx.as_ptr()) }
     }
 
-    pub fn set_icon(&self, icon: &impl WxObject) {
+    pub fn set_icon(&self, icon: &impl WxIcon) {
         unsafe { sys::wxAboutDialogInfo_SetIcon(self.as_ptr(), icon.as_ptr()) }
     }
 

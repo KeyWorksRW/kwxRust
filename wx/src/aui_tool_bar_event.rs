@@ -16,6 +16,13 @@ impl AuiToolBarEvent {
         Self(NotifyEvent::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,6 +45,7 @@ impl WxObject for AuiToolBarEvent {
 impl WxNotifyEvent for AuiToolBarEvent {}
 impl WxCommandEvent for AuiToolBarEvent {}
 impl WxEvent for AuiToolBarEvent {}
+impl WxAuiToolBarEvent for AuiToolBarEvent {}
 
 impl AuiToolBarEvent {
     pub fn is_drop_down_clicked(&self) -> bool {

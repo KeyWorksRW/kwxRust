@@ -16,6 +16,13 @@ impl Connection {
         Self(ConnectionBase::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -71,6 +78,13 @@ impl Connection {
         }
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::kwxConnection_Delete(self.as_ptr()) }
+    }
+
     pub fn disconnect(&self) -> bool {
         unsafe { sys::kwxConnection_Disconnect(self.as_ptr()) != 0 }
     }
@@ -85,7 +99,7 @@ impl Connection {
         unsafe { sys::kwxConnection_Poke(self.as_ptr(), item_wx.as_ptr(), data, size as c_int, format as c_int) != 0 }
     }
 
-    pub fn request(&self, item: impl AsRef<str>, size: &impl WxObject, format: i32) -> *mut c_void {
+    pub fn request(&self, item: impl AsRef<str>, size: &impl WxSize, format: i32) -> *mut c_void {
         let item_wx = WxStr::new(item.as_ref());
         unsafe { sys::kwxConnection_Request(self.as_ptr(), item_wx.as_ptr(), size.as_ptr(), format as c_int) }
     }

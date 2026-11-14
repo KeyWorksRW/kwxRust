@@ -16,6 +16,13 @@ impl PropertyGridEvent {
         Self(NotifyEvent::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,11 +45,26 @@ impl WxObject for PropertyGridEvent {
 impl WxNotifyEvent for PropertyGridEvent {}
 impl WxCommandEvent for PropertyGridEvent {}
 impl WxEvent for PropertyGridEvent {}
+impl WxPropertyGridEvent for PropertyGridEvent {}
 
 use crate::pg_property::PGProperty;
+use crate::support::WxStr;
 use crate::variant::Variant;
 
 impl PropertyGridEvent {
+    pub fn set_validation_failure_behavior(&self, flags: i32) {
+        unsafe { sys::wxPropertyGridEvent_SetValidationFailureBehavior(self.as_ptr(), flags as c_int) }
+    }
+
+    pub fn set_validation_failure_message(&self, message: impl AsRef<str>) {
+        let message_wx = WxStr::new(message.as_ref());
+        unsafe { sys::wxPropertyGridEvent_SetValidationFailureMessage(self.as_ptr(), message_wx.as_ptr()) }
+    }
+
+    pub fn get_validation_failure_behavior(&self) -> i32 {
+        unsafe { sys::wxPropertyGridEvent_GetValidationFailureBehavior(self.as_ptr()) as i32 }
+    }
+
     pub fn has_property(&self) -> bool {
         unsafe { sys::wxPropertyGridEvent_HasProperty(self.as_ptr()) != 0 }
     }

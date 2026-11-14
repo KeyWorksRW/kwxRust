@@ -16,6 +16,13 @@ impl AffineMatrix2D {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for AffineMatrix2D {
     }
 }
 
+impl WxAffineMatrix2D for AffineMatrix2D {}
 impl AffineMatrix2D {
     pub fn new() -> Self {
         let ptr = unsafe { sys::wxAffineMatrix2D_Create() };
@@ -48,6 +56,13 @@ impl AffineMatrix2D {
         Self::from_raw(ptr)
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxAffineMatrix2D_Delete(self.as_ptr()) }
+    }
+
     pub fn set(&self, m11: f64, m12: f64, m21: f64, m22: f64, tr_x: f64, tr_y: f64) {
         unsafe { sys::wxAffineMatrix2D_Set(self.as_ptr(), m11 as c_double, m12 as c_double, m21 as c_double, m22 as c_double, tr_x as c_double, tr_y as c_double) }
     }
@@ -56,7 +71,7 @@ impl AffineMatrix2D {
         unsafe { sys::wxAffineMatrix2D_Get(self.as_ptr(), m11 as *mut c_double, m12 as *mut c_double, m21 as *mut c_double, m22 as *mut c_double, tr_x as *mut c_double, tr_y as *mut c_double) }
     }
 
-    pub fn concat(&self, other: &impl WxObject) {
+    pub fn concat(&self, other: &impl WxAffineMatrix2D) {
         unsafe { sys::wxAffineMatrix2D_Concat(self.as_ptr(), other.as_ptr()) }
     }
 
@@ -68,7 +83,7 @@ impl AffineMatrix2D {
         unsafe { sys::wxAffineMatrix2D_IsIdentity(self.as_ptr()) != 0 }
     }
 
-    pub fn is_equal(&self, other: &impl WxObject) -> bool {
+    pub fn is_equal(&self, other: &impl WxAffineMatrix2D) -> bool {
         unsafe { sys::wxAffineMatrix2D_IsEqual(self.as_ptr(), other.as_ptr()) != 0 }
     }
 

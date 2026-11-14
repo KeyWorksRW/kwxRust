@@ -16,6 +16,13 @@ impl ExecuteEnv {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for ExecuteEnv {
     }
 }
 
+impl WxExecuteEnv for ExecuteEnv {}
 use crate::support::WxStr;
 use crate::support::take_string;
 
@@ -49,6 +57,13 @@ impl ExecuteEnv {
         let ptr = unsafe { sys::wxExecuteEnv_Create() };
         assert!(!ptr.is_null(), "wxExecuteEnv_Create returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxExecuteEnv_Delete(self.as_ptr()) }
     }
 
     pub fn set_cwd(&self, cwd: impl AsRef<str>) {

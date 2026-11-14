@@ -16,6 +16,13 @@ impl RibbonBarEvent {
         Self(NotifyEvent::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,6 +45,7 @@ impl WxObject for RibbonBarEvent {
 impl WxNotifyEvent for RibbonBarEvent {}
 impl WxCommandEvent for RibbonBarEvent {}
 impl WxEvent for RibbonBarEvent {}
+impl WxRibbonBarEvent for RibbonBarEvent {}
 
 use crate::ribbon_page::RibbonPage;
 
@@ -51,7 +59,7 @@ impl RibbonBarEvent {
         }
     }
 
-    pub fn set_page(&self, page: &impl WxObject) {
+    pub fn set_page(&self, page: &impl WxRibbonPage) {
         unsafe { sys::wxRibbonBarEvent_SetPage(self.as_ptr(), page.as_ptr()) }
     }
 

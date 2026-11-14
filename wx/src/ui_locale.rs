@@ -16,6 +16,13 @@ impl UILocale {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for UILocale {
     }
 }
 
+impl WxUILocale for UILocale {}
 use crate::support::WxStr;
 use crate::support::take_string;
 
@@ -46,7 +54,7 @@ impl UILocale {
         Self::from_raw(ptr)
     }
 
-    pub fn from_tag(&self, tag: impl AsRef<str>) -> Option<UILocale> {
+    pub fn from_tag(tag: impl AsRef<str>) -> Option<UILocale> {
         let tag_wx = WxStr::new(tag.as_ref());
         let ptr = unsafe { sys::wxUILocale_FromTag(tag_wx.as_ptr()) };
         if ptr.is_null() {
@@ -56,11 +64,11 @@ impl UILocale {
         }
     }
 
-    pub fn get_language_info(&self, lang: i32) -> *mut c_void {
+    pub fn get_language_info(lang: i32) -> *mut c_void {
         unsafe { sys::wxUILocale_GetLanguageInfo(lang as c_int) }
     }
 
-    pub fn get_current(&self) -> Option<UILocale> {
+    pub fn get_current() -> Option<UILocale> {
         let ptr = unsafe { sys::wxUILocale_GetCurrent() };
         if ptr.is_null() {
             None
@@ -69,7 +77,14 @@ impl UILocale {
         }
     }
 
-    pub fn use_locale_name(&self, locale_name: impl AsRef<str>) -> bool {
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxUILocale_Delete(self.as_ptr()) }
+    }
+
+    pub fn use_locale_name(locale_name: impl AsRef<str>) -> bool {
         let locale_name_wx = WxStr::new(locale_name.as_ref());
         unsafe { sys::wxUILocale_UseLocaleName(locale_name_wx.as_ptr()) != 0 }
     }
@@ -128,35 +143,35 @@ impl UILocale {
         unsafe { sys::wxUILocale_CompareStrings(self.as_ptr(), lhs_wx.as_ptr(), rhs_wx.as_ptr(), flags as c_int) as i32 }
     }
 
-    pub fn get_system_locale_tag(&self) -> String {
+    pub fn get_system_locale_tag() -> String {
         take_string(unsafe { sys::wxUILocale_GetSystemLocaleTag() })
     }
 
-    pub fn get_system_language(&self) -> i32 {
+    pub fn get_system_language() -> i32 {
         unsafe { sys::wxUILocale_GetSystemLanguage() as i32 }
     }
 
-    pub fn get_system_locale(&self) -> i32 {
+    pub fn get_system_locale() -> i32 {
         unsafe { sys::wxUILocale_GetSystemLocale() as i32 }
     }
 
-    pub fn get_language_name(&self, language: i32) -> String {
+    pub fn get_language_name(language: i32) -> String {
         take_string(unsafe { sys::wxUILocale_GetLanguageName(language as c_int) })
     }
 
-    pub fn get_language_canonical_name(&self, language: i32) -> String {
+    pub fn get_language_canonical_name(language: i32) -> String {
         take_string(unsafe { sys::wxUILocale_GetLanguageCanonicalName(language as c_int) })
     }
 
-    pub fn get_info(&self, index: i32, category: i32) -> String {
+    pub fn get_info(index: i32, category: i32) -> String {
         take_string(unsafe { sys::wxUILocale_GetInfo(index as c_int, category as c_int) })
     }
 
-    pub fn is_set(&self) -> bool {
+    pub fn is_set() -> bool {
         unsafe { sys::wxUILocale_IsSet() != 0 }
     }
 
-    pub fn use_default(&self) -> bool {
+    pub fn use_default() -> bool {
         unsafe { sys::wxUILocale_UseDefault() != 0 }
     }
 

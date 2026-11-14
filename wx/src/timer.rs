@@ -16,6 +16,13 @@ impl Timer {
         Self(EvtHandler::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -59,6 +66,13 @@ impl Timer {
         unsafe { sys::wxTimer_StartOnce(self.as_ptr(), milliseconds as c_int) != 0 }
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxTimer_Delete(self.as_ptr()) }
+    }
+
     pub fn get_interval(&self) -> i32 {
         unsafe { sys::wxTimer_GetInterval(self.as_ptr()) as i32 }
     }
@@ -81,6 +95,14 @@ impl Timer {
 
     pub fn set_on_notify(&self, p_function: *mut c_void) {
         unsafe { sys::wxTimer_SetOnNotify(self.as_ptr(), p_function) }
+    }
+
+    /// Alternative constructor wrapping `kwxTimer_Create`; takes every
+    /// declared parameter.  `new`/`new_full` wrap the wxWidgets-own constructor.
+    pub fn new_with_state(p_object: *mut c_void) -> Self {
+        let ptr = unsafe { sys::kwxTimer_Create(p_object) };
+        assert!(!ptr.is_null(), "kwxTimer_Create returned null");
+        Self::from_raw(ptr)
     }
 
 }

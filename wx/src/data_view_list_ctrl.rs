@@ -16,6 +16,13 @@ impl DataViewListCtrl {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,23 +42,24 @@ impl WxObject for DataViewListCtrl {
     }
 }
 
+impl WxDataViewListCtrl for DataViewListCtrl {}
 use crate::data_view_column::DataViewColumn;
 use crate::data_view_list_store::DataViewListStore;
 use crate::support::WxStr;
 use crate::support::take_string;
 
 impl DataViewListCtrl {
-    pub fn append_column(&self, column: &impl WxObject, variant_type: impl AsRef<str>) -> bool {
+    pub fn append_column(&self, column: &impl WxDataViewColumn, variant_type: impl AsRef<str>) -> bool {
         let variant_type_wx = WxStr::new(variant_type.as_ref());
         unsafe { sys::wxDataViewListCtrl_AppendColumn(self.as_ptr(), column.as_ptr(), variant_type_wx.as_ptr()) != 0 }
     }
 
-    pub fn prepend_column(&self, column: &impl WxObject, variant_type: impl AsRef<str>) -> bool {
+    pub fn prepend_column(&self, column: &impl WxDataViewColumn, variant_type: impl AsRef<str>) -> bool {
         let variant_type_wx = WxStr::new(variant_type.as_ref());
         unsafe { sys::wxDataViewListCtrl_PrependColumn(self.as_ptr(), column.as_ptr(), variant_type_wx.as_ptr()) != 0 }
     }
 
-    pub fn insert_column(&self, pos: u32, column: &impl WxObject, variant_type: impl AsRef<str>) -> bool {
+    pub fn insert_column(&self, pos: u32, column: &impl WxDataViewColumn, variant_type: impl AsRef<str>) -> bool {
         let variant_type_wx = WxStr::new(variant_type.as_ref());
         unsafe { sys::wxDataViewListCtrl_InsertColumn(self.as_ptr(), pos as c_uint, column.as_ptr(), variant_type_wx.as_ptr()) != 0 }
     }
@@ -117,11 +125,11 @@ impl DataViewListCtrl {
         }
     }
 
-    pub fn item_to_row(&self, item: &impl WxObject) -> i32 {
+    pub fn item_to_row(&self, item: &impl WxDataViewItem) -> i32 {
         unsafe { sys::wxDataViewListCtrl_ItemToRow(self.as_ptr(), item.as_ptr()) as i32 }
     }
 
-    pub fn row_to_item(&self, row: i32, item: &impl WxObject) {
+    pub fn row_to_item(&self, row: i32, item: &impl WxDataViewItem) {
         unsafe { sys::wxDataViewListCtrl_RowToItem(self.as_ptr(), row as c_int, item.as_ptr()) }
     }
 
@@ -157,11 +165,11 @@ impl DataViewListCtrl {
         unsafe { sys::wxDataViewListCtrl_DeleteAllItems(self.as_ptr()) }
     }
 
-    pub fn set_value(&self, value: &impl WxObject, row: u32, col: u32) {
+    pub fn set_value(&self, value: &impl WxVariant, row: u32, col: u32) {
         unsafe { sys::wxDataViewListCtrl_SetValue(self.as_ptr(), value.as_ptr(), row as c_uint, col as c_uint) }
     }
 
-    pub fn get_value(&self, value: &impl WxObject, row: u32, col: u32) {
+    pub fn get_value(&self, value: &impl WxVariant, row: u32, col: u32) {
         unsafe { sys::wxDataViewListCtrl_GetValue(self.as_ptr(), value.as_ptr(), row as c_uint, col as c_uint) }
     }
 
@@ -182,11 +190,11 @@ impl DataViewListCtrl {
         unsafe { sys::wxDataViewListCtrl_GetToggleValue(self.as_ptr(), row as c_uint, col as c_uint) != 0 }
     }
 
-    pub fn set_item_data(&self, item: &impl WxObject, data: usize) {
+    pub fn set_item_data(&self, item: &impl WxDataViewItem, data: usize) {
         unsafe { sys::wxDataViewListCtrl_SetItemData(self.as_ptr(), item.as_ptr(), data as usize) }
     }
 
-    pub fn get_item_data(&self, item: &impl WxObject) -> usize {
+    pub fn get_item_data(&self, item: &impl WxDataViewItem) -> usize {
         unsafe { sys::wxDataViewListCtrl_GetItemData(self.as_ptr(), item.as_ptr()) as usize }
     }
 

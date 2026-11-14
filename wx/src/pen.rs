@@ -16,6 +16,13 @@ impl Pen {
         Self(GDIObject::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -36,9 +43,10 @@ impl WxObject for Pen {
 }
 
 impl WxGDIObject for Pen {}
+impl WxPen for Pen {}
 
 impl Pen {
-    pub fn assign(&self, pen: &impl WxObject) {
+    pub fn assign(&self, pen: &impl WxPen) {
         unsafe { sys::wxPen_Assign(self.as_ptr(), pen.as_ptr()) }
     }
 
@@ -54,7 +62,7 @@ impl Pen {
         Self::from_raw(ptr)
     }
 
-    pub fn create_from_colour(col: &impl WxObject, width: i32, style: i32) -> Self {
+    pub fn create_from_colour(col: &impl WxColour, width: i32, style: i32) -> Self {
         let ptr = unsafe { sys::wxPen_CreateFromColour(col.as_ptr(), width as c_int, style as c_int) };
         assert!(!ptr.is_null(), "wxPen_CreateFromColour returned null");
         Self::from_raw(ptr)
@@ -66,11 +74,18 @@ impl Pen {
         Self::from_raw(ptr)
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxPen_Delete(self.as_ptr()) }
+    }
+
     pub fn get_cap(&self) -> i32 {
         unsafe { sys::wxPen_GetCap(self.as_ptr()) as i32 }
     }
 
-    pub fn get_colour(&self, ref_: &impl WxObject) {
+    pub fn get_colour(&self, ref_: &impl WxColour) {
         unsafe { sys::wxPen_GetColour(self.as_ptr(), ref_.as_ptr()) }
     }
 
@@ -94,7 +109,7 @@ impl Pen {
         unsafe { sys::wxPen_GetWidth(self.as_ptr()) as i32 }
     }
 
-    pub fn is_equal(&self, pen: &impl WxObject) -> bool {
+    pub fn is_equal(&self, pen: &impl WxPen) -> bool {
         unsafe { sys::wxPen_IsEqual(self.as_ptr(), pen.as_ptr()) != 0 }
     }
 
@@ -106,7 +121,7 @@ impl Pen {
         unsafe { sys::wxPen_SetCap(self.as_ptr(), cap as c_int) }
     }
 
-    pub fn set_colour(&self, col: &impl WxObject) {
+    pub fn set_colour(&self, col: &impl WxColour) {
         unsafe { sys::wxPen_SetColour(self.as_ptr(), col.as_ptr()) }
     }
 

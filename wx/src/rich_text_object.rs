@@ -16,6 +16,13 @@ impl RichTextObject {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -108,11 +115,11 @@ impl RichTextObject {
         unsafe { sys::wxRichTextObject_SetRange(self.as_ptr(), start as c_long, end as c_long) }
     }
 
-    pub fn get_attributes(&self, attr: &impl WxObject) {
+    pub fn get_attributes(&self, attr: &impl WxRichTextAttr) {
         unsafe { sys::wxRichTextObject_GetAttributes(self.as_ptr(), attr.as_ptr()) }
     }
 
-    pub fn set_attributes(&self, attr: &impl WxObject) {
+    pub fn set_attributes(&self, attr: &impl WxRichTextAttr) {
         unsafe { sys::wxRichTextObject_SetAttributes(self.as_ptr(), attr.as_ptr()) }
     }
 
@@ -147,6 +154,13 @@ impl RichTextObject {
 
     pub fn show(&self, show: bool) {
         unsafe { sys::wxRichTextObject_Show(self.as_ptr(), show as c_int) }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxRichTextObject_Delete(self.as_ptr()) }
     }
 
 }

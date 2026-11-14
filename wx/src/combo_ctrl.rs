@@ -16,6 +16,13 @@ impl ComboCtrl {
         Self(Control::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -126,7 +133,7 @@ impl ComboCtrl {
         unsafe { sys::wxComboCtrl_GetCustomPaintWidth(self.as_ptr()) as i32 }
     }
 
-    pub fn get_features(&self) -> i32 {
+    pub fn get_features() -> i32 {
         unsafe { sys::wxComboCtrl_GetFeatures() as i32 }
     }
 
@@ -188,7 +195,7 @@ impl ComboCtrl {
         unsafe { sys::wxComboCtrl_IsEditable(self.as_ptr()) != 0 }
     }
 
-    pub fn is_key_popup_toggle(&self, event: &impl WxObject) -> bool {
+    pub fn is_key_popup_toggle(&self, event: &impl WxKeyEvent) -> bool {
         unsafe { sys::wxComboCtrl_IsKeyPopupToggle(self.as_ptr(), event.as_ptr()) != 0 }
     }
 
@@ -225,7 +232,7 @@ impl ComboCtrl {
         unsafe { sys::wxComboCtrl_SelectAll(self.as_ptr()) }
     }
 
-    pub fn set_button_bitmaps(&self, bmp_normal: &impl WxObject, push_button_bg: bool, bmp_pressed: &impl WxObject, bmp_hover: &impl WxObject, bmp_disabled: &impl WxObject) {
+    pub fn set_button_bitmaps(&self, bmp_normal: &impl WxBitmapBundle, push_button_bg: bool, bmp_pressed: &impl WxBitmapBundle, bmp_hover: &impl WxBitmapBundle, bmp_disabled: &impl WxBitmapBundle) {
         unsafe { sys::wxComboCtrl_SetButtonBitmaps(self.as_ptr(), bmp_normal.as_ptr(), push_button_bg as c_int, bmp_pressed.as_ptr(), bmp_hover.as_ptr(), bmp_disabled.as_ptr()) }
     }
 
@@ -262,7 +269,7 @@ impl ComboCtrl {
         unsafe { sys::wxComboCtrl_SetPopupAnchor(self.as_ptr(), anchor_side as c_int) }
     }
 
-    pub fn set_popup_control(&self, popup: &impl WxObject) {
+    pub fn set_popup_control(&self, popup: &impl WxComboPopup) {
         unsafe { sys::wxComboCtrl_SetPopupControl(self.as_ptr(), popup.as_ptr()) }
     }
 

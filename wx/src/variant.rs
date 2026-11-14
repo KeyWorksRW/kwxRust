@@ -16,6 +16,13 @@ impl Variant {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,9 +42,11 @@ impl WxObject for Variant {
     }
 }
 
+impl WxVariant for Variant {}
 
 use crate::array_string::ArrayString;
 use crate::colour_property_value::ColourPropertyValue;
+use crate::font::Font;
 use crate::support::WxStr;
 use crate::support::take_string;
 
@@ -75,7 +84,7 @@ impl Variant {
         Self::from_raw(ptr)
     }
 
-    pub fn create_from_date_time(value: &impl WxObject, name: impl AsRef<str>) -> Self {
+    pub fn create_from_date_time(value: &impl WxDateTime, name: impl AsRef<str>) -> Self {
         let name_wx = WxStr::new(name.as_ref());
         let ptr = unsafe { sys::wxVariant_CreateFromDateTime(value.as_ptr(), name_wx.as_ptr()) };
         assert!(!ptr.is_null(), "wxVariant_CreateFromDateTime returned null");
@@ -103,7 +112,7 @@ impl Variant {
         Self::from_raw(ptr)
     }
 
-    pub fn create_from_array_string(value: &impl WxObject, name: impl AsRef<str>) -> Self {
+    pub fn create_from_array_string(value: &impl WxArrayString, name: impl AsRef<str>) -> Self {
         let name_wx = WxStr::new(name.as_ref());
         let ptr = unsafe { sys::wxVariant_CreateFromArrayString(value.as_ptr(), name_wx.as_ptr()) };
         assert!(!ptr.is_null(), "wxVariant_CreateFromArrayString returned null");
@@ -153,7 +162,7 @@ impl Variant {
         unsafe { sys::wxVariant_SetString(self.as_ptr(), value_wx.as_ptr()) }
     }
 
-    pub fn set_date_time(&self, value: &impl WxObject) {
+    pub fn set_date_time(&self, value: &impl WxDateTime) {
         unsafe { sys::wxVariant_SetDateTime(self.as_ptr(), value.as_ptr()) }
     }
 
@@ -165,7 +174,7 @@ impl Variant {
         unsafe { sys::wxVariant_SetObject(self.as_ptr(), value.as_ptr()) }
     }
 
-    pub fn set_array_string(&self, value: &impl WxObject) {
+    pub fn set_array_string(&self, value: &impl WxArrayString) {
         unsafe { sys::wxVariant_SetArrayString(self.as_ptr(), value.as_ptr()) }
     }
 
@@ -203,15 +212,15 @@ impl Variant {
         unsafe { sys::wxVariant_NullList(self.as_ptr()) }
     }
 
-    pub fn append(&self, value: &impl WxObject) {
+    pub fn append(&self, value: &impl WxVariant) {
         unsafe { sys::wxVariant_Append(self.as_ptr(), value.as_ptr()) }
     }
 
-    pub fn insert(&self, value: &impl WxObject) {
+    pub fn insert(&self, value: &impl WxVariant) {
         unsafe { sys::wxVariant_Insert(self.as_ptr(), value.as_ptr()) }
     }
 
-    pub fn member(&self, value: &impl WxObject) -> bool {
+    pub fn member(&self, value: &impl WxVariant) -> bool {
         unsafe { sys::wxVariant_Member(self.as_ptr(), value.as_ptr()) != 0 }
     }
 
@@ -231,7 +240,25 @@ impl Variant {
         unsafe { sys::wxVariant_ConvertToBool(self.as_ptr(), value as *mut c_int) != 0 }
     }
 
-    pub fn get_colour_property_value(&self, variant: &impl WxObject) -> Option<ColourPropertyValue> {
+    pub fn item(&self, index: usize) -> Option<Variant> {
+        let ptr = unsafe { sys::wxVariant_Item(self.as_ptr(), index) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(Variant::from_raw(ptr))
+        }
+    }
+
+    pub fn get_font(&self) -> Option<Font> {
+        let ptr = unsafe { sys::wxVariant_GetFont(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(Font::from_raw(ptr))
+        }
+    }
+
+    pub fn get_colour_property_value(variant: &impl WxVariant) -> Option<ColourPropertyValue> {
         let ptr = unsafe { sys::wxVariant_GetColourPropertyValue(variant.as_ptr()) };
         if ptr.is_null() {
             None
@@ -250,6 +277,13 @@ impl Variant {
         let ptr = unsafe { sys::wxVariant_Create() };
         assert!(!ptr.is_null(), "wxVariant_Create returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxVariant_Delete(self.as_ptr()) }
     }
 
     pub fn get_type(&self) -> String {

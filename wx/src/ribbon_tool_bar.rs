@@ -16,6 +16,13 @@ impl RibbonToolBar {
         Self(RibbonControl::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,6 +46,7 @@ impl WxRibbonControl for RibbonToolBar {}
 impl WxControl for RibbonToolBar {}
 impl WxWindow for RibbonToolBar {}
 impl WxEvtHandler for RibbonToolBar {}
+impl WxRibbonToolBar for RibbonToolBar {}
 
 use crate::object::Object;
 use crate::ribbon_art_provider::RibbonArtProvider;
@@ -211,7 +219,7 @@ impl RibbonToolBar {
         unsafe { sys::wxRibbonToolBar_GetToolCount(self.as_ptr()) as usize }
     }
 
-    pub fn get_tool_id(&self, tool: &impl WxObject) -> i32 {
+    pub fn get_tool_id(&self, tool: &impl WxRibbonToolBarToolBase) -> i32 {
         unsafe { sys::wxRibbonToolBar_GetToolId(self.as_ptr(), tool.as_ptr()) as i32 }
     }
 
@@ -286,7 +294,7 @@ impl RibbonToolBar {
         unsafe { sys::wxRibbonToolBar_Realize(self.as_ptr()) != 0 }
     }
 
-    pub fn set_art_provider(&self, art: &impl WxObject) {
+    pub fn set_art_provider(&self, art: &impl WxRibbonArtProvider) {
         unsafe { sys::wxRibbonToolBar_SetArtProvider(self.as_ptr(), art.as_ptr()) }
     }
 

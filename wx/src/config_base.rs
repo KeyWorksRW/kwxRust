@@ -16,6 +16,13 @@ impl ConfigBase {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -41,7 +48,7 @@ use crate::support::WxStr;
 use crate::support::take_string;
 
 impl ConfigBase {
-    pub fn get(&self) -> Option<ConfigBase> {
+    pub fn get() -> Option<ConfigBase> {
         let ptr = unsafe { sys::wxConfigBase_Get() };
         if ptr.is_null() {
             None
@@ -54,7 +61,7 @@ impl ConfigBase {
         unsafe { sys::wxConfigBase_Set(self.as_ptr()) }
     }
 
-    pub fn dont_create_on_demand(&self) {
+    pub fn dont_create_on_demand() {
         unsafe { sys::wxConfigBase_DontCreateOnDemand() }
     }
 
@@ -84,6 +91,13 @@ impl ConfigBase {
         let key_wx = WxStr::new(key.as_ref());
         let value_wx = WxStr::new(value.as_ref());
         unsafe { sys::wxConfigBase_Write(self.as_ptr(), key_wx.as_ptr(), value_wx.as_ptr()) != 0 }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxConfigBase_Delete(self.as_ptr()) }
     }
 
     pub fn delete_all(&self) -> bool {

@@ -16,6 +16,13 @@ impl RibbonPage {
         Self(RibbonControl::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,20 +46,21 @@ impl WxRibbonControl for RibbonPage {}
 impl WxControl for RibbonPage {}
 impl WxWindow for RibbonPage {}
 impl WxEvtHandler for RibbonPage {}
+impl WxRibbonPage for RibbonPage {}
 
 use crate::ribbon_art_provider::RibbonArtProvider;
 use crate::support::WxStr;
 use crate::support::take_string;
 
 impl RibbonPage {
-    pub fn new(parent: &impl WxObject, label: impl AsRef<str>, icon: &impl WxBitmap) -> Self {
+    pub fn new(parent: &impl WxRibbonBar, label: impl AsRef<str>, icon: &impl WxBitmap) -> Self {
         let label_wx = WxStr::new(label.as_ref());
         let ptr = unsafe { sys::wxRibbonPage_Create(parent.as_ptr(), -1, label_wx.as_ptr(), icon.as_ptr(), 0) };
         assert!(!ptr.is_null(), "wxRibbonPage_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(parent: &impl WxObject, id: i32, label: impl AsRef<str>, icon: &impl WxBitmap, style: i32) -> Self {
+    pub fn new_full(parent: &impl WxRibbonBar, id: i32, label: impl AsRef<str>, icon: &impl WxBitmap, style: i32) -> Self {
         let label_wx = WxStr::new(label.as_ref());
         let ptr = unsafe { sys::wxRibbonPage_Create(parent.as_ptr(), id as c_int, label_wx.as_ptr(), icon.as_ptr(), style as c_int) };
         assert!(!ptr.is_null(), "wxRibbonPage_Create returned null");
@@ -100,7 +108,7 @@ impl RibbonPage {
         }
     }
 
-    pub fn set_art_provider(&self, art: &impl WxObject) {
+    pub fn set_art_provider(&self, art: &impl WxRibbonArtProvider) {
         unsafe { sys::wxRibbonPage_SetArtProvider(self.as_ptr(), art.as_ptr()) }
     }
 

@@ -16,6 +16,13 @@ impl RichTextBufferDataObject {
         Self(DataObjectSimple::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -37,21 +44,29 @@ impl WxObject for RichTextBufferDataObject {
 
 impl WxDataObjectSimple for RichTextBufferDataObject {}
 impl WxDataObject for RichTextBufferDataObject {}
+impl WxRichTextBufferDataObject for RichTextBufferDataObject {}
 
 use crate::rich_text_buffer::RichTextBuffer;
 use crate::support::take_string;
 
 impl RichTextBufferDataObject {
-    pub fn new(rich_text_buffer: &impl WxObject) -> Self {
+    pub fn new(rich_text_buffer: &impl WxRichTextBuffer) -> Self {
         let ptr = unsafe { sys::wxRichTextBufferDataObject_Create(rich_text_buffer.as_ptr()) };
         assert!(!ptr.is_null(), "wxRichTextBufferDataObject_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(rich_text_buffer: &impl WxObject) -> Self {
+    pub fn new_full(rich_text_buffer: &impl WxRichTextBuffer) -> Self {
         let ptr = unsafe { sys::wxRichTextBufferDataObject_Create(rich_text_buffer.as_ptr()) };
         assert!(!ptr.is_null(), "wxRichTextBufferDataObject_Create returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxRichTextBufferDataObject_Delete(self.as_ptr()) }
     }
 
     pub fn get_rich_text_buffer(&self) -> Option<RichTextBuffer> {

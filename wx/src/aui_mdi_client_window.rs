@@ -16,6 +16,13 @@ impl AuiMDIClientWindow {
         Self(AuiNotebook::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -40,6 +47,7 @@ impl WxBookCtrlBase for AuiMDIClientWindow {}
 impl WxControl for AuiMDIClientWindow {}
 impl WxWindow for AuiMDIClientWindow {}
 impl WxEvtHandler for AuiMDIClientWindow {}
+impl WxAuiMDIClientWindow for AuiMDIClientWindow {}
 
 use crate::aui_mdi_child_frame::AuiMDIChildFrame;
 
@@ -53,11 +61,18 @@ impl AuiMDIClientWindow {
         }
     }
 
-    pub fn create_client(&self, parent: &impl WxObject, style: i32) -> bool {
+    pub fn create_client(&self, parent: &impl WxAuiMDIParentFrame, style: i32) -> bool {
         unsafe { sys::wxAuiMDIClientWindow_CreateClient(self.as_ptr(), parent.as_ptr(), style as c_int) != 0 }
     }
 
-    pub fn set_active_child(&self, child: &impl WxObject) {
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxAuiMDIClientWindow_Delete(self.as_ptr()) }
+    }
+
+    pub fn set_active_child(&self, child: &impl WxAuiMDIChildFrame) {
         unsafe { sys::wxAuiMDIClientWindow_SetActiveChild(self.as_ptr(), child.as_ptr()) }
     }
 

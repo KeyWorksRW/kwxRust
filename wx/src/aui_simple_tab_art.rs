@@ -16,6 +16,13 @@ impl AuiSimpleTabArt {
         Self(AuiTabArt::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -36,6 +43,7 @@ impl WxObject for AuiSimpleTabArt {
 }
 
 impl WxAuiTabArt for AuiSimpleTabArt {}
+impl WxAuiSimpleTabArt for AuiSimpleTabArt {}
 
 use crate::support::Size;
 use crate::support::WxStr;
@@ -70,35 +78,35 @@ impl AuiSimpleTabArt {
         unsafe { sys::wxAuiSimpleTabArt_SetSizingInfo(self.as_ptr(), size.width as c_int, size.height as c_int, tab_count) }
     }
 
-    pub fn set_normal_font(&self, font: &impl WxObject) {
+    pub fn set_normal_font(&self, font: &impl WxFont) {
         unsafe { sys::wxAuiSimpleTabArt_SetNormalFont(self.as_ptr(), font.as_ptr()) }
     }
 
-    pub fn set_selected_font(&self, font: &impl WxObject) {
+    pub fn set_selected_font(&self, font: &impl WxFont) {
         unsafe { sys::wxAuiSimpleTabArt_SetSelectedFont(self.as_ptr(), font.as_ptr()) }
     }
 
-    pub fn set_measuring_font(&self, font: &impl WxObject) {
+    pub fn set_measuring_font(&self, font: &impl WxFont) {
         unsafe { sys::wxAuiSimpleTabArt_SetMeasuringFont(self.as_ptr(), font.as_ptr()) }
     }
 
-    pub fn set_colour(&self, colour: &impl WxObject) {
+    pub fn set_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxAuiSimpleTabArt_SetColour(self.as_ptr(), colour.as_ptr()) }
     }
 
-    pub fn set_active_colour(&self, colour: &impl WxObject) {
+    pub fn set_active_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxAuiSimpleTabArt_SetActiveColour(self.as_ptr(), colour.as_ptr()) }
     }
 
-    pub fn draw_background(&self, dc: &impl WxDC, window: &impl WxWindow, rect: &impl WxObject) {
+    pub fn draw_background(&self, dc: &impl WxDC, window: &impl WxWindow, rect: &impl WxRect) {
         unsafe { sys::wxAuiSimpleTabArt_DrawBackground(self.as_ptr(), dc.as_ptr(), window.as_ptr(), rect.as_ptr()) }
     }
 
-    pub fn draw_tab(&self, dc: &impl WxDC, window: &impl WxWindow, pane: &impl WxObject, in_rect: &impl WxObject, close_button_state: i32, out_tab_rect: &impl WxObject, out_button_rect: &impl WxObject, x_extent: *mut i32) {
+    pub fn draw_tab(&self, dc: &impl WxDC, window: &impl WxWindow, pane: &impl WxAuiNotebookPage, in_rect: &impl WxRect, close_button_state: i32, out_tab_rect: &impl WxRect, out_button_rect: &impl WxRect, x_extent: *mut i32) {
         unsafe { sys::wxAuiSimpleTabArt_DrawTab(self.as_ptr(), dc.as_ptr(), window.as_ptr(), pane.as_ptr(), in_rect.as_ptr(), close_button_state as c_int, out_tab_rect.as_ptr(), out_button_rect.as_ptr(), x_extent as *mut c_int) }
     }
 
-    pub fn draw_button(&self, dc: &impl WxDC, window: &impl WxWindow, in_rect: &impl WxObject, bitmap_id: i32, button_state: i32, orientation: i32, out_rect: &impl WxObject) {
+    pub fn draw_button(&self, dc: &impl WxDC, window: &impl WxWindow, in_rect: &impl WxRect, bitmap_id: i32, button_state: i32, orientation: i32, out_rect: &impl WxRect) {
         unsafe { sys::wxAuiSimpleTabArt_DrawButton(self.as_ptr(), dc.as_ptr(), window.as_ptr(), in_rect.as_ptr(), bitmap_id as c_int, button_state as c_int, orientation as c_int, out_rect.as_ptr()) }
     }
 
@@ -116,11 +124,11 @@ impl AuiSimpleTabArt {
         }
     }
 
-    pub fn show_drop_down(&self, window: &impl WxWindow, items: &impl WxObject, active_idx: i32) -> i32 {
+    pub fn show_drop_down(&self, window: &impl WxWindow, items: &impl WxAuiNotebookPageArray, active_idx: i32) -> i32 {
         unsafe { sys::wxAuiSimpleTabArt_ShowDropDown(self.as_ptr(), window.as_ptr(), items.as_ptr(), active_idx as c_int) as i32 }
     }
 
-    pub fn get_best_tab_ctrl_size(&self, window: &impl WxWindow, pages: &impl WxObject, size: Size) -> i32 {
+    pub fn get_best_tab_ctrl_size(&self, window: &impl WxWindow, pages: &impl WxAuiNotebookPageArray, size: Size) -> i32 {
         unsafe { sys::wxAuiSimpleTabArt_GetBestTabCtrlSize(self.as_ptr(), window.as_ptr(), pages.as_ptr(), size.width as c_int, size.height as c_int) as i32 }
     }
 

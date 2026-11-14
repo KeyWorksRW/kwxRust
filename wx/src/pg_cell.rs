@@ -16,6 +16,13 @@ impl PGCell {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for PGCell {
     }
 }
 
+impl WxPGCell for PGCell {}
 use crate::bitmap_bundle::BitmapBundle;
 use crate::colour::Colour;
 use crate::font::Font;
@@ -61,6 +69,13 @@ impl PGCell {
         Self::from_raw(ptr)
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxPGCell_Delete(self.as_ptr()) }
+    }
+
     pub fn has_text(&self) -> bool {
         unsafe { sys::wxPGCell_HasText(self.as_ptr()) != 0 }
     }
@@ -73,7 +88,7 @@ impl PGCell {
         unsafe { sys::wxPGCell_SetEmptyData(self.as_ptr()) }
     }
 
-    pub fn merge_from(&self, src_cell: &impl WxObject) {
+    pub fn merge_from(&self, src_cell: &impl WxPGCell) {
         unsafe { sys::wxPGCell_MergeFrom(self.as_ptr(), src_cell.as_ptr()) }
     }
 
@@ -82,19 +97,19 @@ impl PGCell {
         unsafe { sys::wxPGCell_SetText(self.as_ptr(), text_wx.as_ptr()) }
     }
 
-    pub fn set_bitmap(&self, bitmap: &impl WxObject) {
+    pub fn set_bitmap(&self, bitmap: &impl WxBitmapBundle) {
         unsafe { sys::wxPGCell_SetBitmap(self.as_ptr(), bitmap.as_ptr()) }
     }
 
-    pub fn set_fg_col(&self, colour: &impl WxObject) {
+    pub fn set_fg_col(&self, colour: &impl WxColour) {
         unsafe { sys::wxPGCell_SetFgCol(self.as_ptr(), colour.as_ptr()) }
     }
 
-    pub fn set_bg_col(&self, colour: &impl WxObject) {
+    pub fn set_bg_col(&self, colour: &impl WxColour) {
         unsafe { sys::wxPGCell_SetBgCol(self.as_ptr(), colour.as_ptr()) }
     }
 
-    pub fn set_font(&self, font: &impl WxObject) {
+    pub fn set_font(&self, font: &impl WxFont) {
         unsafe { sys::wxPGCell_SetFont(self.as_ptr(), font.as_ptr()) }
     }
 

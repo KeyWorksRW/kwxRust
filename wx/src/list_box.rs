@@ -16,6 +16,13 @@ impl ListBox {
         Self(Control::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -62,7 +69,7 @@ impl ListBox {
         }
     }
 
-    pub fn set_font(&self, font: &impl WxObject) -> bool {
+    pub fn set_font(&self, font: &impl WxFont) -> bool {
         unsafe { sys::wxListBox_SetFont(self.as_ptr(), font.as_ptr()) != 0 }
     }
 

@@ -16,6 +16,13 @@ impl PropertyGridManager {
         Self(Panel::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,6 +45,7 @@ impl WxObject for PropertyGridManager {
 impl WxPanel for PropertyGridManager {}
 impl WxWindow for PropertyGridManager {}
 impl WxEvtHandler for PropertyGridManager {}
+impl WxPropertyGridManager for PropertyGridManager {}
 
 use crate::array_int::ArrayInt;
 use crate::array_string::ArrayString;
@@ -58,7 +66,7 @@ use crate::validator::Validator;
 use crate::variant::Variant;
 
 impl PropertyGridManager {
-    pub fn add_page_object(&self, label: impl AsRef<str>, bitmap: &impl WxObject, page: &impl WxPropertyGridPage) -> Option<PropertyGridPage> {
+    pub fn add_page_object(&self, label: impl AsRef<str>, bitmap: &impl WxBitmapBundle, page: &impl WxPropertyGridPage) -> Option<PropertyGridPage> {
         let label_wx = WxStr::new(label.as_ref());
         let ptr = unsafe { sys::wxPropertyGridManager_AddPageObject(self.as_ptr(), label_wx.as_ptr(), bitmap.as_ptr(), page.as_ptr()) };
         if ptr.is_null() {
@@ -68,7 +76,7 @@ impl PropertyGridManager {
         }
     }
 
-    pub fn insert_page_object(&self, index: i32, label: impl AsRef<str>, bitmap: &impl WxObject, page: &impl WxPropertyGridPage) -> Option<PropertyGridPage> {
+    pub fn insert_page_object(&self, index: i32, label: impl AsRef<str>, bitmap: &impl WxBitmapBundle, page: &impl WxPropertyGridPage) -> Option<PropertyGridPage> {
         let label_wx = WxStr::new(label.as_ref());
         let ptr = unsafe { sys::wxPropertyGridManager_InsertPageObject(self.as_ptr(), index as c_int, label_wx.as_ptr(), bitmap.as_ptr(), page.as_ptr()) };
         if ptr.is_null() {
@@ -103,7 +111,7 @@ impl PropertyGridManager {
         unsafe { sys::wxPropertyGridManager_SetColumnTitle(self.as_ptr(), idx as c_int, title_wx.as_ptr()) }
     }
 
-    pub fn add_page(&self, label: impl AsRef<str>, bmp: &impl WxObject) -> Option<PropertyGridPage> {
+    pub fn add_page(&self, label: impl AsRef<str>, bmp: &impl WxBitmapBundle) -> Option<PropertyGridPage> {
         let label_wx = WxStr::new(label.as_ref());
         let ptr = unsafe { sys::wxPropertyGridManager_AddPage(self.as_ptr(), label_wx.as_ptr(), bmp.as_ptr()) };
         if ptr.is_null() {
@@ -113,7 +121,7 @@ impl PropertyGridManager {
         }
     }
 
-    pub fn insert_page(&self, index: i32, label: impl AsRef<str>, bmp: &impl WxObject) -> Option<PropertyGridPage> {
+    pub fn insert_page(&self, index: i32, label: impl AsRef<str>, bmp: &impl WxBitmapBundle) -> Option<PropertyGridPage> {
         let label_wx = WxStr::new(label.as_ref());
         let ptr = unsafe { sys::wxPropertyGridManager_InsertPage(self.as_ptr(), index as c_int, label_wx.as_ptr(), bmp.as_ptr()) };
         if ptr.is_null() {
@@ -232,11 +240,11 @@ impl PropertyGridManager {
         unsafe { sys::wxPropertyGridInterface_GetProperty(self.as_ptr(), name_wx.as_ptr()) }
     }
 
-    pub fn register_additional_editors(&self) {
+    pub fn register_additional_editors() {
         unsafe { sys::wxPropertyGridInterface_RegisterAdditionalEditors() }
     }
 
-    pub fn set_property_attribute_all(&self, attr_name: impl AsRef<str>, value: &impl WxObject) {
+    pub fn set_property_attribute_all(&self, attr_name: impl AsRef<str>, value: &impl WxVariant) {
         let attr_name_wx = WxStr::new(attr_name.as_ref());
         unsafe { sys::wxPropertyGridInterface_SetPropertyAttributeAll(self.as_ptr(), attr_name_wx.as_ptr(), value.as_ptr()) }
     }
@@ -448,7 +456,7 @@ impl PropertyGridManager {
         unsafe { sys::wxPropertyGridInterface_LimitPropertyEditing(self.as_ptr(), id.as_ptr(), limit as c_int) }
     }
 
-    pub fn refresh_grid(&self, state: &impl WxObject) {
+    pub fn refresh_grid(&self, state: &impl WxPropertyGridPageState) {
         unsafe { sys::wxPropertyGridInterface_RefreshGrid(self.as_ptr(), state.as_ptr()) }
     }
 
@@ -485,7 +493,7 @@ impl PropertyGridManager {
         unsafe { sys::wxPropertyGridInterface_GetPropertyValueAsDouble(self.as_ptr(), id.as_ptr()) as f64 }
     }
 
-    pub fn set_property_value(&self, id: &impl WxPGProperty, value: &impl WxObject) {
+    pub fn set_property_value(&self, id: &impl WxPGProperty, value: &impl WxVariant) {
         unsafe { sys::wxPropertyGridInterface_SetPropertyValue(self.as_ptr(), id.as_ptr(), value.as_ptr()) }
     }
 
@@ -542,11 +550,11 @@ impl PropertyGridManager {
         unsafe { sys::wxPropertyGridInterface_SetPropertyEditorByName(self.as_ptr(), id.as_ptr(), name_wx.as_ptr()) }
     }
 
-    pub fn set_property_image(&self, id: &impl WxPGProperty, bitmap: &impl WxObject) {
+    pub fn set_property_image(&self, id: &impl WxPGProperty, bitmap: &impl WxBitmapBundle) {
         unsafe { sys::wxPropertyGridInterface_SetPropertyImage(self.as_ptr(), id.as_ptr(), bitmap.as_ptr()) }
     }
 
-    pub fn set_property_cell(&self, id: &impl WxPGProperty, column: i32, text: impl AsRef<str>, bitmap: &impl WxObject, fg_col: &impl WxObject, bg_col: &impl WxObject) {
+    pub fn set_property_cell(&self, id: &impl WxPGProperty, column: i32, text: impl AsRef<str>, bitmap: &impl WxBitmapBundle, fg_col: &impl WxColour, bg_col: &impl WxColour) {
         let text_wx = WxStr::new(text.as_ref());
         unsafe { sys::wxPropertyGridInterface_SetPropertyCell(self.as_ptr(), id.as_ptr(), column as c_int, text_wx.as_ptr(), bitmap.as_ptr(), fg_col.as_ptr(), bg_col.as_ptr()) }
     }
@@ -612,7 +620,7 @@ impl PropertyGridManager {
         unsafe { sys::wxPropertyGridInterface_EndAddChildren(self.as_ptr(), id.as_ptr()) }
     }
 
-    pub fn change_property_value(&self, id: &impl WxPGProperty, value: &impl WxObject) -> bool {
+    pub fn change_property_value(&self, id: &impl WxPGProperty, value: &impl WxVariant) -> bool {
         unsafe { sys::wxPropertyGridInterface_ChangePropertyValue(self.as_ptr(), id.as_ptr(), value.as_ptr()) != 0 }
     }
 
@@ -626,7 +634,7 @@ impl PropertyGridManager {
         }
     }
 
-    pub fn set_property_attribute(&self, id: &impl WxPGProperty, attr_name: impl AsRef<str>, value: &impl WxObject, flags: i32) {
+    pub fn set_property_attribute(&self, id: &impl WxPGProperty, attr_name: impl AsRef<str>, value: &impl WxVariant, flags: i32) {
         let attr_name_wx = WxStr::new(attr_name.as_ref());
         unsafe { sys::wxPropertyGridInterface_SetPropertyAttribute(self.as_ptr(), id.as_ptr(), attr_name_wx.as_ptr(), value.as_ptr(), flags as c_int) }
     }
@@ -662,15 +670,15 @@ impl PropertyGridManager {
         }
     }
 
-    pub fn set_property_values(&self, list: &impl WxObject, baseparent: &impl WxPGProperty) {
+    pub fn set_property_values(&self, list: &impl WxVariant, baseparent: &impl WxPGProperty) {
         unsafe { sys::wxPropertyGridInterface_SetPropertyValues(self.as_ptr(), list.as_ptr(), baseparent.as_ptr()) }
     }
 
-    pub fn set_property_background_colour(&self, id: &impl WxPGProperty, colour: &impl WxObject, flags: i32) {
+    pub fn set_property_background_colour(&self, id: &impl WxPGProperty, colour: &impl WxColour, flags: i32) {
         unsafe { sys::wxPropertyGridInterface_SetPropertyBackgroundColour(self.as_ptr(), id.as_ptr(), colour.as_ptr(), flags as c_int) }
     }
 
-    pub fn set_property_text_colour(&self, id: &impl WxPGProperty, colour: &impl WxObject, flags: i32) {
+    pub fn set_property_text_colour(&self, id: &impl WxPGProperty, colour: &impl WxColour, flags: i32) {
         unsafe { sys::wxPropertyGridInterface_SetPropertyTextColour(self.as_ptr(), id.as_ptr(), colour.as_ptr(), flags as c_int) }
     }
 
@@ -739,7 +747,7 @@ impl PropertyGridManager {
         }
     }
 
-    pub fn get_editor_by_name(&self, name: impl AsRef<str>) -> Option<PGEditor> {
+    pub fn get_editor_by_name(name: impl AsRef<str>) -> Option<PGEditor> {
         let name_wx = WxStr::new(name.as_ref());
         let ptr = unsafe { sys::wxPropertyGridInterface_GetEditorByName(name_wx.as_ptr()) };
         if ptr.is_null() {
@@ -749,11 +757,11 @@ impl PropertyGridManager {
         }
     }
 
-    pub fn init_all_type_handlers(&self) {
+    pub fn init_all_type_handlers() {
         unsafe { sys::wxPropertyGridInterface_InitAllTypeHandlers() }
     }
 
-    pub fn set_bool_choices(&self, true_choice: impl AsRef<str>, false_choice: impl AsRef<str>) {
+    pub fn set_bool_choices(true_choice: impl AsRef<str>, false_choice: impl AsRef<str>) {
         let true_choice_wx = WxStr::new(true_choice.as_ref());
         let false_choice_wx = WxStr::new(false_choice.as_ref());
         unsafe { sys::wxPropertyGridInterface_SetBoolChoices(true_choice_wx.as_ptr(), false_choice_wx.as_ptr()) }

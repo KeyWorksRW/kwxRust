@@ -16,6 +16,13 @@ impl ColourPropertyValue {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for ColourPropertyValue {
     }
 }
 
+impl WxColourPropertyValue for ColourPropertyValue {}
 
 use crate::colour::Colour;
 
@@ -51,19 +59,26 @@ impl ColourPropertyValue {
         Self::from_raw(ptr)
     }
 
-    pub fn create_with_type(type_: u32, colour: &impl WxObject) -> Self {
+    pub fn create_with_type(type_: u32, colour: &impl WxColour) -> Self {
         let ptr = unsafe { sys::wxColourPropertyValue_CreateWithType(type_ as c_uint, colour.as_ptr()) };
         assert!(!ptr.is_null(), "wxColourPropertyValue_CreateWithType returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn create_from_colour(colour: &impl WxObject) -> Self {
+    pub fn create_from_colour(colour: &impl WxColour) -> Self {
         let ptr = unsafe { sys::wxColourPropertyValue_CreateFromColour(colour.as_ptr()) };
         assert!(!ptr.is_null(), "wxColourPropertyValue_CreateFromColour returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn init(&self, type_: u32, colour: &impl WxObject) {
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxColourPropertyValue_Delete(self.as_ptr()) }
+    }
+
+    pub fn init(&self, type_: u32, colour: &impl WxColour) {
         unsafe { sys::wxColourPropertyValue_Init(self.as_ptr(), type_ as c_uint, colour.as_ptr()) }
     }
 
@@ -84,7 +99,7 @@ impl ColourPropertyValue {
         }
     }
 
-    pub fn set_colour(&self, colour: &impl WxObject) {
+    pub fn set_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxColourPropertyValue_SetColour(self.as_ptr(), colour.as_ptr()) }
     }
 

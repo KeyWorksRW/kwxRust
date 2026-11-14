@@ -16,6 +16,13 @@ impl Translations {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for Translations {
     }
 }
 
+impl WxTranslations for Translations {}
 use crate::array_string::ArrayString;
 use crate::support::WxStr;
 use crate::support::take_string;
@@ -52,7 +60,14 @@ impl Translations {
         Self::from_raw(ptr)
     }
 
-    pub fn get(&self) -> Option<Translations> {
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxTranslations_Delete(self.as_ptr()) }
+    }
+
+    pub fn get() -> Option<Translations> {
         let ptr = unsafe { sys::wxTranslations_Get() };
         if ptr.is_null() {
             None
@@ -61,7 +76,7 @@ impl Translations {
         }
     }
 
-    pub fn set(&self, translations: &impl WxObject) {
+    pub fn set(translations: &impl WxTranslations) {
         unsafe { sys::wxTranslations_Set(translations.as_ptr()) }
     }
 
@@ -132,7 +147,7 @@ impl Translations {
         take_string(unsafe { sys::wxTranslations_GetHeaderValue(self.as_ptr(), header_wx.as_ptr(), domain_wx.as_ptr()) })
     }
 
-    pub fn get_untranslated_string(&self, text: impl AsRef<str>) -> String {
+    pub fn get_untranslated_string(text: impl AsRef<str>) -> String {
         let text_wx = WxStr::new(text.as_ref());
         take_string(unsafe { sys::wxTranslations_GetUntranslatedString(text_wx.as_ptr()) })
     }

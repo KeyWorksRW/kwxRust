@@ -16,6 +16,13 @@ impl Slider {
         Self(Control::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,6 +45,7 @@ impl WxObject for Slider {
 impl WxControl for Slider {}
 impl WxWindow for Slider {}
 impl WxEvtHandler for Slider {}
+impl WxSlider for Slider {}
 
 use crate::support::Rect;
 
@@ -120,6 +128,10 @@ impl Slider {
 
     pub fn set_tick(&self, tick_pos: i32) {
         unsafe { sys::wxSlider_SetTick(self.as_ptr(), tick_pos as c_int) }
+    }
+
+    pub fn set_tick_freq(&self, freq: i32) {
+        unsafe { sys::wxSlider_SetTickFreq(self.as_ptr(), freq as c_int) }
     }
 
     pub fn set_value(&self, value: i32) {

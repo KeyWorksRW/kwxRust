@@ -16,6 +16,13 @@ impl HeaderColumnSimple {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for HeaderColumnSimple {
     }
 }
 
+impl WxHeaderColumnSimple for HeaderColumnSimple {}
 use crate::support::WxStr;
 use crate::support::take_string;
 
@@ -53,10 +61,17 @@ impl HeaderColumnSimple {
         Self::from_raw(ptr)
     }
 
-    pub fn create_with_bitmap(bitmap: &impl WxObject, width: i32, align: i32, flags: i32) -> Self {
+    pub fn create_with_bitmap(bitmap: &impl WxBitmapBundle, width: i32, align: i32, flags: i32) -> Self {
         let ptr = unsafe { sys::wxHeaderColumnSimple_CreateWithBitmap(bitmap.as_ptr(), width as c_int, align as c_int, flags as c_int) };
         assert!(!ptr.is_null(), "wxHeaderColumnSimple_CreateWithBitmap returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxHeaderColumnSimple_Delete(self.as_ptr()) }
     }
 
     pub fn get_alignment(&self) -> i32 {
@@ -91,7 +106,7 @@ impl HeaderColumnSimple {
         unsafe { sys::wxHeaderColumnSimple_SetAlignment(self.as_ptr(), align as c_int) }
     }
 
-    pub fn set_bitmap(&self, bitmap: &impl WxObject) {
+    pub fn set_bitmap(&self, bitmap: &impl WxBitmapBundle) {
         unsafe { sys::wxHeaderColumnSimple_SetBitmap(self.as_ptr(), bitmap.as_ptr()) }
     }
 

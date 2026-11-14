@@ -16,6 +16,13 @@ impl RichTextStyleListBox {
         Self(HtmlListBox::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -41,6 +48,7 @@ impl WxVScrolledWindow for RichTextStyleListBox {}
 impl WxPanel for RichTextStyleListBox {}
 impl WxWindow for RichTextStyleListBox {}
 impl WxEvtHandler for RichTextStyleListBox {}
+impl WxRichTextStyleListBox for RichTextStyleListBox {}
 
 use crate::rich_text_ctrl::RichTextCtrl;
 use crate::rich_text_style_definition::RichTextStyleDefinition;
@@ -61,7 +69,14 @@ impl RichTextStyleListBox {
         Self::from_raw(ptr)
     }
 
-    pub fn set_style_sheet(&self, style_sheet: &impl WxObject) {
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxRichTextStyleListBox_Delete(self.as_ptr()) }
+    }
+
+    pub fn set_style_sheet(&self, style_sheet: &impl WxRichTextStyleSheet) {
         unsafe { sys::wxRichTextStyleListBox_SetStyleSheet(self.as_ptr(), style_sheet.as_ptr()) }
     }
 
@@ -74,7 +89,7 @@ impl RichTextStyleListBox {
         }
     }
 
-    pub fn set_rich_text_ctrl(&self, ctrl: &impl WxObject) {
+    pub fn set_rich_text_ctrl(&self, ctrl: &impl WxRichTextCtrl) {
         unsafe { sys::wxRichTextStyleListBox_SetRichTextCtrl(self.as_ptr(), ctrl.as_ptr()) }
     }
 

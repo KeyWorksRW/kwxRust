@@ -16,6 +16,13 @@ impl SystemOptions {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,38 +42,39 @@ impl WxObject for SystemOptions {
     }
 }
 
+impl WxSystemOptions for SystemOptions {}
 
 use crate::support::WxStr;
 use crate::support::take_string;
 
 impl SystemOptions {
-    pub fn set_option(&self, name: impl AsRef<str>, value: impl AsRef<str>) {
+    pub fn set_option(name: impl AsRef<str>, value: impl AsRef<str>) {
         let name_wx = WxStr::new(name.as_ref());
         let value_wx = WxStr::new(value.as_ref());
         unsafe { sys::wxSystemOptions_SetOption(name_wx.as_ptr(), value_wx.as_ptr()) }
     }
 
-    pub fn set_option_int(&self, name: impl AsRef<str>, value: i32) {
+    pub fn set_option_int(name: impl AsRef<str>, value: i32) {
         let name_wx = WxStr::new(name.as_ref());
         unsafe { sys::wxSystemOptions_SetOptionInt(name_wx.as_ptr(), value as c_int) }
     }
 
-    pub fn get_option(&self, name: impl AsRef<str>) -> String {
+    pub fn get_option(name: impl AsRef<str>) -> String {
         let name_wx = WxStr::new(name.as_ref());
         take_string(unsafe { sys::wxSystemOptions_GetOption(name_wx.as_ptr()) })
     }
 
-    pub fn get_option_int(&self, name: impl AsRef<str>) -> i32 {
+    pub fn get_option_int(name: impl AsRef<str>) -> i32 {
         let name_wx = WxStr::new(name.as_ref());
         unsafe { sys::wxSystemOptions_GetOptionInt(name_wx.as_ptr()) as i32 }
     }
 
-    pub fn has_option(&self, name: impl AsRef<str>) -> bool {
+    pub fn has_option(name: impl AsRef<str>) -> bool {
         let name_wx = WxStr::new(name.as_ref());
         unsafe { sys::wxSystemOptions_HasOption(name_wx.as_ptr()) != 0 }
     }
 
-    pub fn is_false(&self, name: impl AsRef<str>) -> bool {
+    pub fn is_false(name: impl AsRef<str>) -> bool {
         let name_wx = WxStr::new(name.as_ref());
         unsafe { sys::wxSystemOptions_IsFalse(name_wx.as_ptr()) != 0 }
     }

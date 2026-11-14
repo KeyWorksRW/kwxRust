@@ -16,6 +16,13 @@ impl GenericDragImage {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,14 +42,15 @@ impl WxObject for GenericDragImage {
     }
 }
 
+impl WxGenericDragImage for GenericDragImage {}
 impl GenericDragImage {
-    pub fn new(cursor: &impl WxObject) -> Self {
+    pub fn new(cursor: &impl WxCursor) -> Self {
         let ptr = unsafe { sys::wxGenericDragImage_Create(cursor.as_ptr()) };
         assert!(!ptr.is_null(), "wxGenericDragImage_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(cursor: &impl WxObject) -> Self {
+    pub fn new_full(cursor: &impl WxCursor) -> Self {
         let ptr = unsafe { sys::wxGenericDragImage_Create(cursor.as_ptr()) };
         assert!(!ptr.is_null(), "wxGenericDragImage_Create returned null");
         Self::from_raw(ptr)
@@ -61,7 +69,7 @@ impl GenericDragImage {
         }
     }
 
-    pub fn update_backing_from_window(&self, window_dc: &impl WxDC, dest_dc: &impl WxObject, x: i32, y: i32, width: i32, height: i32, xdest: i32, ydest: i32, dest_width: i32, dest_height: i32) -> bool {
+    pub fn update_backing_from_window(&self, window_dc: &impl WxDC, dest_dc: &impl WxMemoryDC, x: i32, y: i32, width: i32, height: i32, xdest: i32, ydest: i32, dest_width: i32, dest_height: i32) -> bool {
         unsafe { sys::wxGenericDragImage_UpdateBackingFromWindow(self.as_ptr(), window_dc.as_ptr(), dest_dc.as_ptr(), x as c_int, y as c_int, width as c_int, height as c_int, xdest as c_int, ydest as c_int, dest_width as c_int, dest_height as c_int) != 0 }
     }
 

@@ -16,6 +16,13 @@ impl Colour {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for Colour {
     }
 }
 
+impl WxColour for Colour {}
 
 use crate::support::WxStr;
 use crate::support::take_string;
@@ -68,7 +76,7 @@ impl Colour {
         take_string(unsafe { sys::wxColour_GetAsString(self.as_ptr(), flags as c_long) })
     }
 
-    pub fn make_disabled(&self, r: *mut c_void, g: *mut c_void, b: *mut c_void, brightness: i32) {
+    pub fn make_disabled(r: *mut c_void, g: *mut c_void, b: *mut c_void, brightness: i32) {
         unsafe { sys::wxColour_MakeDisabled(r, g, b, brightness as c_int) }
     }
 
@@ -109,6 +117,13 @@ impl Colour {
         Self::from_raw(ptr)
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxColour_Delete(self.as_ptr()) }
+    }
+
     pub fn green(&self) -> u8 {
         unsafe { sys::wxColour_Green(self.as_ptr()) as u8 }
     }
@@ -130,7 +145,7 @@ impl Colour {
         unsafe { sys::wxColour_SetByName(self.as_ptr(), name_wx.as_ptr()) }
     }
 
-    pub fn valid_name(&self, name: *mut c_void) -> bool {
+    pub fn valid_name(name: *mut c_void) -> bool {
         unsafe { sys::wxColour_ValidName(name) != 0 }
     }
 

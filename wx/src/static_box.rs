@@ -16,6 +16,13 @@ impl StaticBox {
         Self(Control::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,6 +45,7 @@ impl WxObject for StaticBox {
 impl WxControl for StaticBox {}
 impl WxWindow for StaticBox {}
 impl WxEvtHandler for StaticBox {}
+impl WxStaticBox for StaticBox {}
 
 use crate::support::Rect;
 use crate::support::WxStr;
@@ -54,6 +62,12 @@ impl StaticBox {
         let text_wx = WxStr::new(text.as_ref());
         let ptr = unsafe { sys::wxStaticBox_Create(parent.as_ptr(), id as c_int, text_wx.as_ptr(), rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int, style as c_int) };
         assert!(!ptr.is_null(), "wxStaticBox_Create returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn create_with_label_window(parent: &impl WxWindow, id: i32, label: &impl WxWindow, rect: Rect, style: i32) -> Self {
+        let ptr = unsafe { sys::wxStaticBox_CreateWithLabelWindow(parent.as_ptr(), id as c_int, label.as_ptr(), rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int, style as c_int) };
+        assert!(!ptr.is_null(), "wxStaticBox_CreateWithLabelWindow returned null");
         Self::from_raw(ptr)
     }
 

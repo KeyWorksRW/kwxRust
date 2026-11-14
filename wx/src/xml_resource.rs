@@ -16,6 +16,13 @@ impl XmlResource {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for XmlResource {
     }
 }
 
+impl WxXmlResource for XmlResource {}
 
 use crate::bitmap_button::BitmapButton;
 use crate::box_sizer::BoxSizer;
@@ -81,7 +89,7 @@ use crate::tool_bar::ToolBar;
 use crate::tree_ctrl::TreeCtrl;
 
 impl XmlResource {
-    pub fn get_styled_text_ctrl(&self, win: &impl WxWindow, str_id: impl AsRef<str>) -> *mut c_void {
+    pub fn get_styled_text_ctrl(win: &impl WxWindow, str_id: impl AsRef<str>) -> *mut c_void {
         let str_id_wx = WxStr::new(str_id.as_ref());
         unsafe { sys::wxXmlResource_GetStyledTextCtrl(win.as_ptr(), str_id_wx.as_ptr()) }
     }
@@ -141,7 +149,14 @@ impl XmlResource {
         Self::from_raw(ptr)
     }
 
-    pub fn get(&self) -> Option<XmlResource> {
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxXmlResource_Delete(self.as_ptr()) }
+    }
+
+    pub fn get() -> Option<XmlResource> {
         let ptr = unsafe { sys::wxXmlResource_Get() };
         if ptr.is_null() {
             None
@@ -205,7 +220,7 @@ impl XmlResource {
         }
     }
 
-    pub fn load_icon(&self, name: impl AsRef<str>, ref_: &impl WxObject) {
+    pub fn load_icon(&self, name: impl AsRef<str>, ref_: &impl WxIcon) {
         let name_wx = WxStr::new(name.as_ref());
         unsafe { sys::wxXmlResource_LoadIcon(self.as_ptr(), name_wx.as_ptr(), ref_.as_ptr()) }
     }
@@ -635,7 +650,7 @@ impl XmlResource {
         unsafe { sys::wxXmlResource_Unload(self.as_ptr(), filemask_wx.as_ptr()) != 0 }
     }
 
-    pub fn set(&self, res: &impl WxObject) -> Option<XmlResource> {
+    pub fn set(&self, res: &impl WxXmlResource) -> Option<XmlResource> {
         let ptr = unsafe { sys::wxXmlResource_Set(self.as_ptr(), res.as_ptr()) };
         if ptr.is_null() {
             None

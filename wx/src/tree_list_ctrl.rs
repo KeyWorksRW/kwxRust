@@ -16,6 +16,13 @@ impl TreeListCtrl {
         Self(Window::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -37,6 +44,7 @@ impl WxObject for TreeListCtrl {
 
 impl WxWindow for TreeListCtrl {}
 impl WxEvtHandler for TreeListCtrl {}
+impl WxTreeListCtrl for TreeListCtrl {}
 
 use crate::client_data::ClientData;
 use crate::data_view_ctrl::DataViewCtrl;
@@ -45,12 +53,12 @@ use crate::support::WxStr;
 use crate::support::take_string;
 
 impl TreeListCtrl {
-    pub fn set_item_text_simple(&self, item: &impl WxObject, text: impl AsRef<str>) {
+    pub fn set_item_text_simple(&self, item: &impl WxTreeListItem, text: impl AsRef<str>) {
         let text_wx = WxStr::new(text.as_ref());
         unsafe { sys::wxTreeListCtrl_SetItemTextSimple(self.as_ptr(), item.as_ptr(), text_wx.as_ptr()) }
     }
 
-    pub fn get_item_data(&self, item: &impl WxObject) -> Option<ClientData> {
+    pub fn get_item_data(&self, item: &impl WxTreeListItem) -> Option<ClientData> {
         let ptr = unsafe { sys::wxTreeListCtrl_GetItemData(self.as_ptr(), item.as_ptr()) };
         if ptr.is_null() {
             None
@@ -59,7 +67,7 @@ impl TreeListCtrl {
         }
     }
 
-    pub fn set_item_data(&self, item: &impl WxObject, data: &impl WxClientData) {
+    pub fn set_item_data(&self, item: &impl WxTreeListItem, data: &impl WxClientData) {
         unsafe { sys::wxTreeListCtrl_SetItemData(self.as_ptr(), item.as_ptr(), data.as_ptr()) }
     }
 
@@ -105,22 +113,22 @@ impl TreeListCtrl {
         unsafe { sys::wxTreeListCtrl_WidthFor(self.as_ptr(), text_wx.as_ptr()) as i32 }
     }
 
-    pub fn append_item(&self, parent: &impl WxObject, text: impl AsRef<str>, image_closed: i32, image_opened: i32, result: &impl WxObject) {
+    pub fn append_item(&self, parent: &impl WxTreeListItem, text: impl AsRef<str>, image_closed: i32, image_opened: i32, result: &impl WxTreeListItem) {
         let text_wx = WxStr::new(text.as_ref());
         unsafe { sys::wxTreeListCtrl_AppendItem(self.as_ptr(), parent.as_ptr(), text_wx.as_ptr(), image_closed as c_int, image_opened as c_int, result.as_ptr()) }
     }
 
-    pub fn insert_item(&self, parent: &impl WxObject, previous: &impl WxObject, text: impl AsRef<str>, image_closed: i32, image_opened: i32, result: &impl WxObject) {
+    pub fn insert_item(&self, parent: &impl WxTreeListItem, previous: &impl WxTreeListItem, text: impl AsRef<str>, image_closed: i32, image_opened: i32, result: &impl WxTreeListItem) {
         let text_wx = WxStr::new(text.as_ref());
         unsafe { sys::wxTreeListCtrl_InsertItem(self.as_ptr(), parent.as_ptr(), previous.as_ptr(), text_wx.as_ptr(), image_closed as c_int, image_opened as c_int, result.as_ptr()) }
     }
 
-    pub fn prepend_item(&self, parent: &impl WxObject, text: impl AsRef<str>, image_closed: i32, image_opened: i32, result: &impl WxObject) {
+    pub fn prepend_item(&self, parent: &impl WxTreeListItem, text: impl AsRef<str>, image_closed: i32, image_opened: i32, result: &impl WxTreeListItem) {
         let text_wx = WxStr::new(text.as_ref());
         unsafe { sys::wxTreeListCtrl_PrependItem(self.as_ptr(), parent.as_ptr(), text_wx.as_ptr(), image_closed as c_int, image_opened as c_int, result.as_ptr()) }
     }
 
-    pub fn delete_item(&self, item: &impl WxObject) {
+    pub fn delete_item(&self, item: &impl WxTreeListItem) {
         unsafe { sys::wxTreeListCtrl_DeleteItem(self.as_ptr(), item.as_ptr()) }
     }
 
@@ -128,68 +136,68 @@ impl TreeListCtrl {
         unsafe { sys::wxTreeListCtrl_DeleteAllItems(self.as_ptr()) }
     }
 
-    pub fn get_root_item(&self, result: &impl WxObject) {
+    pub fn get_root_item(&self, result: &impl WxTreeListItem) {
         unsafe { sys::wxTreeListCtrl_GetRootItem(self.as_ptr(), result.as_ptr()) }
     }
 
-    pub fn get_item_parent(&self, item: &impl WxObject, result: &impl WxObject) {
+    pub fn get_item_parent(&self, item: &impl WxTreeListItem, result: &impl WxTreeListItem) {
         unsafe { sys::wxTreeListCtrl_GetItemParent(self.as_ptr(), item.as_ptr(), result.as_ptr()) }
     }
 
-    pub fn get_first_child(&self, item: &impl WxObject, result: &impl WxObject) {
+    pub fn get_first_child(&self, item: &impl WxTreeListItem, result: &impl WxTreeListItem) {
         unsafe { sys::wxTreeListCtrl_GetFirstChild(self.as_ptr(), item.as_ptr(), result.as_ptr()) }
     }
 
-    pub fn get_next_sibling(&self, item: &impl WxObject, result: &impl WxObject) {
+    pub fn get_next_sibling(&self, item: &impl WxTreeListItem, result: &impl WxTreeListItem) {
         unsafe { sys::wxTreeListCtrl_GetNextSibling(self.as_ptr(), item.as_ptr(), result.as_ptr()) }
     }
 
-    pub fn get_first_item(&self, result: &impl WxObject) {
+    pub fn get_first_item(&self, result: &impl WxTreeListItem) {
         unsafe { sys::wxTreeListCtrl_GetFirstItem(self.as_ptr(), result.as_ptr()) }
     }
 
-    pub fn get_next_item(&self, item: &impl WxObject, result: &impl WxObject) {
+    pub fn get_next_item(&self, item: &impl WxTreeListItem, result: &impl WxTreeListItem) {
         unsafe { sys::wxTreeListCtrl_GetNextItem(self.as_ptr(), item.as_ptr(), result.as_ptr()) }
     }
 
-    pub fn get_item_text(&self, item: &impl WxObject, col: u32) -> String {
+    pub fn get_item_text(&self, item: &impl WxTreeListItem, col: u32) -> String {
         take_string(unsafe { sys::wxTreeListCtrl_GetItemText(self.as_ptr(), item.as_ptr(), col as c_uint) })
     }
 
-    pub fn set_item_text(&self, item: &impl WxObject, col: u32, text: impl AsRef<str>) {
+    pub fn set_item_text(&self, item: &impl WxTreeListItem, col: u32, text: impl AsRef<str>) {
         let text_wx = WxStr::new(text.as_ref());
         unsafe { sys::wxTreeListCtrl_SetItemText(self.as_ptr(), item.as_ptr(), col as c_uint, text_wx.as_ptr()) }
     }
 
-    pub fn set_item_image(&self, item: &impl WxObject, closed: i32, opened: i32) {
+    pub fn set_item_image(&self, item: &impl WxTreeListItem, closed: i32, opened: i32) {
         unsafe { sys::wxTreeListCtrl_SetItemImage(self.as_ptr(), item.as_ptr(), closed as c_int, opened as c_int) }
     }
 
-    pub fn expand(&self, item: &impl WxObject) {
+    pub fn expand(&self, item: &impl WxTreeListItem) {
         unsafe { sys::wxTreeListCtrl_Expand(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn collapse(&self, item: &impl WxObject) {
+    pub fn collapse(&self, item: &impl WxTreeListItem) {
         unsafe { sys::wxTreeListCtrl_Collapse(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn is_expanded(&self, item: &impl WxObject) -> bool {
+    pub fn is_expanded(&self, item: &impl WxTreeListItem) -> bool {
         unsafe { sys::wxTreeListCtrl_IsExpanded(self.as_ptr(), item.as_ptr()) != 0 }
     }
 
-    pub fn get_selection(&self, result: &impl WxObject) {
+    pub fn get_selection(&self, result: &impl WxTreeListItem) {
         unsafe { sys::wxTreeListCtrl_GetSelection(self.as_ptr(), result.as_ptr()) }
     }
 
-    pub fn select(&self, item: &impl WxObject) {
+    pub fn select(&self, item: &impl WxTreeListItem) {
         unsafe { sys::wxTreeListCtrl_Select(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn unselect(&self, item: &impl WxObject) {
+    pub fn unselect(&self, item: &impl WxTreeListItem) {
         unsafe { sys::wxTreeListCtrl_Unselect(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn is_selected(&self, item: &impl WxObject) -> bool {
+    pub fn is_selected(&self, item: &impl WxTreeListItem) -> bool {
         unsafe { sys::wxTreeListCtrl_IsSelected(self.as_ptr(), item.as_ptr()) != 0 }
     }
 
@@ -201,31 +209,31 @@ impl TreeListCtrl {
         unsafe { sys::wxTreeListCtrl_UnselectAll(self.as_ptr()) }
     }
 
-    pub fn ensure_visible(&self, item: &impl WxObject) {
+    pub fn ensure_visible(&self, item: &impl WxTreeListItem) {
         unsafe { sys::wxTreeListCtrl_EnsureVisible(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn check_item(&self, item: &impl WxObject, state: i32) {
+    pub fn check_item(&self, item: &impl WxTreeListItem, state: i32) {
         unsafe { sys::wxTreeListCtrl_CheckItem(self.as_ptr(), item.as_ptr(), state as c_int) }
     }
 
-    pub fn uncheck_item(&self, item: &impl WxObject) {
+    pub fn uncheck_item(&self, item: &impl WxTreeListItem) {
         unsafe { sys::wxTreeListCtrl_UncheckItem(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn check_item_recursively(&self, item: &impl WxObject, state: i32) {
+    pub fn check_item_recursively(&self, item: &impl WxTreeListItem, state: i32) {
         unsafe { sys::wxTreeListCtrl_CheckItemRecursively(self.as_ptr(), item.as_ptr(), state as c_int) }
     }
 
-    pub fn update_item_parent_state_recursively(&self, item: &impl WxObject) {
+    pub fn update_item_parent_state_recursively(&self, item: &impl WxTreeListItem) {
         unsafe { sys::wxTreeListCtrl_UpdateItemParentStateRecursively(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn get_checked_state(&self, item: &impl WxObject) -> i32 {
+    pub fn get_checked_state(&self, item: &impl WxTreeListItem) -> i32 {
         unsafe { sys::wxTreeListCtrl_GetCheckedState(self.as_ptr(), item.as_ptr()) as i32 }
     }
 
-    pub fn are_all_children_in_state(&self, item: &impl WxObject, state: i32) -> bool {
+    pub fn are_all_children_in_state(&self, item: &impl WxTreeListItem, state: i32) -> bool {
         unsafe { sys::wxTreeListCtrl_AreAllChildrenInState(self.as_ptr(), item.as_ptr(), state as c_int) != 0 }
     }
 

@@ -16,6 +16,13 @@ impl ToolBarBase {
         Self(Control::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -44,7 +51,7 @@ use crate::support::WxStr;
 use crate::tool_bar_tool_base::ToolBarToolBase;
 
 impl ToolBarBase {
-    pub fn add_check_tool(&self, toolid: i32, label: impl AsRef<str>, bitmap: &impl WxObject, bmp_disabled: &impl WxObject, short_help: impl AsRef<str>, long_help: impl AsRef<str>, client_data: *mut c_void) -> Option<ToolBarToolBase> {
+    pub fn add_check_tool(&self, toolid: i32, label: impl AsRef<str>, bitmap: &impl WxBitmapBundle, bmp_disabled: &impl WxBitmapBundle, short_help: impl AsRef<str>, long_help: impl AsRef<str>, client_data: *mut c_void) -> Option<ToolBarToolBase> {
         let label_wx = WxStr::new(label.as_ref());
         let short_help_wx = WxStr::new(short_help.as_ref());
         let long_help_wx = WxStr::new(long_help.as_ref());
@@ -61,7 +68,7 @@ impl ToolBarBase {
         unsafe { sys::wxToolBarBase_AddControl(self.as_ptr(), control, label_wx.as_ptr()) }
     }
 
-    pub fn add_radio_tool(&self, toolid: i32, label: impl AsRef<str>, bitmap: &impl WxObject, bmp_disabled: &impl WxObject, short_help: impl AsRef<str>, long_help: impl AsRef<str>, client_data: *mut c_void) -> Option<ToolBarToolBase> {
+    pub fn add_radio_tool(&self, toolid: i32, label: impl AsRef<str>, bitmap: &impl WxBitmapBundle, bmp_disabled: &impl WxBitmapBundle, short_help: impl AsRef<str>, long_help: impl AsRef<str>, client_data: *mut c_void) -> Option<ToolBarToolBase> {
         let label_wx = WxStr::new(label.as_ref());
         let short_help_wx = WxStr::new(short_help.as_ref());
         let long_help_wx = WxStr::new(long_help.as_ref());
@@ -91,7 +98,7 @@ impl ToolBarBase {
         }
     }
 
-    pub fn add_tool(&self, toolid: i32, label: impl AsRef<str>, bitmap: &impl WxObject, bmp_disabled: &impl WxObject, kind: i32, short_help: impl AsRef<str>, long_help: impl AsRef<str>, client_data: *mut c_void) -> Option<ToolBarToolBase> {
+    pub fn add_tool(&self, toolid: i32, label: impl AsRef<str>, bitmap: &impl WxBitmapBundle, bmp_disabled: &impl WxBitmapBundle, kind: i32, short_help: impl AsRef<str>, long_help: impl AsRef<str>, client_data: *mut c_void) -> Option<ToolBarToolBase> {
         let label_wx = WxStr::new(label.as_ref());
         let short_help_wx = WxStr::new(short_help.as_ref());
         let long_help_wx = WxStr::new(long_help.as_ref());
@@ -127,7 +134,7 @@ impl ToolBarBase {
         unsafe { sys::wxToolBarBase_GetToolsCount(self.as_ptr()) as usize }
     }
 
-    pub fn insert_tool(&self, pos: usize, toolid: i32, label: impl AsRef<str>, bitmap: &impl WxObject, bmp_disabled: &impl WxObject, kind: i32, short_help: impl AsRef<str>, long_help: impl AsRef<str>, client_data: *mut c_void) -> Option<ToolBarToolBase> {
+    pub fn insert_tool(&self, pos: usize, toolid: i32, label: impl AsRef<str>, bitmap: &impl WxBitmapBundle, bmp_disabled: &impl WxBitmapBundle, kind: i32, short_help: impl AsRef<str>, long_help: impl AsRef<str>, client_data: *mut c_void) -> Option<ToolBarToolBase> {
         let label_wx = WxStr::new(label.as_ref());
         let short_help_wx = WxStr::new(short_help.as_ref());
         let long_help_wx = WxStr::new(long_help.as_ref());
@@ -168,7 +175,7 @@ impl ToolBarBase {
         unsafe { sys::wxToolBarBase_SetRows(self.as_ptr(), n_rows as c_int) }
     }
 
-    pub fn set_tool_bitmap_size(&self, size: &impl WxObject) {
+    pub fn set_tool_bitmap_size(&self, size: &impl WxSize) {
         unsafe { sys::wxToolBarBase_SetToolBitmapSize(self.as_ptr(), size.as_ptr()) }
     }
 

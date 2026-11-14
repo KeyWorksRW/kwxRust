@@ -16,6 +16,13 @@ impl GenericCalendarCtrl {
         Self(CalendarCtrlBase::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,17 +46,18 @@ impl WxCalendarCtrlBase for GenericCalendarCtrl {}
 impl WxControl for GenericCalendarCtrl {}
 impl WxWindow for GenericCalendarCtrl {}
 impl WxEvtHandler for GenericCalendarCtrl {}
+impl WxGenericCalendarCtrl for GenericCalendarCtrl {}
 
 use crate::support::Rect;
 
 impl GenericCalendarCtrl {
-    pub fn new(parent: &impl WxWindow, date: &impl WxObject) -> Self {
+    pub fn new(parent: &impl WxWindow, date: &impl WxDateTime) -> Self {
         let ptr = unsafe { sys::wxGenericCalendarCtrl_Create(parent.as_ptr(), -1, date.as_ptr(), Rect::default().x as c_int, Rect::default().y as c_int, Rect::default().width as c_int, Rect::default().height as c_int, 0) };
         assert!(!ptr.is_null(), "wxGenericCalendarCtrl_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(parent: &impl WxWindow, id: i32, date: &impl WxObject, rect: Rect, style: i32) -> Self {
+    pub fn new_full(parent: &impl WxWindow, id: i32, date: &impl WxDateTime, rect: Rect, style: i32) -> Self {
         let ptr = unsafe { sys::wxGenericCalendarCtrl_Create(parent.as_ptr(), id as c_int, date.as_ptr(), rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int, style as c_int) };
         assert!(!ptr.is_null(), "wxGenericCalendarCtrl_Create returned null");
         Self::from_raw(ptr)

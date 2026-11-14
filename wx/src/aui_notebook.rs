@@ -16,6 +16,13 @@ impl AuiNotebook {
         Self(BookCtrlBase::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -208,15 +215,15 @@ impl AuiNotebook {
         unsafe { sys::wxAuiNotebook_SetArtProvider(self.as_ptr(), art_id.as_ptr()) }
     }
 
-    pub fn set_font(&self, font: &impl WxObject) -> bool {
+    pub fn set_font(&self, font: &impl WxFont) -> bool {
         unsafe { sys::wxAuiNotebook_SetFont(self.as_ptr(), font.as_ptr()) != 0 }
     }
 
-    pub fn set_measuring_font(&self, font: &impl WxObject) {
+    pub fn set_measuring_font(&self, font: &impl WxFont) {
         unsafe { sys::wxAuiNotebook_SetMeasuringFont(self.as_ptr(), font.as_ptr()) }
     }
 
-    pub fn set_normal_font(&self, font: &impl WxObject) {
+    pub fn set_normal_font(&self, font: &impl WxFont) {
         unsafe { sys::wxAuiNotebook_SetNormalFont(self.as_ptr(), font.as_ptr()) }
     }
 
@@ -238,7 +245,7 @@ impl AuiNotebook {
         unsafe { sys::wxAuiNotebook_SetPageToolTip(self.as_ptr(), page as c_int, text_wx.as_ptr()) != 0 }
     }
 
-    pub fn set_selected_font(&self, font: &impl WxObject) {
+    pub fn set_selected_font(&self, font: &impl WxFont) {
         unsafe { sys::wxAuiNotebook_SetSelectedFont(self.as_ptr(), font.as_ptr()) }
     }
 
@@ -275,7 +282,7 @@ impl AuiNotebook {
         }
     }
 
-    pub fn get_pages_in_display_order(&self, tab_ctrl: &impl WxObject) -> Option<ArrayInt> {
+    pub fn get_pages_in_display_order(&self, tab_ctrl: &impl WxAuiTabCtrl) -> Option<ArrayInt> {
         let ptr = unsafe { sys::wxAuiNotebook_GetPagesInDisplayOrder(self.as_ptr(), tab_ctrl.as_ptr()) };
         if ptr.is_null() {
             None
@@ -284,12 +291,12 @@ impl AuiNotebook {
         }
     }
 
-    pub fn save_layout(&self, name: impl AsRef<str>, serializer: &impl WxObject) {
+    pub fn save_layout(&self, name: impl AsRef<str>, serializer: &impl WxAuiSerializer) {
         let name_wx = WxStr::new(name.as_ref());
         unsafe { sys::wxAuiNotebook_SaveLayout(self.as_ptr(), name_wx.as_ptr(), serializer.as_ptr()) }
     }
 
-    pub fn load_layout(&self, name: impl AsRef<str>, deserializer: &impl WxObject) {
+    pub fn load_layout(&self, name: impl AsRef<str>, deserializer: &impl WxAuiDeserializer) {
         let name_wx = WxStr::new(name.as_ref());
         unsafe { sys::wxAuiNotebook_LoadLayout(self.as_ptr(), name_wx.as_ptr(), deserializer.as_ptr()) }
     }

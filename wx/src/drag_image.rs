@@ -16,6 +16,13 @@ impl DragImage {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,13 +42,14 @@ impl WxObject for DragImage {
     }
 }
 
+impl WxDragImage for DragImage {}
 
 impl DragImage {
     pub fn begin_drag(&self, x: i32, y: i32, window: &impl WxWindow, bounding_window: &impl WxWindow) -> bool {
         unsafe { sys::wxDragImage_BeginDrag(self.as_ptr(), x as c_int, y as c_int, window.as_ptr(), bounding_window.as_ptr()) != 0 }
     }
 
-    pub fn begin_drag_full_screen(&self, x_pos: i32, y_pos: i32, window: &impl WxWindow, full_screen: bool, rect: &impl WxObject) -> bool {
+    pub fn begin_drag_full_screen(&self, x_pos: i32, y_pos: i32, window: &impl WxWindow, full_screen: bool, rect: &impl WxRect) -> bool {
         unsafe { sys::wxDragImage_BeginDragFullScreen(self.as_ptr(), x_pos as c_int, y_pos as c_int, window.as_ptr(), full_screen as c_int, rect.as_ptr()) != 0 }
     }
 
@@ -55,6 +63,13 @@ impl DragImage {
         let ptr = unsafe { sys::wxDragImage_Create(image.as_ptr(), x as c_int, y as c_int) };
         assert!(!ptr.is_null(), "wxDragImage_Create returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxDragImage_Delete(self.as_ptr()) }
     }
 
     pub fn end_drag(&self) -> bool {

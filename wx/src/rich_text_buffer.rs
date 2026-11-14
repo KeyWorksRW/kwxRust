@@ -16,6 +16,13 @@ impl RichTextBuffer {
         Self(RichTextParagraphLayoutBox::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,7 +45,10 @@ impl WxObject for RichTextBuffer {
 impl WxRichTextParagraphLayoutBox for RichTextBuffer {}
 impl WxRichTextCompositeObject for RichTextBuffer {}
 impl WxRichTextObject for RichTextBuffer {}
+impl WxRichTextBuffer for RichTextBuffer {}
 
+use crate::rich_text_drawing_handler::RichTextDrawingHandler;
+use crate::rich_text_field_type::RichTextFieldType;
 use crate::rich_text_style_sheet::RichTextStyleSheet;
 use crate::support::WxStr;
 use crate::support::take_string;
@@ -56,11 +66,60 @@ impl RichTextBuffer {
         Self::from_raw(ptr)
     }
 
-    pub fn add_handler(&self, handler: *mut c_void) {
+    pub fn add_handler(handler: *mut c_void) {
         unsafe { sys::wxRichTextBuffer_AddHandler(handler) }
     }
 
-    pub fn add_paragraph(&self, text: impl AsRef<str>, para_style: &impl WxObject, start: *mut i64, end: *mut i64) {
+    pub fn add_field_type(field_type: &impl WxRichTextFieldType) {
+        unsafe { sys::wxRichTextBuffer_AddFieldType(field_type.as_ptr()) }
+    }
+
+    pub fn remove_field_type(name: impl AsRef<str>) -> bool {
+        let name_wx = WxStr::new(name.as_ref());
+        unsafe { sys::wxRichTextBuffer_RemoveFieldType(name_wx.as_ptr()) != 0 }
+    }
+
+    pub fn find_field_type(name: impl AsRef<str>) -> Option<RichTextFieldType> {
+        let name_wx = WxStr::new(name.as_ref());
+        let ptr = unsafe { sys::wxRichTextBuffer_FindFieldType(name_wx.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(RichTextFieldType::from_raw(ptr))
+        }
+    }
+
+    pub fn add_drawing_handler(handler: &impl WxRichTextDrawingHandler) {
+        unsafe { sys::wxRichTextBuffer_AddDrawingHandler(handler.as_ptr()) }
+    }
+
+    pub fn insert_drawing_handler(handler: &impl WxRichTextDrawingHandler) {
+        unsafe { sys::wxRichTextBuffer_InsertDrawingHandler(handler.as_ptr()) }
+    }
+
+    pub fn remove_drawing_handler(name: impl AsRef<str>) -> bool {
+        let name_wx = WxStr::new(name.as_ref());
+        unsafe { sys::wxRichTextBuffer_RemoveDrawingHandler(name_wx.as_ptr()) != 0 }
+    }
+
+    pub fn find_drawing_handler(name: impl AsRef<str>) -> Option<RichTextDrawingHandler> {
+        let name_wx = WxStr::new(name.as_ref());
+        let ptr = unsafe { sys::wxRichTextBuffer_FindDrawingHandler(name_wx.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(RichTextDrawingHandler::from_raw(ptr))
+        }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxRichTextBuffer_Delete(self.as_ptr()) }
+    }
+
+    pub fn add_paragraph(&self, text: impl AsRef<str>, para_style: &impl WxRichTextAttr, start: *mut i64, end: *mut i64) {
         let text_wx = WxStr::new(text.as_ref());
         unsafe { sys::wxRichTextBuffer_AddParagraph(self.as_ptr(), text_wx.as_ptr(), para_style.as_ptr(), start as *mut c_long, end as *mut c_long) }
     }
@@ -95,7 +154,7 @@ impl RichTextBuffer {
         unsafe { sys::wxRichTextBuffer_ResetAndClearCommands(self.as_ptr()) }
     }
 
-    pub fn set_style_sheet(&self, style_sheet: &impl WxObject) {
+    pub fn set_style_sheet(&self, style_sheet: &impl WxRichTextStyleSheet) {
         unsafe { sys::wxRichTextBuffer_SetStyleSheet(self.as_ptr(), style_sheet.as_ptr()) }
     }
 
@@ -108,11 +167,11 @@ impl RichTextBuffer {
         }
     }
 
-    pub fn set_style_sheet_and_notify(&self, sheet: &impl WxObject) -> bool {
+    pub fn set_style_sheet_and_notify(&self, sheet: &impl WxRichTextStyleSheet) -> bool {
         unsafe { sys::wxRichTextBuffer_SetStyleSheetAndNotify(self.as_ptr(), sheet.as_ptr()) != 0 }
     }
 
-    pub fn push_style_sheet(&self, style_sheet: &impl WxObject) -> bool {
+    pub fn push_style_sheet(&self, style_sheet: &impl WxRichTextStyleSheet) -> bool {
         unsafe { sys::wxRichTextBuffer_PushStyleSheet(self.as_ptr(), style_sheet.as_ptr()) != 0 }
     }
 
@@ -172,6 +231,10 @@ impl RichTextBuffer {
 
     pub fn suppressing_undo(&self) -> bool {
         unsafe { sys::wxRichTextBuffer_SuppressingUndo(self.as_ptr()) != 0 }
+    }
+
+    pub fn get_ext_wildcard(combine: bool, save: bool, types: &impl WxArrayInt) -> String {
+        take_string(unsafe { sys::wxRichTextBuffer_GetExtWildcard(combine as c_int, save as c_int, types.as_ptr()) })
     }
 
 }

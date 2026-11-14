@@ -16,6 +16,13 @@ impl MenuItem {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,18 +42,28 @@ impl WxObject for MenuItem {
     }
 }
 
+impl WxMenuItem for MenuItem {}
 
+use crate::accelerator_entry::AcceleratorEntry;
 use crate::bitmap::Bitmap;
 use crate::menu::Menu;
 use crate::support::WxStr;
 use crate::support::take_string;
 
 impl MenuItem {
-    pub fn create_ex(id: i32, text: impl AsRef<str>, helpstr: impl AsRef<str>, itemkind: i32, submenu: &impl WxObject) -> Self {
+    pub fn create_ex(id: i32, text: impl AsRef<str>, helpstr: impl AsRef<str>, itemkind: i32, submenu: &impl WxMenu) -> Self {
         let text_wx = WxStr::new(text.as_ref());
         let helpstr_wx = WxStr::new(helpstr.as_ref());
         let ptr = unsafe { sys::wxMenuItem_CreateEx(id as c_int, text_wx.as_ptr(), helpstr_wx.as_ptr(), itemkind as c_int, submenu.as_ptr()) };
         assert!(!ptr.is_null(), "wxMenuItem_CreateEx returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn create_ex_with_parent(parent_menu: &impl WxMenu, id: i32, text: impl AsRef<str>, helpstr: impl AsRef<str>, itemkind: i32, sub_menu: &impl WxMenu) -> Self {
+        let text_wx = WxStr::new(text.as_ref());
+        let helpstr_wx = WxStr::new(helpstr.as_ref());
+        let ptr = unsafe { sys::wxMenuItem_CreateExWithParent(parent_menu.as_ptr(), id as c_int, text_wx.as_ptr(), helpstr_wx.as_ptr(), itemkind as c_int, sub_menu.as_ptr()) };
+        assert!(!ptr.is_null(), "wxMenuItem_CreateExWithParent returned null");
         Self::from_raw(ptr)
     }
 
@@ -60,11 +77,11 @@ impl MenuItem {
         unsafe { sys::wxMenuItem_Check(self.as_ptr(), check as c_int) }
     }
 
-    pub fn set_bitmaps(&self, bmp_checked: &impl WxObject, bmp_unchecked: &impl WxObject) {
+    pub fn set_bitmaps(&self, bmp_checked: &impl WxBitmapBundle, bmp_unchecked: &impl WxBitmapBundle) {
         unsafe { sys::wxMenuItem_SetBitmaps(self.as_ptr(), bmp_checked.as_ptr(), bmp_unchecked.as_ptr()) }
     }
 
-    pub fn set_disabled_bitmap(&self, bmp_disabled: &impl WxObject) {
+    pub fn set_disabled_bitmap(&self, bmp_disabled: &impl WxBitmapBundle) {
         unsafe { sys::wxMenuItem_SetDisabledBitmap(self.as_ptr(), bmp_disabled.as_ptr()) }
     }
 
@@ -78,6 +95,13 @@ impl MenuItem {
         let ptr = unsafe { sys::wxMenuItem_Create() };
         assert!(!ptr.is_null(), "wxMenuItem_Create returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxMenuItem_Delete(self.as_ptr()) }
     }
 
     pub fn enable(&self, enable: bool) {
@@ -96,7 +120,7 @@ impl MenuItem {
         take_string(unsafe { sys::wxMenuItem_GetItemLabelText(self.as_ptr()) })
     }
 
-    pub fn get_label_text(&self, text: *mut c_void) -> String {
+    pub fn get_label_text(text: *mut c_void) -> String {
         take_string(unsafe { sys::wxMenuItem_GetLabelText(text) })
     }
 
@@ -155,7 +179,7 @@ impl MenuItem {
         unsafe { sys::wxMenuItem_SetId(self.as_ptr(), id as c_int) }
     }
 
-    pub fn set_sub_menu(&self, menu: &impl WxObject) {
+    pub fn set_sub_menu(&self, menu: &impl WxMenu) {
         unsafe { sys::wxMenuItem_SetSubMenu(self.as_ptr(), menu.as_ptr()) }
     }
 
@@ -180,7 +204,7 @@ impl MenuItem {
         unsafe { sys::wxMenuItem_Toggle(self.as_ptr()) }
     }
 
-    pub fn set_bitmap(&self, bmp: &impl WxBitmap) {
+    pub fn set_bitmap(&self, bmp: &impl WxBitmapBundle) {
         unsafe { sys::wxMenuItem_SetBitmap(self.as_ptr(), bmp.as_ptr()) }
     }
 
@@ -190,6 +214,15 @@ impl MenuItem {
             None
         } else {
             Some(Bitmap::from_raw(ptr))
+        }
+    }
+
+    pub fn get_accel(&self) -> Option<AcceleratorEntry> {
+        let ptr = unsafe { sys::wxMenuItem_GetAccel(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(AcceleratorEntry::from_raw(ptr))
         }
     }
 

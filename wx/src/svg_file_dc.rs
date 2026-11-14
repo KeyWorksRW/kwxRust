@@ -16,6 +16,13 @@ impl SVGFileDC {
         Self(DC::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -36,6 +43,7 @@ impl WxObject for SVGFileDC {
 }
 
 impl WxDC for SVGFileDC {}
+impl WxSVGFileDC for SVGFileDC {}
 
 use crate::support::Size;
 use crate::support::WxStr;
@@ -75,6 +83,13 @@ impl SVGFileDC {
         let ptr = unsafe { sys::wxSVGFileDC_CreateWithSizeAndResolution(file_name_wx.as_ptr(), size.width as c_int, size.height as c_int, a_dpi as c_float) };
         assert!(!ptr.is_null(), "wxSVGFileDC_CreateWithSizeAndResolution returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxSVGFileDC_Delete(self.as_ptr()) }
     }
 
 }

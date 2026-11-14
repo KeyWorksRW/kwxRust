@@ -16,6 +16,13 @@ impl TreeCtrl {
         Self(Control::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,6 +45,7 @@ impl WxObject for TreeCtrl {
 impl WxControl for TreeCtrl {}
 impl WxWindow for TreeCtrl {}
 impl WxEvtHandler for TreeCtrl {}
+impl WxTreeCtrl for TreeCtrl {}
 
 use crate::colour::Colour;
 use crate::combo_ctrl::ComboCtrl;
@@ -51,11 +59,11 @@ use crate::text_ctrl::TextCtrl;
 use crate::window::Window;
 
 impl TreeCtrl {
-    pub fn assign_image_list(&self, image_list: &impl WxObject) {
+    pub fn assign_image_list(&self, image_list: &impl WxImageList) {
         unsafe { sys::wxTreeCtrl_AssignImageList(self.as_ptr(), image_list.as_ptr()) }
     }
 
-    pub fn assign_state_image_list(&self, image_list: &impl WxObject) {
+    pub fn assign_state_image_list(&self, image_list: &impl WxImageList) {
         unsafe { sys::wxTreeCtrl_AssignStateImageList(self.as_ptr(), image_list.as_ptr()) }
     }
 
@@ -65,21 +73,21 @@ impl TreeCtrl {
         Self::from_raw(ptr)
     }
 
-    pub fn get_item_client_closure(&self, item: &impl WxObject) -> *mut c_void {
+    pub fn get_item_client_closure(&self, item: &impl WxTreeItemId) -> *mut c_void {
         unsafe { sys::wxTreeCtrl_GetItemClientClosure(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn insert_item2(&self, parent: &impl WxObject, id_previous: &impl WxObject, text: impl AsRef<str>, image: i32, selected_image: i32, closure: &impl WxObject, item: &impl WxObject) {
+    pub fn insert_item2(&self, parent: &impl WxTreeItemId, id_previous: &impl WxTreeItemId, text: impl AsRef<str>, image: i32, selected_image: i32, closure: &impl WxClosure, item: &impl WxTreeItemId) {
         let text_wx = WxStr::new(text.as_ref());
         unsafe { sys::wxTreeCtrl_InsertItem2(self.as_ptr(), parent.as_ptr(), id_previous.as_ptr(), text_wx.as_ptr(), image as c_int, selected_image as c_int, closure.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn insert_item_by_index2(&self, parent: &impl WxObject, index: i32, text: impl AsRef<str>, image: i32, selected_image: i32, data: &impl WxObject, item: &impl WxObject) {
+    pub fn insert_item_by_index2(&self, parent: &impl WxTreeItemId, index: i32, text: impl AsRef<str>, image: i32, selected_image: i32, data: &impl WxClosure, item: &impl WxTreeItemId) {
         let text_wx = WxStr::new(text.as_ref());
         unsafe { sys::wxTreeCtrl_InsertItemByIndex2(self.as_ptr(), parent.as_ptr(), index as c_int, text_wx.as_ptr(), image as c_int, selected_image as c_int, data.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn set_item_client_closure(&self, item: &impl WxObject, closure: &impl WxObject) {
+    pub fn set_item_client_closure(&self, item: &impl WxTreeItemId, closure: &impl WxClosure) {
         unsafe { sys::wxTreeCtrl_SetItemClientClosure(self.as_ptr(), item.as_ptr(), closure.as_ptr()) }
     }
 
@@ -99,7 +107,7 @@ impl TreeCtrl {
         unsafe { sys::wxTreeCtrl_GetStateImageCount(self.as_ptr()) as i32 }
     }
 
-    pub fn has_children(&self, item: &impl WxObject) -> bool {
+    pub fn has_children(&self, item: &impl WxTreeItemId) -> bool {
         unsafe { sys::wxTreeCtrl_HasChildren(self.as_ptr(), item.as_ptr()) != 0 }
     }
 
@@ -107,11 +115,11 @@ impl TreeCtrl {
         unsafe { sys::wxTreeCtrl_IsEmpty(self.as_ptr()) != 0 }
     }
 
-    pub fn unselect_item(&self, item: &impl WxObject) {
+    pub fn unselect_item(&self, item: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_UnselectItem(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn toggle_item_selection(&self, item: &impl WxObject) {
+    pub fn toggle_item_selection(&self, item: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_ToggleItemSelection(self.as_ptr(), item.as_ptr()) }
     }
 
@@ -119,7 +127,7 @@ impl TreeCtrl {
         unsafe { sys::wxTreeCtrl_EnableBellOnNoMatch(self.as_ptr(), on as c_int) }
     }
 
-    pub fn add_root(&self, text: impl AsRef<str>, image: i32, selected_image: i32, data: &impl WxObject, item: &impl WxObject) {
+    pub fn add_root(&self, text: impl AsRef<str>, image: i32, selected_image: i32, data: &impl WxTreeItemData, item: &impl WxTreeItemId) {
         let text_wx = WxStr::new(text.as_ref());
         unsafe { sys::wxTreeCtrl_AddRoot(self.as_ptr(), text_wx.as_ptr(), image as c_int, selected_image as c_int, data.as_ptr(), item.as_ptr()) }
     }
@@ -132,16 +140,16 @@ impl TreeCtrl {
         unsafe { sys::wxTreeCtrl_SetButtonsImageList(self.as_ptr(), image_list) }
     }
 
-    pub fn append_item(&self, parent: &impl WxObject, text: impl AsRef<str>, image: i32, selected_image: i32, data: &impl WxObject, item: &impl WxObject) {
+    pub fn append_item(&self, parent: &impl WxTreeItemId, text: impl AsRef<str>, image: i32, selected_image: i32, data: &impl WxTreeItemData, item: &impl WxTreeItemId) {
         let text_wx = WxStr::new(text.as_ref());
         unsafe { sys::wxTreeCtrl_AppendItem(self.as_ptr(), parent.as_ptr(), text_wx.as_ptr(), image as c_int, selected_image as c_int, data.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn collapse(&self, item: &impl WxObject) {
+    pub fn collapse(&self, item: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_Collapse(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn collapse_and_reset(&self, item: &impl WxObject) {
+    pub fn collapse_and_reset(&self, item: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_CollapseAndReset(self.as_ptr(), item.as_ptr()) }
     }
 
@@ -157,7 +165,7 @@ impl TreeCtrl {
         Self::from_raw(ptr)
     }
 
-    pub fn delete(&self, item: &impl WxObject) {
+    pub fn delete(&self, item: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_Delete(self.as_ptr(), item.as_ptr()) }
     }
 
@@ -165,27 +173,27 @@ impl TreeCtrl {
         unsafe { sys::wxTreeCtrl_DeleteAllItems(self.as_ptr()) }
     }
 
-    pub fn delete_children(&self, item: &impl WxObject) {
+    pub fn delete_children(&self, item: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_DeleteChildren(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn edit_label(&self, item: &impl WxObject) {
+    pub fn edit_label(&self, item: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_EditLabel(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn end_edit_label(&self, item: &impl WxObject, discard_changes: bool) {
+    pub fn end_edit_label(&self, item: &impl WxTreeItemId, discard_changes: bool) {
         unsafe { sys::wxTreeCtrl_EndEditLabel(self.as_ptr(), item.as_ptr(), discard_changes as c_int) }
     }
 
-    pub fn ensure_visible(&self, item: &impl WxObject) {
+    pub fn ensure_visible(&self, item: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_EnsureVisible(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn expand(&self, item: &impl WxObject) {
+    pub fn expand(&self, item: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_Expand(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn get_bounding_rect(&self, item: &impl WxObject, text_only: bool) -> Option<crate::rect::Rect> {
+    pub fn get_bounding_rect(&self, item: &impl WxTreeItemId, text_only: bool) -> Option<crate::rect::Rect> {
         let ptr = unsafe { sys::wxTreeCtrl_GetBoundingRect(self.as_ptr(), item.as_ptr(), text_only as c_int) };
         if ptr.is_null() {
             None
@@ -194,7 +202,7 @@ impl TreeCtrl {
         }
     }
 
-    pub fn get_children_count(&self, item: &impl WxObject, recursively: bool) -> i32 {
+    pub fn get_children_count(&self, item: &impl WxTreeItemId, recursively: bool) -> i32 {
         unsafe { sys::wxTreeCtrl_GetChildrenCount(self.as_ptr(), item.as_ptr(), recursively as c_int) as i32 }
     }
 
@@ -211,11 +219,11 @@ impl TreeCtrl {
         }
     }
 
-    pub fn get_first_child(&self, input_item: &impl WxObject, cookie: *mut c_void, result: &impl WxObject) {
+    pub fn get_first_child(&self, input_item: &impl WxTreeItemId, cookie: *mut c_void, result: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_GetFirstChild(self.as_ptr(), input_item.as_ptr(), cookie, result.as_ptr()) }
     }
 
-    pub fn get_first_visible_item(&self, result: &impl WxObject) {
+    pub fn get_first_visible_item(&self, result: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_GetFirstVisibleItem(self.as_ptr(), result.as_ptr()) }
     }
 
@@ -232,51 +240,51 @@ impl TreeCtrl {
         unsafe { sys::wxTreeCtrl_GetIndent(self.as_ptr()) as i32 }
     }
 
-    pub fn get_item_data(&self, item: &impl WxObject) -> *mut c_void {
+    pub fn get_item_data(&self, item: &impl WxTreeItemId) -> *mut c_void {
         unsafe { sys::wxTreeCtrl_GetItemData(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn get_item_image(&self, item: &impl WxObject, which: i32) -> i32 {
+    pub fn get_item_image(&self, item: &impl WxTreeItemId, which: i32) -> i32 {
         unsafe { sys::wxTreeCtrl_GetItemImage(self.as_ptr(), item.as_ptr(), which as c_int) as i32 }
     }
 
-    pub fn get_item_text(&self, item: &impl WxObject) -> String {
+    pub fn get_item_text(&self, item: &impl WxTreeItemId) -> String {
         take_string(unsafe { sys::wxTreeCtrl_GetItemText(self.as_ptr(), item.as_ptr()) })
     }
 
-    pub fn get_last_child(&self, input_item: &impl WxObject, result: &impl WxObject) {
+    pub fn get_last_child(&self, input_item: &impl WxTreeItemId, result: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_GetLastChild(self.as_ptr(), input_item.as_ptr(), result.as_ptr()) }
     }
 
-    pub fn get_next_child(&self, input_item: &impl WxObject, cookie: *mut c_void, result: &impl WxObject) {
+    pub fn get_next_child(&self, input_item: &impl WxTreeItemId, cookie: *mut c_void, result: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_GetNextChild(self.as_ptr(), input_item.as_ptr(), cookie, result.as_ptr()) }
     }
 
-    pub fn get_next_sibling(&self, input_item: &impl WxObject, result: &impl WxObject) {
+    pub fn get_next_sibling(&self, input_item: &impl WxTreeItemId, result: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_GetNextSibling(self.as_ptr(), input_item.as_ptr(), result.as_ptr()) }
     }
 
-    pub fn get_next_visible(&self, input_item: &impl WxObject, result: &impl WxObject) {
+    pub fn get_next_visible(&self, input_item: &impl WxTreeItemId, result: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_GetNextVisible(self.as_ptr(), input_item.as_ptr(), result.as_ptr()) }
     }
 
-    pub fn get_parent(&self, input_item: &impl WxObject, result: &impl WxObject) {
+    pub fn get_parent(&self, input_item: &impl WxTreeItemId, result: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_GetParent(self.as_ptr(), input_item.as_ptr(), result.as_ptr()) }
     }
 
-    pub fn get_prev_sibling(&self, input_item: &impl WxObject, result: &impl WxObject) {
+    pub fn get_prev_sibling(&self, input_item: &impl WxTreeItemId, result: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_GetPrevSibling(self.as_ptr(), input_item.as_ptr(), result.as_ptr()) }
     }
 
-    pub fn get_prev_visible(&self, input_item: &impl WxObject, result: &impl WxObject) {
+    pub fn get_prev_visible(&self, input_item: &impl WxTreeItemId, result: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_GetPrevVisible(self.as_ptr(), input_item.as_ptr(), result.as_ptr()) }
     }
 
-    pub fn get_root_item(&self, item: &impl WxObject) {
+    pub fn get_root_item(&self, item: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_GetRootItem(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn get_selection(&self, item: &impl WxObject) {
+    pub fn get_selection(&self, item: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_GetSelection(self.as_ptr(), item.as_ptr()) }
     }
 
@@ -297,70 +305,70 @@ impl TreeCtrl {
         }
     }
 
-    pub fn hit_test(&self, point: Point, flags: *mut i32, item: &impl WxObject) {
+    pub fn hit_test(&self, point: Point, flags: *mut i32, item: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_HitTest(self.as_ptr(), point.x as c_int, point.y as c_int, flags as *mut c_int, item.as_ptr()) }
     }
 
-    pub fn insert_item(&self, parent: &impl WxObject, id_previous: &impl WxObject, text: impl AsRef<str>, image: i32, selected_image: i32, data: *mut c_void, item: &impl WxObject) {
+    pub fn insert_item(&self, parent: &impl WxTreeItemId, id_previous: &impl WxTreeItemId, text: impl AsRef<str>, image: i32, selected_image: i32, data: *mut c_void, item: &impl WxTreeItemId) {
         let text_wx = WxStr::new(text.as_ref());
         unsafe { sys::wxTreeCtrl_InsertItem(self.as_ptr(), parent.as_ptr(), id_previous.as_ptr(), text_wx.as_ptr(), image as c_int, selected_image as c_int, data, item.as_ptr()) }
     }
 
-    pub fn insert_item_by_index(&self, parent: &impl WxObject, index: i32, text: impl AsRef<str>, image: i32, selected_image: i32, data: *mut c_void, item: &impl WxObject) {
+    pub fn insert_item_by_index(&self, parent: &impl WxTreeItemId, index: i32, text: impl AsRef<str>, image: i32, selected_image: i32, data: *mut c_void, item: &impl WxTreeItemId) {
         let text_wx = WxStr::new(text.as_ref());
         unsafe { sys::wxTreeCtrl_InsertItemByIndex(self.as_ptr(), parent.as_ptr(), index as c_int, text_wx.as_ptr(), image as c_int, selected_image as c_int, data, item.as_ptr()) }
     }
 
-    pub fn is_bold(&self, item: &impl WxObject) -> bool {
+    pub fn is_bold(&self, item: &impl WxTreeItemId) -> bool {
         unsafe { sys::wxTreeCtrl_IsBold(self.as_ptr(), item.as_ptr()) != 0 }
     }
 
-    pub fn is_expanded(&self, item: &impl WxObject) -> bool {
+    pub fn is_expanded(&self, item: &impl WxTreeItemId) -> bool {
         unsafe { sys::wxTreeCtrl_IsExpanded(self.as_ptr(), item.as_ptr()) != 0 }
     }
 
-    pub fn is_selected(&self, item: &impl WxObject) -> bool {
+    pub fn is_selected(&self, item: &impl WxTreeItemId) -> bool {
         unsafe { sys::wxTreeCtrl_IsSelected(self.as_ptr(), item.as_ptr()) != 0 }
     }
 
-    pub fn is_visible(&self, item: &impl WxObject) -> bool {
+    pub fn is_visible(&self, item: &impl WxTreeItemId) -> bool {
         unsafe { sys::wxTreeCtrl_IsVisible(self.as_ptr(), item.as_ptr()) != 0 }
     }
 
-    pub fn item_has_children(&self, item: &impl WxObject) -> i32 {
+    pub fn item_has_children(&self, item: &impl WxTreeItemId) -> i32 {
         unsafe { sys::wxTreeCtrl_ItemHasChildren(self.as_ptr(), item.as_ptr()) as i32 }
     }
 
-    pub fn on_compare_items(&self, item1: &impl WxObject, item2: &impl WxObject) -> i32 {
+    pub fn on_compare_items(&self, item1: &impl WxTreeItemId, item2: &impl WxTreeItemId) -> i32 {
         unsafe { sys::wxTreeCtrl_OnCompareItems(self.as_ptr(), item1.as_ptr(), item2.as_ptr()) as i32 }
     }
 
-    pub fn prepend_item(&self, parent: &impl WxObject, text: impl AsRef<str>, image: i32, selected_image: i32, data: *mut c_void, item: &impl WxObject) {
+    pub fn prepend_item(&self, parent: &impl WxTreeItemId, text: impl AsRef<str>, image: i32, selected_image: i32, data: *mut c_void, item: &impl WxTreeItemId) {
         let text_wx = WxStr::new(text.as_ref());
         unsafe { sys::wxTreeCtrl_PrependItem(self.as_ptr(), parent.as_ptr(), text_wx.as_ptr(), image as c_int, selected_image as c_int, data, item.as_ptr()) }
     }
 
-    pub fn scroll_to(&self, item: &impl WxObject) {
+    pub fn scroll_to(&self, item: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_ScrollTo(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn select_item(&self, item: &impl WxObject) {
+    pub fn select_item(&self, item: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_SelectItem(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn select_item2(&self, item: &impl WxObject, select: bool) {
+    pub fn select_item2(&self, item: &impl WxTreeItemId, select: bool) {
         unsafe { sys::wxTreeCtrl_SelectItem2(self.as_ptr(), item.as_ptr(), select as c_int) }
     }
 
-    pub fn set_image_list(&self, image_list: &impl WxObject) {
+    pub fn set_image_list(&self, image_list: &impl WxImageList) {
         unsafe { sys::wxTreeCtrl_SetImageList(self.as_ptr(), image_list.as_ptr()) }
     }
 
-    pub fn set_images(&self, images: &impl WxObject) {
+    pub fn set_images(&self, images: &impl WxBitmapBundleArray) {
         unsafe { sys::wxTreeCtrl_SetImages(self.as_ptr(), images.as_ptr()) }
     }
 
-    pub fn set_state_images(&self, images: &impl WxObject) {
+    pub fn set_state_images(&self, images: &impl WxBitmapBundleArray) {
         unsafe { sys::wxTreeCtrl_SetStateImages(self.as_ptr(), images.as_ptr()) }
     }
 
@@ -368,40 +376,40 @@ impl TreeCtrl {
         unsafe { sys::wxTreeCtrl_SetIndent(self.as_ptr(), indent as c_int) }
     }
 
-    pub fn set_item_background_colour(&self, item: &impl WxObject, col: &impl WxObject) {
+    pub fn set_item_background_colour(&self, item: &impl WxTreeItemId, col: &impl WxColour) {
         unsafe { sys::wxTreeCtrl_SetItemBackgroundColour(self.as_ptr(), item.as_ptr(), col.as_ptr()) }
     }
 
-    pub fn set_item_bold(&self, item: &impl WxObject, bold: bool) {
+    pub fn set_item_bold(&self, item: &impl WxTreeItemId, bold: bool) {
         unsafe { sys::wxTreeCtrl_SetItemBold(self.as_ptr(), item.as_ptr(), bold as c_int) }
     }
 
-    pub fn set_item_data(&self, item: &impl WxObject, data: *mut c_void) {
+    pub fn set_item_data(&self, item: &impl WxTreeItemId, data: *mut c_void) {
         unsafe { sys::wxTreeCtrl_SetItemData(self.as_ptr(), item.as_ptr(), data) }
     }
 
-    pub fn set_item_drop_highlight(&self, item: &impl WxObject, highlight: bool) {
+    pub fn set_item_drop_highlight(&self, item: &impl WxTreeItemId, highlight: bool) {
         unsafe { sys::wxTreeCtrl_SetItemDropHighlight(self.as_ptr(), item.as_ptr(), highlight as c_int) }
     }
 
-    pub fn set_item_font(&self, item: &impl WxObject, font: &impl WxObject) {
+    pub fn set_item_font(&self, item: &impl WxTreeItemId, font: &impl WxFont) {
         unsafe { sys::wxTreeCtrl_SetItemFont(self.as_ptr(), item.as_ptr(), font.as_ptr()) }
     }
 
-    pub fn set_item_has_children(&self, item: &impl WxObject, has_children: bool) {
+    pub fn set_item_has_children(&self, item: &impl WxTreeItemId, has_children: bool) {
         unsafe { sys::wxTreeCtrl_SetItemHasChildren(self.as_ptr(), item.as_ptr(), has_children as c_int) }
     }
 
-    pub fn set_item_image(&self, item: &impl WxObject, image: i32, which: i32) {
+    pub fn set_item_image(&self, item: &impl WxTreeItemId, image: i32, which: i32) {
         unsafe { sys::wxTreeCtrl_SetItemImage(self.as_ptr(), item.as_ptr(), image as c_int, which as c_int) }
     }
 
-    pub fn set_item_text(&self, item: &impl WxObject, text: impl AsRef<str>) {
+    pub fn set_item_text(&self, item: &impl WxTreeItemId, text: impl AsRef<str>) {
         let text_wx = WxStr::new(text.as_ref());
         unsafe { sys::wxTreeCtrl_SetItemText(self.as_ptr(), item.as_ptr(), text_wx.as_ptr()) }
     }
 
-    pub fn set_item_text_colour(&self, item: &impl WxObject, col: &impl WxObject) {
+    pub fn set_item_text_colour(&self, item: &impl WxTreeItemId, col: &impl WxColour) {
         unsafe { sys::wxTreeCtrl_SetItemTextColour(self.as_ptr(), item.as_ptr(), col.as_ptr()) }
     }
 
@@ -409,15 +417,15 @@ impl TreeCtrl {
         unsafe { sys::wxTreeCtrl_SetSpacing(self.as_ptr(), spacing as c_int) }
     }
 
-    pub fn set_state_image_list(&self, image_list: &impl WxObject) {
+    pub fn set_state_image_list(&self, image_list: &impl WxImageList) {
         unsafe { sys::wxTreeCtrl_SetStateImageList(self.as_ptr(), image_list.as_ptr()) }
     }
 
-    pub fn sort_children(&self, item: &impl WxObject) {
+    pub fn sort_children(&self, item: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_SortChildren(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn toggle(&self, item: &impl WxObject) {
+    pub fn toggle(&self, item: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_Toggle(self.as_ptr(), item.as_ptr()) }
     }
 
@@ -429,7 +437,7 @@ impl TreeCtrl {
         unsafe { sys::wxTreeCtrl_UnselectAll(self.as_ptr()) }
     }
 
-    pub fn get_focused_item(&self, item: &impl WxObject) {
+    pub fn get_focused_item(&self, item: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_GetFocusedItem(self.as_ptr(), item.as_ptr()) }
     }
 
@@ -437,15 +445,15 @@ impl TreeCtrl {
         unsafe { sys::wxTreeCtrl_ClearFocusedItem(self.as_ptr()) }
     }
 
-    pub fn set_focused_item(&self, item: &impl WxObject) {
+    pub fn set_focused_item(&self, item: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_SetFocusedItem(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn select_children(&self, parent: &impl WxObject) {
+    pub fn select_children(&self, parent: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_SelectChildren(self.as_ptr(), parent.as_ptr()) }
     }
 
-    pub fn expand_all_children(&self, item: &impl WxObject) {
+    pub fn expand_all_children(&self, item: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_ExpandAllChildren(self.as_ptr(), item.as_ptr()) }
     }
 
@@ -453,7 +461,7 @@ impl TreeCtrl {
         unsafe { sys::wxTreeCtrl_ExpandAll(self.as_ptr()) }
     }
 
-    pub fn collapse_all_children(&self, item: &impl WxObject) {
+    pub fn collapse_all_children(&self, item: &impl WxTreeItemId) {
         unsafe { sys::wxTreeCtrl_CollapseAllChildren(self.as_ptr(), item.as_ptr()) }
     }
 
@@ -461,15 +469,15 @@ impl TreeCtrl {
         unsafe { sys::wxTreeCtrl_CollapseAll(self.as_ptr()) }
     }
 
-    pub fn get_item_state(&self, item: &impl WxObject) -> i32 {
+    pub fn get_item_state(&self, item: &impl WxTreeItemId) -> i32 {
         unsafe { sys::wxTreeCtrl_GetItemState(self.as_ptr(), item.as_ptr()) as i32 }
     }
 
-    pub fn set_item_state(&self, item: &impl WxObject, state: i32) {
+    pub fn set_item_state(&self, item: &impl WxTreeItemId, state: i32) {
         unsafe { sys::wxTreeCtrl_SetItemState(self.as_ptr(), item.as_ptr(), state as c_int) }
     }
 
-    pub fn get_item_text_colour(&self, item: &impl WxObject) -> Option<Colour> {
+    pub fn get_item_text_colour(&self, item: &impl WxTreeItemId) -> Option<Colour> {
         let ptr = unsafe { sys::wxTreeCtrl_GetItemTextColour(self.as_ptr(), item.as_ptr()) };
         if ptr.is_null() {
             None
@@ -478,7 +486,7 @@ impl TreeCtrl {
         }
     }
 
-    pub fn get_item_background_colour(&self, item: &impl WxObject) -> Option<Colour> {
+    pub fn get_item_background_colour(&self, item: &impl WxTreeItemId) -> Option<Colour> {
         let ptr = unsafe { sys::wxTreeCtrl_GetItemBackgroundColour(self.as_ptr(), item.as_ptr()) };
         if ptr.is_null() {
             None
@@ -487,7 +495,7 @@ impl TreeCtrl {
         }
     }
 
-    pub fn get_item_font(&self, item: &impl WxObject) -> Option<Font> {
+    pub fn get_item_font(&self, item: &impl WxTreeItemId) -> Option<Font> {
         let ptr = unsafe { sys::wxTreeCtrl_GetItemFont(self.as_ptr(), item.as_ptr()) };
         if ptr.is_null() {
             None
@@ -540,11 +548,11 @@ impl TreeCtrl {
         unsafe { sys::wxComboPopup_PaintComboControl(self.as_ptr(), dc.as_ptr(), rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int) }
     }
 
-    pub fn on_combo_key_event(&self, event: &impl WxObject) {
+    pub fn on_combo_key_event(&self, event: &impl WxKeyEvent) {
         unsafe { sys::wxComboPopup_OnComboKeyEvent(self.as_ptr(), event.as_ptr()) }
     }
 
-    pub fn on_combo_char_event(&self, event: &impl WxObject) {
+    pub fn on_combo_char_event(&self, event: &impl WxKeyEvent) {
         unsafe { sys::wxComboPopup_OnComboCharEvent(self.as_ptr(), event.as_ptr()) }
     }
 

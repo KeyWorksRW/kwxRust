@@ -16,6 +16,13 @@ impl RichTextCtrl {
         Self(Control::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,12 +45,16 @@ impl WxObject for RichTextCtrl {
 impl WxControl for RichTextCtrl {}
 impl WxWindow for RichTextCtrl {}
 impl WxEvtHandler for RichTextCtrl {}
+impl WxRichTextCtrl for RichTextCtrl {}
 
 use crate::menu::Menu;
+use crate::rich_text_box::RichTextBox;
 use crate::rich_text_buffer::RichTextBuffer;
+use crate::rich_text_field::RichTextField;
 use crate::rich_text_object::RichTextObject;
 use crate::rich_text_paragraph_layout_box::RichTextParagraphLayoutBox;
 use crate::rich_text_style_sheet::RichTextStyleSheet;
+use crate::rich_text_table::RichTextTable;
 use crate::support::Point;
 use crate::support::Rect;
 use crate::support::WxStr;
@@ -72,17 +83,32 @@ impl RichTextCtrl {
         unsafe { sys::wxRichTextCtrl_GetCommandProcessor(self.as_ptr()) }
     }
 
-    pub fn write_field(&self, field_type: impl AsRef<str>, properties: &impl WxObject, text_attr: &impl WxObject) -> *mut c_void {
+    pub fn write_field(&self, field_type: impl AsRef<str>, properties: &impl WxRichTextProperties, text_attr: &impl WxRichTextAttr) -> Option<RichTextField> {
         let field_type_wx = WxStr::new(field_type.as_ref());
-        unsafe { sys::wxRichTextCtrl_WriteField(self.as_ptr(), field_type_wx.as_ptr(), properties.as_ptr(), text_attr.as_ptr()) }
+        let ptr = unsafe { sys::wxRichTextCtrl_WriteField(self.as_ptr(), field_type_wx.as_ptr(), properties.as_ptr(), text_attr.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(RichTextField::from_raw(ptr))
+        }
     }
 
-    pub fn write_table(&self, rows: i32, cols: i32, table_attr: &impl WxObject, cell_attr: &impl WxObject) -> *mut c_void {
-        unsafe { sys::wxRichTextCtrl_WriteTable(self.as_ptr(), rows as c_int, cols as c_int, table_attr.as_ptr(), cell_attr.as_ptr()) }
+    pub fn write_table(&self, rows: i32, cols: i32, table_attr: &impl WxRichTextAttr, cell_attr: &impl WxRichTextAttr) -> Option<RichTextTable> {
+        let ptr = unsafe { sys::wxRichTextCtrl_WriteTable(self.as_ptr(), rows as c_int, cols as c_int, table_attr.as_ptr(), cell_attr.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(RichTextTable::from_raw(ptr))
+        }
     }
 
-    pub fn write_text_box(&self, text_attr: &impl WxObject) -> *mut c_void {
-        unsafe { sys::wxRichTextCtrl_WriteTextBox(self.as_ptr(), text_attr.as_ptr()) }
+    pub fn write_text_box(&self, text_attr: &impl WxRichTextAttr) -> Option<RichTextBox> {
+        let ptr = unsafe { sys::wxRichTextCtrl_WriteTextBox(self.as_ptr(), text_attr.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(RichTextBox::from_raw(ptr))
+        }
     }
 
     pub fn get_focus_object(&self) -> Option<RichTextParagraphLayoutBox> {
@@ -206,15 +232,15 @@ impl RichTextCtrl {
         unsafe { sys::wxRichTextCtrl_SetScale(self.as_ptr(), scale as c_double, refresh as c_int) }
     }
 
-    pub fn get_basic_style(&self, style: &impl WxObject) {
+    pub fn get_basic_style(&self, style: &impl WxRichTextAttr) {
         unsafe { sys::wxRichTextCtrl_GetBasicStyle(self.as_ptr(), style.as_ptr()) }
     }
 
-    pub fn set_basic_style(&self, style: &impl WxObject) {
+    pub fn set_basic_style(&self, style: &impl WxRichTextAttr) {
         unsafe { sys::wxRichTextCtrl_SetBasicStyle(self.as_ptr(), style.as_ptr()) }
     }
 
-    pub fn get_default_style_ex(&self, style: &impl WxObject) {
+    pub fn get_default_style_ex(&self, style: &impl WxRichTextAttr) {
         unsafe { sys::wxRichTextCtrl_GetDefaultStyleEx(self.as_ptr(), style.as_ptr()) }
     }
 
@@ -235,11 +261,11 @@ impl RichTextCtrl {
         }
     }
 
-    pub fn set_style_sheet(&self, style_sheet: &impl WxObject) {
+    pub fn set_style_sheet(&self, style_sheet: &impl WxRichTextStyleSheet) {
         unsafe { sys::wxRichTextCtrl_SetStyleSheet(self.as_ptr(), style_sheet.as_ptr()) }
     }
 
-    pub fn push_style_sheet(&self, style_sheet: &impl WxObject) -> bool {
+    pub fn push_style_sheet(&self, style_sheet: &impl WxRichTextStyleSheet) -> bool {
         unsafe { sys::wxRichTextCtrl_PushStyleSheet(self.as_ptr(), style_sheet.as_ptr()) != 0 }
     }
 
@@ -252,7 +278,7 @@ impl RichTextCtrl {
         }
     }
 
-    pub fn apply_style_sheet(&self, style_sheet: &impl WxObject) -> bool {
+    pub fn apply_style_sheet(&self, style_sheet: &impl WxRichTextStyleSheet) -> bool {
         unsafe { sys::wxRichTextCtrl_ApplyStyleSheet(self.as_ptr(), style_sheet.as_ptr()) != 0 }
     }
 
@@ -265,15 +291,15 @@ impl RichTextCtrl {
         unsafe { sys::wxRichTextCtrl_AddParagraph(self.as_ptr(), text_wx.as_ptr(), start as *mut c_long, end as *mut c_long) }
     }
 
-    pub fn add_image(&self, image: &impl WxObject, start: *mut i64, end: *mut i64) {
+    pub fn add_image(&self, image: &impl WxImage, start: *mut i64, end: *mut i64) {
         unsafe { sys::wxRichTextCtrl_AddImage(self.as_ptr(), image.as_ptr(), start as *mut c_long, end as *mut c_long) }
     }
 
-    pub fn write_image_bitmap(&self, bitmap: &impl WxBitmap, bitmap_type: i32, text_attr: &impl WxObject) -> bool {
+    pub fn write_image_bitmap(&self, bitmap: &impl WxBitmap, bitmap_type: i32, text_attr: &impl WxRichTextAttr) -> bool {
         unsafe { sys::wxRichTextCtrl_WriteImageBitmap(self.as_ptr(), bitmap.as_ptr(), bitmap_type as c_int, text_attr.as_ptr()) != 0 }
     }
 
-    pub fn write_image_block(&self, image_block: &impl WxObject, text_attr: &impl WxObject) -> bool {
+    pub fn write_image_block(&self, image_block: &impl WxRichTextImageBlock, text_attr: &impl WxRichTextAttr) -> bool {
         unsafe { sys::wxRichTextCtrl_WriteImageBlock(self.as_ptr(), image_block.as_ptr(), text_attr.as_ptr()) != 0 }
     }
 
@@ -281,19 +307,19 @@ impl RichTextCtrl {
         unsafe { sys::wxRichTextCtrl_DeleteRange(self.as_ptr(), start as c_long, end as c_long) != 0 }
     }
 
-    pub fn set_style_ex(&self, start: i32, end: i32, style: &impl WxObject, flags: i32) -> bool {
+    pub fn set_style_ex(&self, start: i32, end: i32, style: &impl WxRichTextAttr, flags: i32) -> bool {
         unsafe { sys::wxRichTextCtrl_SetStyleEx(self.as_ptr(), start as c_long, end as c_long, style.as_ptr(), flags as c_int) != 0 }
     }
 
-    pub fn get_uncombined_style(&self, position: i32, style: &impl WxObject) -> bool {
+    pub fn get_uncombined_style(&self, position: i32, style: &impl WxRichTextAttr) -> bool {
         unsafe { sys::wxRichTextCtrl_GetUncombinedStyle(self.as_ptr(), position as c_long, style.as_ptr()) != 0 }
     }
 
-    pub fn get_style_for_range(&self, start: i32, end: i32, style: &impl WxObject) -> bool {
+    pub fn get_style_for_range(&self, start: i32, end: i32, style: &impl WxRichTextAttr) -> bool {
         unsafe { sys::wxRichTextCtrl_GetStyleForRange(self.as_ptr(), start as c_long, end as c_long, style.as_ptr()) != 0 }
     }
 
-    pub fn begin_style(&self, style: &impl WxObject) -> bool {
+    pub fn begin_style(&self, style: &impl WxRichTextAttr) -> bool {
         unsafe { sys::wxRichTextCtrl_BeginStyle(self.as_ptr(), style.as_ptr()) != 0 }
     }
 
@@ -351,7 +377,7 @@ impl RichTextCtrl {
         unsafe { sys::wxRichTextCtrl_PromoteList(self.as_ptr(), promote_by as c_int, start as c_long, end as c_long, def_name_wx.as_ptr(), flags as c_int, specified_level as c_int) != 0 }
     }
 
-    pub fn apply_style(&self, def: &impl WxObject) -> bool {
+    pub fn apply_style(&self, def: &impl WxRichTextStyleDefinition) -> bool {
         unsafe { sys::wxRichTextCtrl_ApplyStyle(self.as_ptr(), def.as_ptr()) != 0 }
     }
 
@@ -455,15 +481,15 @@ impl RichTextCtrl {
         unsafe { sys::wxRichTextCtrl_ApplyAlignmentToSelection(self.as_ptr(), alignment as c_int) != 0 }
     }
 
-    pub fn show_context_menu(&self, menu: &impl WxObject, point: Point, add_property_commands: bool) -> bool {
+    pub fn show_context_menu(&self, menu: &impl WxMenu, point: Point, add_property_commands: bool) -> bool {
         unsafe { sys::wxRichTextCtrl_ShowContextMenu(self.as_ptr(), menu.as_ptr(), point.x as c_int, point.y as c_int, add_property_commands as c_int) != 0 }
     }
 
-    pub fn prepare_context_menu(&self, menu: &impl WxObject, point: Point, add_property_commands: bool) -> i32 {
+    pub fn prepare_context_menu(&self, menu: &impl WxMenu, point: Point, add_property_commands: bool) -> i32 {
         unsafe { sys::wxRichTextCtrl_PrepareContextMenu(self.as_ptr(), menu.as_ptr(), point.x as c_int, point.y as c_int, add_property_commands as c_int) as i32 }
     }
 
-    pub fn set_context_menu(&self, menu: &impl WxObject) {
+    pub fn set_context_menu(&self, menu: &impl WxMenu) {
         unsafe { sys::wxRichTextCtrl_SetContextMenu(self.as_ptr(), menu.as_ptr()) }
     }
 
@@ -737,11 +763,11 @@ impl RichTextCtrl {
         }
     }
 
-    pub fn set_font(&self, font: &impl WxObject) -> bool {
+    pub fn set_font(&self, font: &impl WxFont) -> bool {
         unsafe { sys::wxRichTextCtrl_SetFont(self.as_ptr(), font.as_ptr()) != 0 }
     }
 
-    pub fn set_font_style(&self, start: i32, end: i32, font: &impl WxObject) -> bool {
+    pub fn set_font_style(&self, start: i32, end: i32, font: &impl WxFont) -> bool {
         unsafe { sys::wxRichTextCtrl_SetFontStyle(self.as_ptr(), start as c_long, end as c_long, font.as_ptr()) != 0 }
     }
 
@@ -749,8 +775,8 @@ impl RichTextCtrl {
         unsafe { sys::wxRichTextCtrl_XYToPosition(self.as_ptr(), x as c_long, y as c_long) as i64 }
     }
 
-    pub fn position_to_xy(&self, pos: i32, arg: i32) -> bool {
-        unsafe { sys::wxRichTextCtrl_PositionToXY(self.as_ptr(), pos as c_long, arg as c_int) != 0 }
+    pub fn position_to_xy(&self, pos: i32, x: *mut c_long, y: *mut c_long) -> bool {
+        unsafe { sys::wxRichTextCtrl_PositionToXY(self.as_ptr(), pos as c_long, x, y) != 0 }
     }
 
     pub fn show_position(&self, position: i32) {
@@ -809,7 +835,7 @@ impl RichTextCtrl {
         unsafe { sys::wxRichTextCtrl_EndFontSize(self.as_ptr()) != 0 }
     }
 
-    pub fn begin_font(&self, font: &impl WxObject) -> bool {
+    pub fn begin_font(&self, font: &impl WxFont) -> bool {
         unsafe { sys::wxRichTextCtrl_BeginFont(self.as_ptr(), font.as_ptr()) != 0 }
     }
 
@@ -817,7 +843,7 @@ impl RichTextCtrl {
         unsafe { sys::wxRichTextCtrl_EndFont(self.as_ptr()) != 0 }
     }
 
-    pub fn begin_text_colour(&self, colour: &impl WxObject) -> bool {
+    pub fn begin_text_colour(&self, colour: &impl WxColour) -> bool {
         unsafe { sys::wxRichTextCtrl_BeginTextColour(self.as_ptr(), colour.as_ptr()) != 0 }
     }
 
@@ -901,11 +927,11 @@ impl RichTextCtrl {
         unsafe { sys::wxRichTextCtrl_EndURL(self.as_ptr()) != 0 }
     }
 
-    pub fn write_image(&self, image: &impl WxObject, bitmap_type: i32, text_attr: &impl WxObject) -> bool {
+    pub fn write_image(&self, image: &impl WxImage, bitmap_type: i32, text_attr: &impl WxRichTextAttr) -> bool {
         unsafe { sys::wxRichTextCtrl_WriteImage(self.as_ptr(), image.as_ptr(), bitmap_type as c_int, text_attr.as_ptr()) != 0 }
     }
 
-    pub fn write_image_file(&self, filename: impl AsRef<str>, bitmap_type: i32, text_attr: &impl WxObject) -> bool {
+    pub fn write_image_file(&self, filename: impl AsRef<str>, bitmap_type: i32, text_attr: &impl WxRichTextAttr) -> bool {
         let filename_wx = WxStr::new(filename.as_ref());
         unsafe { sys::wxRichTextCtrl_WriteImageFile(self.as_ptr(), filename_wx.as_ptr(), bitmap_type as c_int, text_attr.as_ptr()) != 0 }
     }
@@ -916,6 +942,99 @@ impl RichTextCtrl {
 
     pub fn line_break(&self) -> bool {
         unsafe { sys::wxRichTextCtrl_LineBreak(self.as_ptr()) != 0 }
+    }
+
+    /// Alternative constructor wrapping `kwxRichTextCtrl_Create`; takes every
+    /// declared parameter.  `new`/`new_full` wrap the wxWidgets-own constructor.
+    pub fn new_with_state(parent: &impl WxWindow, id: i32, x: i32, y: i32, width: i32, height: i32, style: i32) -> Self {
+        let ptr = unsafe { sys::kwxRichTextCtrl_Create(parent.as_ptr(), id as c_int, x as c_int, y as c_int, width as c_int, height as c_int, style as c_int) };
+        assert!(!ptr.is_null(), "kwxRichTextCtrl_Create returned null");
+        Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::kwxRichTextCtrl_Delete(self.as_ptr()) }
+    }
+
+    pub fn set_on_prepare_content(&self, p_function: *mut c_void) {
+        unsafe { sys::kwxRichTextCtrl_SetOnPrepareContent(self.as_ptr(), p_function) }
+    }
+
+    pub fn set_on_can_delete_range(&self, p_function: *mut c_void) {
+        unsafe { sys::kwxRichTextCtrl_SetOnCanDeleteRange(self.as_ptr(), p_function) }
+    }
+
+    pub fn set_on_can_insert_content(&self, p_function: *mut c_void) {
+        unsafe { sys::kwxRichTextCtrl_SetOnCanInsertContent(self.as_ptr(), p_function) }
+    }
+
+    pub fn set_can_delete_range_result(&self, result: bool) {
+        unsafe { sys::kwxRichTextCtrl_SetCanDeleteRangeResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_can_insert_content_result(&self, result: bool) {
+        unsafe { sys::kwxRichTextCtrl_SetCanInsertContentResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn convert_to_upper_case(&self) {
+        unsafe { sys::wxTextEntry_ConvertToUpperCase(self.as_ptr()) }
+    }
+
+    pub fn forward_enable_text_changed_events(&self, enable: bool) {
+        unsafe { sys::wxTextEntry_ForwardEnableTextChangedEvents(self.as_ptr(), enable as c_int) }
+    }
+
+    pub fn change_value(&self, value: impl AsRef<str>) {
+        let value_wx = WxStr::new(value.as_ref());
+        unsafe { sys::wxTextEntry_ChangeValue(self.as_ptr(), value_wx.as_ptr()) }
+    }
+
+    pub fn is_empty(&self) -> bool {
+        unsafe { sys::wxTextEntry_IsEmpty(self.as_ptr()) != 0 }
+    }
+
+    pub fn remove_selection(&self) {
+        unsafe { sys::wxTextEntry_RemoveSelection(self.as_ptr()) }
+    }
+
+    pub fn set_max_length(&self, len: u64) {
+        unsafe { sys::wxTextEntry_SetMaxLength(self.as_ptr(), len as c_ulong) }
+    }
+
+    pub fn force_upper(&self) {
+        unsafe { sys::wxTextEntry_ForceUpper(self.as_ptr()) }
+    }
+
+    pub fn set_hint(&self, hint: impl AsRef<str>) -> bool {
+        let hint_wx = WxStr::new(hint.as_ref());
+        unsafe { sys::wxTextEntry_SetHint(self.as_ptr(), hint_wx.as_ptr()) != 0 }
+    }
+
+    pub fn get_hint(&self) -> String {
+        take_string(unsafe { sys::wxTextEntry_GetHint(self.as_ptr()) })
+    }
+
+    pub fn set_margins(&self, left: i32, top: i32) -> bool {
+        unsafe { sys::wxTextEntry_SetMargins(self.as_ptr(), left as c_int, top as c_int) != 0 }
+    }
+
+    pub fn get_margins(&self, left: *mut i32, top: *mut i32) {
+        unsafe { sys::wxTextEntry_GetMargins(self.as_ptr(), left as *mut c_int, top as *mut c_int) }
+    }
+
+    pub fn auto_complete(&self, count: i32, items: *mut c_void) -> bool {
+        unsafe { sys::wxTextEntry_AutoComplete(self.as_ptr(), count as c_int, items) != 0 }
+    }
+
+    pub fn auto_complete_file_names(&self) -> bool {
+        unsafe { sys::wxTextEntry_AutoCompleteFileNames(self.as_ptr()) != 0 }
+    }
+
+    pub fn auto_complete_directories(&self) -> bool {
+        unsafe { sys::wxTextEntry_AutoCompleteDirectories(self.as_ptr()) != 0 }
     }
 
 }

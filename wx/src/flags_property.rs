@@ -16,6 +16,13 @@ impl FlagsProperty {
         Self(PGProperty::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -36,6 +43,7 @@ impl WxObject for FlagsProperty {
 }
 
 impl WxPGProperty for FlagsProperty {}
+impl WxFlagsProperty for FlagsProperty {}
 
 use crate::support::WxStr;
 
@@ -53,6 +61,21 @@ impl FlagsProperty {
         let name_wx = WxStr::new(name.as_ref());
         let ptr = unsafe { sys::wxFlagsProperty_Create(label_wx.as_ptr(), name_wx.as_ptr(), label_count as c_int, labels, value_count as c_int, values, value as c_int) };
         assert!(!ptr.is_null(), "wxFlagsProperty_Create returned null");
+        Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxFlagsProperty_Delete(self.as_ptr()) }
+    }
+
+    pub fn create_with_choices(label: impl AsRef<str>, name: impl AsRef<str>, choices: &impl WxPGChoices, value: i32) -> Self {
+        let label_wx = WxStr::new(label.as_ref());
+        let name_wx = WxStr::new(name.as_ref());
+        let ptr = unsafe { sys::wxFlagsProperty_CreateWithChoices(label_wx.as_ptr(), name_wx.as_ptr(), choices.as_ptr(), value as c_long) };
+        assert!(!ptr.is_null(), "wxFlagsProperty_CreateWithChoices returned null");
         Self::from_raw(ptr)
     }
 

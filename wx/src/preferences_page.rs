@@ -16,6 +16,13 @@ impl PreferencesPage {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -37,6 +44,13 @@ impl WxObject for PreferencesPage {
 
 impl WxPreferencesPage for PreferencesPage {}
 impl PreferencesPage {
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxPreferencesPage_Delete(self.as_ptr()) }
+    }
+
     pub fn set_on_get_name(&self, p_function: *mut c_void) {
         unsafe { sys::wxPreferencesPage_SetOnGetName(self.as_ptr(), p_function) }
     }
@@ -58,7 +72,7 @@ impl PreferencesPage {
         unsafe { sys::wxPreferencesPage_SetOnCreateWindowResult(self.as_ptr(), window.as_ptr()) }
     }
 
-    pub fn set_on_get_icon_result(&self, bundle: &impl WxObject) {
+    pub fn set_on_get_icon_result(&self, bundle: &impl WxBitmapBundle) {
         unsafe { sys::wxPreferencesPage_SetOnGetIconResult(self.as_ptr(), bundle.as_ptr()) }
     }
 

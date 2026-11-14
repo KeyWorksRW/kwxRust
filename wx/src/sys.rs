@@ -214,6 +214,7 @@ extern "C" {
     pub fn exp_wxEVT_MENU() -> c_int;
     pub fn exp_wxEVT_MENU_CLOSE() -> c_int;
     pub fn exp_wxEVT_MENU_HIGHLIGHT() -> c_int;
+    pub fn exp_wxEVT_MENU_HIGHLIGHT_ALL() -> c_int;
     pub fn exp_wxEVT_MENU_OPEN() -> c_int;
     pub fn exp_wxEVT_MIDDLE_DCLICK() -> c_int;
     pub fn exp_wxEVT_MIDDLE_DOWN() -> c_int;
@@ -403,6 +404,7 @@ extern "C" {
     pub fn exp_wxEVT_WEBVIEW_TITLE_CHANGED() -> c_int;
     pub fn exp_wxEVT_WEBVIEW_WINDOW_CLOSE_REQUESTED() -> c_int;
     pub fn exp_wxEVT_WINDOW_MODAL_DIALOG_CLOSED() -> c_int;
+    pub fn exp_wxEVT_WIZARD_BEFORE_PAGE_CHANGED() -> c_int;
     pub fn exp_wxEVT_WIZARD_CANCEL() -> c_int;
     pub fn exp_wxEVT_WIZARD_FINISHED() -> c_int;
     pub fn exp_wxEVT_WIZARD_HELP() -> c_int;
@@ -513,6 +515,16 @@ extern "C" {
     pub fn expK_UP() -> c_int;
 
     // Constants
+    pub fn expCP_DEFAULT_STYLE() -> c_int;
+    pub fn expCP_NO_TLW_RESIZE() -> c_int;
+    pub fn expGridActivationChange() -> c_int;
+    pub fn expGridActivationIgnore() -> c_int;
+    pub fn expGridActivationKey() -> c_int;
+    pub fn expGridActivationMouse() -> c_int;
+    pub fn expGridActivationProgram() -> c_int;
+    pub fn expGridActivationShowEditor() -> c_int;
+    pub fn expPGMAN_DEFAULT_STYLE() -> c_int;
+    pub fn expPU_CONTAINS_CONTROLS() -> c_int;
     pub fn expRIBBON_BAR_ALWAYS_SHOW_TABS() -> c_int;
     pub fn expRIBBON_BAR_DEFAULT_STYLE() -> c_int;
     pub fn expRIBBON_BAR_FLOW_HORIZONTAL() -> c_int;
@@ -530,6 +542,15 @@ extern "C" {
     pub fn expRIBBON_PANEL_MINIMISE_BUTTON() -> c_int;
     pub fn expRIBBON_PANEL_NO_AUTO_MINIMISE() -> c_int;
     pub fn expRIBBON_PANEL_STRETCH() -> c_int;
+    pub fn expTL_NO_HEADER() -> c_int;
+    pub fn expTL_SINGLE() -> c_int;
+    pub fn expTab_Leave() -> c_int;
+    pub fn expTab_Stop() -> c_int;
+    pub fn expTab_Wrap() -> c_int;
+    pub fn expWEBVIEW_NAV_ACTION_NONE() -> c_int;
+    pub fn expWEBVIEW_NAV_ACTION_OTHER() -> c_int;
+    pub fn expWEBVIEW_RELOAD_DEFAULT() -> c_int;
+    pub fn expWEBVIEW_RELOAD_NO_CACHE() -> c_int;
     pub fn expwxACCEL_ALT() -> c_int;
     pub fn expwxACCEL_CTRL() -> c_int;
     pub fn expwxACCEL_NORMAL() -> c_int;
@@ -903,6 +924,9 @@ extern "C" {
     pub fn expwxCLIP_SIBLINGS() -> c_int;
     pub fn expwxCLOSE() -> c_int;
     pub fn expwxCLOSE_BOX() -> c_int;
+    pub fn expwxCLRP_DEFAULT_STYLE() -> c_int;
+    pub fn expwxCLRP_SHOW_ALPHA() -> c_int;
+    pub fn expwxCLRP_SHOW_LABEL() -> c_int;
     pub fn expwxCLRP_USE_TEXTCTRL() -> c_int;
     pub fn expwxCMD_LINE_HIDDEN() -> c_int;
     pub fn expwxCMD_LINE_NONE() -> c_int;
@@ -931,13 +955,22 @@ extern "C" {
     pub fn expwxCONFIG_USE_RELATIVE_PATH() -> c_int;
     pub fn expwxCONTENT_PROTECTION_ENABLED() -> c_int;
     pub fn expwxCONTENT_PROTECTION_NONE() -> c_int;
+    pub fn expwxCONTROL_CELL() -> c_int;
+    pub fn expwxCONTROL_CHECKABLE() -> c_int;
     pub fn expwxCONTROL_CHECKED() -> c_int;
     pub fn expwxCONTROL_CURRENT() -> c_int;
     pub fn expwxCONTROL_DIRTY() -> c_int;
     pub fn expwxCONTROL_DISABLED() -> c_int;
+    pub fn expwxCONTROL_EXPANDED() -> c_int;
+    pub fn expwxCONTROL_FLAGS_MASK() -> c_int;
+    pub fn expwxCONTROL_FLAT() -> c_int;
     pub fn expwxCONTROL_FOCUSED() -> c_int;
+    pub fn expwxCONTROL_ISDEFAULT() -> c_int;
+    pub fn expwxCONTROL_ISSUBMENU() -> c_int;
+    pub fn expwxCONTROL_NONE() -> c_int;
     pub fn expwxCONTROL_PRESSED() -> c_int;
     pub fn expwxCONTROL_SELECTED() -> c_int;
+    pub fn expwxCONTROL_SIZEGRIP() -> c_int;
     pub fn expwxCONTROL_SPECIAL() -> c_int;
     pub fn expwxCONTROL_UNDETERMINED() -> c_int;
     pub fn expwxCOPY() -> c_int;
@@ -1013,7 +1046,9 @@ extern "C" {
     pub fn expwxDIRCTRL_MULTIPLE() -> c_int;
     pub fn expwxDIRCTRL_SELECT_FIRST() -> c_int;
     pub fn expwxDIRCTRL_SHOW_FILTERS() -> c_int;
+    pub fn expwxDIRP_CHANGE_DIR() -> c_int;
     pub fn expwxDIRP_DEFAULT_STYLE() -> c_int;
+    pub fn expwxDIRP_DIR_MUST_EXIST() -> c_int;
     pub fn expwxDIRP_SMALL() -> c_int;
     pub fn expwxDIRP_USE_TEXTCTRL() -> c_int;
     pub fn expwxDIR_CONTINUE() -> c_int;
@@ -1065,6 +1100,7 @@ extern "C" {
     pub fn expwxDateTime_Tue() -> c_int;
     pub fn expwxDateTime_Wed() -> c_int;
     pub fn expwxDefaultCoord() -> c_int;
+    pub fn expwxDirDialogDefaultFolderStr() -> *mut c_void;
     pub fn expwxDragCancel() -> c_int;
     pub fn expwxDragCopy() -> c_int;
     pub fn expwxDragError() -> c_int;
@@ -1074,7 +1110,10 @@ extern "C" {
     pub fn expwxDrag_AllowMove() -> c_int;
     pub fn expwxDrag_DefaultMove() -> c_int;
     pub fn expwxEAST() -> c_int;
+    pub fn expwxELLIPSIZE_END() -> c_int;
     pub fn expwxELLIPSIZE_MIDDLE() -> c_int;
+    pub fn expwxELLIPSIZE_NONE() -> c_int;
+    pub fn expwxELLIPSIZE_START() -> c_int;
     pub fn expwxEQUIV() -> c_int;
     pub fn expwxEXEC_ASYNC() -> c_int;
     pub fn expwxEXEC_BLOCK() -> c_int;
@@ -1131,10 +1170,17 @@ extern "C" {
     pub fn expwxFLEX_GROWMODE_NONE() -> c_int;
     pub fn expwxFLOOD_BORDER() -> c_int;
     pub fn expwxFLOOD_SURFACE() -> c_int;
+    pub fn expwxFLP_CHANGE_DIR() -> c_int;
     pub fn expwxFLP_DEFAULT_STYLE() -> c_int;
+    pub fn expwxFLP_FILE_MUST_EXIST() -> c_int;
+    pub fn expwxFLP_OPEN() -> c_int;
+    pub fn expwxFLP_OVERWRITE_PROMPT() -> c_int;
+    pub fn expwxFLP_SAVE() -> c_int;
     pub fn expwxFLP_SMALL() -> c_int;
     pub fn expwxFLP_USE_TEXTCTRL() -> c_int;
     pub fn expwxFNTP_DEFAULT_STYLE() -> c_int;
+    pub fn expwxFNTP_FONTDESC_AS_LABEL() -> c_int;
+    pub fn expwxFNTP_USEFONT_FOR_LABEL() -> c_int;
     pub fn expwxFNTP_USE_TEXTCTRL() -> c_int;
     pub fn expwxFONTENCODING_ALTERNATIVE() -> c_int;
     pub fn expwxFONTENCODING_BULGARIAN() -> c_int;
@@ -1232,7 +1278,10 @@ extern "C" {
     pub fn expwxFULL_REPAINT_ON_RESIZE() -> c_int;
     pub fn expwxFileSelectorDefaultWildcardStr() -> *mut c_void;
     pub fn expwxFromEnd() -> c_int;
+    pub fn expwxGA_HORIZONTAL() -> c_int;
+    pub fn expwxGA_PROGRESS() -> c_int;
     pub fn expwxGA_SMOOTH() -> c_int;
+    pub fn expwxGA_VERTICAL() -> c_int;
     pub fn expwxGREEN() -> *mut c_void;
     pub fn expwxGREEN_BRUSH() -> *mut c_void;
     pub fn expwxGREEN_PEN() -> *mut c_void;
@@ -1282,6 +1331,9 @@ extern "C" {
     pub fn expwxHF_PRINT() -> c_int;
     pub fn expwxHF_SEARCH() -> c_int;
     pub fn expwxHF_TOOLBAR() -> c_int;
+    pub fn expwxHL_ALIGN_CENTRE() -> c_int;
+    pub fn expwxHL_ALIGN_LEFT() -> c_int;
+    pub fn expwxHL_ALIGN_RIGHT() -> c_int;
     pub fn expwxHL_DEFAULT_STYLE() -> c_int;
     pub fn expwxHORIZONTAL() -> c_int;
     pub fn expwxHOURGLASS_CURSOR() -> *mut c_void;
@@ -1747,6 +1799,8 @@ extern "C" {
     pub fn expwxLIST_STATE_FOCUSED() -> c_int;
     pub fn expwxLIST_STATE_SELECTED() -> c_int;
     pub fn expwxLITTLE_ENDIAN() -> c_int;
+    pub fn expwxLI_HORIZONTAL() -> c_int;
+    pub fn expwxLI_VERTICAL() -> c_int;
     pub fn expwxLOCALE_DECIMAL_POINT() -> c_int;
     pub fn expwxLOCALE_FORM_ENGLISH() -> c_int;
     pub fn expwxLOCALE_FORM_NATIVE() -> c_int;
@@ -1940,9 +1994,27 @@ extern "C" {
     pub fn expwxPENSTYLE_TRANSPARENT() -> c_int;
     pub fn expwxPENSTYLE_USER_DASH() -> c_int;
     pub fn expwxPENSTYLE_VERTICAL_HATCH() -> c_int;
+    pub fn expwxPG_ARRAY_DELIMITER() -> *mut c_void;
+    pub fn expwxPG_ATTR_AUTOCOMPLETE() -> *mut c_void;
+    pub fn expwxPG_ATTR_DEFAULT_VALUE() -> *mut c_void;
+    pub fn expwxPG_ATTR_HINT() -> *mut c_void;
+    pub fn expwxPG_ATTR_MAX() -> *mut c_void;
+    pub fn expwxPG_ATTR_MIN() -> *mut c_void;
+    pub fn expwxPG_ATTR_MULTICHOICE_USERSTRINGMODE() -> *mut c_void;
+    pub fn expwxPG_ATTR_SPINCTRL_MOTION() -> *mut c_void;
+    pub fn expwxPG_ATTR_SPINCTRL_STEP() -> *mut c_void;
+    pub fn expwxPG_ATTR_SPINCTRL_WRAP() -> *mut c_void;
+    pub fn expwxPG_ATTR_UNITS() -> *mut c_void;
     pub fn expwxPG_AUTO_SORT() -> c_int;
     pub fn expwxPG_BOLD_MODIFIED() -> c_int;
+    pub fn expwxPG_BOOL_USE_CHECKBOX() -> *mut c_void;
+    pub fn expwxPG_BOOL_USE_DOUBLE_CLICK_CYCLING() -> *mut c_void;
+    pub fn expwxPG_COLOUR_ALLOW_CUSTOM() -> *mut c_void;
+    pub fn expwxPG_COLOUR_HAS_ALPHA() -> *mut c_void;
+    pub fn expwxPG_DATE_FORMAT() -> *mut c_void;
+    pub fn expwxPG_DATE_PICKER_STYLE() -> *mut c_void;
     pub fn expwxPG_DESCRIPTION() -> c_int;
+    pub fn expwxPG_DIALOG_TITLE() -> *mut c_void;
     pub fn expwxPG_EX_ALWAYS_ALLOW_FOCUS() -> c_int;
     pub fn expwxPG_EX_AUTO_UNSPECIFIED_VALUES() -> c_int;
     pub fn expwxPG_EX_ENABLE_TLP_TRACKING() -> c_int;
@@ -1956,6 +2028,12 @@ extern "C" {
     pub fn expwxPG_EX_NO_TOOLBAR_DIVIDER() -> c_int;
     pub fn expwxPG_EX_TOOLBAR_SEPARATOR() -> c_int;
     pub fn expwxPG_EX_WRITEONLY_BUILTIN_ATTRIBUTES() -> c_int;
+    pub fn expwxPG_FILE_DIALOG_STYLE() -> *mut c_void;
+    pub fn expwxPG_FILE_INITIAL_PATH() -> *mut c_void;
+    pub fn expwxPG_FILE_SHOW_FULL_PATH() -> *mut c_void;
+    pub fn expwxPG_FILE_SHOW_RELATIVE_PATH() -> *mut c_void;
+    pub fn expwxPG_FILE_WILDCARD() -> *mut c_void;
+    pub fn expwxPG_FLOAT_PRECISION() -> *mut c_void;
     pub fn expwxPG_HIDE_CATEGORIES() -> c_int;
     pub fn expwxPG_HIDE_MARGIN() -> c_int;
     pub fn expwxPG_ITERATE_ALL() -> c_int;
@@ -1968,8 +2046,20 @@ extern "C" {
     pub fn expwxPG_SPLITTER_AUTO_CENTER() -> c_int;
     pub fn expwxPG_STATIC_LAYOUT() -> c_int;
     pub fn expwxPG_STATIC_SPLITTER() -> c_int;
+    pub fn expwxPG_STRING_PASSWORD() -> *mut c_void;
     pub fn expwxPG_TOOLBAR() -> c_int;
     pub fn expwxPG_TOOLTIPS() -> c_int;
+    pub fn expwxPG_UINT_BASE() -> *mut c_void;
+    pub fn expwxPG_UINT_PREFIX() -> *mut c_void;
+    pub fn expwxPG_VFB_BEEP() -> c_int;
+    pub fn expwxPG_VFB_DEFAULT() -> c_int;
+    pub fn expwxPG_VFB_MARK_CELL() -> c_int;
+    pub fn expwxPG_VFB_NULL() -> c_int;
+    pub fn expwxPG_VFB_SHOW_MESSAGE() -> c_int;
+    pub fn expwxPG_VFB_SHOW_MESSAGEBOX() -> c_int;
+    pub fn expwxPG_VFB_SHOW_MESSAGE_ON_STATUSBAR() -> c_int;
+    pub fn expwxPG_VFB_STAY_IN_PROPERTY() -> c_int;
+    pub fn expwxPG_VFB_UNDEFINED() -> c_int;
     pub fn expwxPLATFORM_CURRENT() -> c_int;
     pub fn expwxPLATFORM_MAC() -> c_int;
     pub fn expwxPLATFORM_UNIX() -> c_int;
@@ -2021,14 +2111,6 @@ extern "C" {
     pub fn expwxRIBBON_ART_BUTTON_BAR_LABEL_COLOUR() -> c_int;
     pub fn expwxRIBBON_ART_BUTTON_BAR_LABEL_DISABLED_COLOUR() -> c_int;
     pub fn expwxRIBBON_ART_GALLERY_HOVER_BACKGROUND_COLOUR() -> c_int;
-    pub fn expwxRIBBON_BAR_DEFAULT_STYLE() -> c_int;
-    pub fn expwxRIBBON_BAR_FLOW_HORIZONTAL() -> c_int;
-    pub fn expwxRIBBON_BAR_FLOW_VERTICAL() -> c_int;
-    pub fn expwxRIBBON_BAR_SHOW_HELP_BUTTON() -> c_int;
-    pub fn expwxRIBBON_BAR_SHOW_PAGE_ICONS() -> c_int;
-    pub fn expwxRIBBON_BAR_SHOW_PAGE_LABELS() -> c_int;
-    pub fn expwxRIBBON_BAR_SHOW_PANEL_EXT_BUTTONS() -> c_int;
-    pub fn expwxRIBBON_BAR_SHOW_TOGGLE_BUTTON() -> c_int;
     pub fn expwxRIBBON_BUTTONBAR_BUTTON_LARGE() -> c_int;
     pub fn expwxRIBBON_BUTTONBAR_BUTTON_MEDIUM() -> c_int;
     pub fn expwxRIBBON_BUTTONBAR_BUTTON_SMALL() -> c_int;
@@ -2040,19 +2122,64 @@ extern "C" {
     pub fn expwxRIBBON_GALLERY_BUTTON_DISABLED() -> c_int;
     pub fn expwxRIBBON_GALLERY_BUTTON_HOVERED() -> c_int;
     pub fn expwxRIBBON_GALLERY_BUTTON_NORMAL() -> c_int;
-    pub fn expwxRIBBON_PANEL_DEFAULT_STYLE() -> c_int;
-    pub fn expwxRIBBON_PANEL_EXT_BUTTON() -> c_int;
-    pub fn expwxRIBBON_PANEL_NO_AUTO_MINIMISE() -> c_int;
     pub fn expwxRICHTEXT_FIELD_STYLE_COMPOSITE() -> c_int;
     pub fn expwxRICHTEXT_FIELD_STYLE_END_TAG() -> c_int;
     pub fn expwxRICHTEXT_FIELD_STYLE_NO_BORDER() -> c_int;
     pub fn expwxRICHTEXT_FIELD_STYLE_RECTANGLE() -> c_int;
     pub fn expwxRICHTEXT_FIELD_STYLE_START_TAG() -> c_int;
+    pub fn expwxRICHTEXT_FORMAT_BACKGROUND() -> c_int;
+    pub fn expwxRICHTEXT_FORMAT_BORDERS() -> c_int;
+    pub fn expwxRICHTEXT_FORMAT_BULLETS() -> c_int;
+    pub fn expwxRICHTEXT_FORMAT_CHARACTER() -> c_int;
+    pub fn expwxRICHTEXT_FORMAT_FONT() -> c_int;
+    pub fn expwxRICHTEXT_FORMAT_HELP_BUTTON() -> c_int;
+    pub fn expwxRICHTEXT_FORMAT_INDENTS_SPACING() -> c_int;
+    pub fn expwxRICHTEXT_FORMAT_LIST_STYLE() -> c_int;
+    pub fn expwxRICHTEXT_FORMAT_MARGINS() -> c_int;
+    pub fn expwxRICHTEXT_FORMAT_PARAGRAPH() -> c_int;
+    pub fn expwxRICHTEXT_FORMAT_SIZE() -> c_int;
+    pub fn expwxRICHTEXT_FORMAT_STYLE() -> c_int;
+    pub fn expwxRICHTEXT_FORMAT_STYLE_EDITOR() -> c_int;
+    pub fn expwxRICHTEXT_FORMAT_TABS() -> c_int;
+    pub fn expwxRICHTEXT_HANDLER_CONVERT_FACENAMES() -> c_int;
+    pub fn expwxRICHTEXT_HANDLER_INCLUDE_STYLESHEET() -> c_int;
+    pub fn expwxRICHTEXT_HANDLER_NO_HEADER_FOOTER() -> c_int;
+    pub fn expwxRICHTEXT_HANDLER_SAVE_IMAGES_TO_BASE64() -> c_int;
+    pub fn expwxRICHTEXT_HANDLER_SAVE_IMAGES_TO_FILES() -> c_int;
+    pub fn expwxRICHTEXT_HANDLER_SAVE_IMAGES_TO_MEMORY() -> c_int;
+    pub fn expwxRICHTEXT_ORGANISER_APPLY_STYLES() -> c_int;
+    pub fn expwxRICHTEXT_ORGANISER_BROWSE() -> c_int;
     pub fn expwxRICHTEXT_ORGANISER_BROWSE_NUMBERING() -> c_int;
+    pub fn expwxRICHTEXT_ORGANISER_CREATE_STYLES() -> c_int;
+    pub fn expwxRICHTEXT_ORGANISER_DELETE_STYLES() -> c_int;
+    pub fn expwxRICHTEXT_ORGANISER_EDIT_STYLES() -> c_int;
+    pub fn expwxRICHTEXT_ORGANISER_OK_CANCEL() -> c_int;
+    pub fn expwxRICHTEXT_ORGANISER_ORGANISE() -> c_int;
+    pub fn expwxRICHTEXT_ORGANISER_RENAME_STYLES() -> c_int;
+    pub fn expwxRICHTEXT_ORGANISER_RENUMBER() -> c_int;
+    pub fn expwxRICHTEXT_ORGANISER_SHOW_ALL() -> c_int;
+    pub fn expwxRICHTEXT_ORGANISER_SHOW_BOX() -> c_int;
+    pub fn expwxRICHTEXT_ORGANISER_SHOW_CHARACTER() -> c_int;
+    pub fn expwxRICHTEXT_ORGANISER_SHOW_LIST() -> c_int;
+    pub fn expwxRICHTEXT_ORGANISER_SHOW_PARAGRAPH() -> c_int;
     pub fn expwxRICHTEXT_PAGE_ALL() -> c_int;
     pub fn expwxRICHTEXT_PAGE_CENTRE() -> c_int;
     pub fn expwxRICHTEXT_PAGE_RIGHT() -> c_int;
+    pub fn expwxRICHTEXT_SETSTYLE_CHARACTERS_ONLY() -> c_int;
+    pub fn expwxRICHTEXT_SETSTYLE_NONE() -> c_int;
+    pub fn expwxRICHTEXT_SETSTYLE_OPTIMIZE() -> c_int;
+    pub fn expwxRICHTEXT_SETSTYLE_PARAGRAPHS_ONLY() -> c_int;
+    pub fn expwxRICHTEXT_SETSTYLE_REMOVE() -> c_int;
+    pub fn expwxRICHTEXT_SETSTYLE_RENUMBER() -> c_int;
+    pub fn expwxRICHTEXT_SETSTYLE_RESET() -> c_int;
+    pub fn expwxRICHTEXT_SETSTYLE_SPECIFY_LEVEL() -> c_int;
+    pub fn expwxRICHTEXT_SETSTYLE_WITH_UNDO() -> c_int;
+    pub fn expwxRICHTEXT_TYPE_ANY() -> c_int;
+    pub fn expwxRICHTEXT_TYPE_HTML() -> c_int;
+    pub fn expwxRICHTEXT_TYPE_PDF() -> c_int;
+    pub fn expwxRICHTEXT_TYPE_RTF() -> c_int;
     pub fn expwxRICHTEXT_TYPE_TEXT() -> c_int;
+    pub fn expwxRICHTEXT_TYPE_XML() -> c_int;
     pub fn expwxRIGHT() -> c_int;
     pub fn expwxROLE_NONE() -> c_int;
     pub fn expwxROLE_SYSTEM_ALERT() -> c_int;
@@ -2173,11 +2300,14 @@ extern "C" {
     pub fn expwxSL_AUTOTICKS() -> c_int;
     pub fn expwxSL_BOTH() -> c_int;
     pub fn expwxSL_BOTTOM() -> c_int;
+    pub fn expwxSL_INVERSE() -> c_int;
     pub fn expwxSL_LABELS() -> c_int;
     pub fn expwxSL_LEFT() -> c_int;
+    pub fn expwxSL_MIN_MAX_LABELS() -> c_int;
     pub fn expwxSL_RIGHT() -> c_int;
     pub fn expwxSL_SELRANGE() -> c_int;
     pub fn expwxSL_TOP() -> c_int;
+    pub fn expwxSL_VALUE_LABEL() -> c_int;
     pub fn expwxSMALL_FONT() -> *mut c_void;
     pub fn expwxSOCKET_BLOCK() -> c_int;
     pub fn expwxSOCKET_CONNECTION() -> c_int;
@@ -2232,8 +2362,12 @@ extern "C" {
     pub fn expwxSTREAM_READ_ERROR() -> c_int;
     pub fn expwxSTREAM_WRITE_ERROR() -> c_int;
     pub fn expwxSTRETCH_NOT() -> c_int;
+    pub fn expwxST_ELLIPSIZE_END() -> c_int;
+    pub fn expwxST_ELLIPSIZE_MIDDLE() -> c_int;
+    pub fn expwxST_ELLIPSIZE_START() -> c_int;
     pub fn expwxST_NO_AUTORESIZE() -> c_int;
     pub fn expwxST_SIZEGRIP() -> c_int;
+    pub fn expwxST_WRAP() -> c_int;
     pub fn expwxSWISS_FONT() -> *mut c_void;
     pub fn expwxSW_3D() -> c_int;
     pub fn expwxSW_3DBORDER() -> c_int;
@@ -2385,15 +2519,23 @@ extern "C" {
     pub fn expwxTEXT_ATTR_BACKGROUND_COLOUR() -> c_int;
     pub fn expwxTEXT_ATTR_BULLET_NUMBER() -> c_int;
     pub fn expwxTEXT_ATTR_BULLET_STYLE() -> c_int;
+    pub fn expwxTEXT_ATTR_BULLET_STYLE_ALIGN_CENTRE() -> c_int;
+    pub fn expwxTEXT_ATTR_BULLET_STYLE_ALIGN_LEFT() -> c_int;
     pub fn expwxTEXT_ATTR_BULLET_STYLE_ALIGN_RIGHT() -> c_int;
     pub fn expwxTEXT_ATTR_BULLET_STYLE_ARABIC() -> c_int;
+    pub fn expwxTEXT_ATTR_BULLET_STYLE_BITMAP() -> c_int;
+    pub fn expwxTEXT_ATTR_BULLET_STYLE_CONTINUATION() -> c_int;
     pub fn expwxTEXT_ATTR_BULLET_STYLE_LETTERS_LOWER() -> c_int;
+    pub fn expwxTEXT_ATTR_BULLET_STYLE_LETTERS_UPPER() -> c_int;
+    pub fn expwxTEXT_ATTR_BULLET_STYLE_NONE() -> c_int;
     pub fn expwxTEXT_ATTR_BULLET_STYLE_OUTLINE() -> c_int;
     pub fn expwxTEXT_ATTR_BULLET_STYLE_PARENTHESES() -> c_int;
     pub fn expwxTEXT_ATTR_BULLET_STYLE_PERIOD() -> c_int;
+    pub fn expwxTEXT_ATTR_BULLET_STYLE_RIGHT_PARENTHESIS() -> c_int;
     pub fn expwxTEXT_ATTR_BULLET_STYLE_ROMAN_LOWER() -> c_int;
     pub fn expwxTEXT_ATTR_BULLET_STYLE_ROMAN_UPPER() -> c_int;
     pub fn expwxTEXT_ATTR_BULLET_STYLE_STANDARD() -> c_int;
+    pub fn expwxTEXT_ATTR_BULLET_STYLE_SYMBOL() -> c_int;
     pub fn expwxTEXT_ATTR_EFFECT_STRIKETHROUGH() -> c_int;
     pub fn expwxTEXT_ATTR_EFFECT_SUBSCRIPT() -> c_int;
     pub fn expwxTEXT_ATTR_EFFECT_SUPERSCRIPT() -> c_int;
@@ -2411,14 +2553,64 @@ extern "C" {
     pub fn expwxTEXT_ATTR_TEXT_COLOUR() -> c_int;
     pub fn expwxTEXT_ATTR_UNDERLINE_DOUBLE() -> c_int;
     pub fn expwxTEXT_ATTR_UNDERLINE_SPECIAL() -> c_int;
+    pub fn expwxTEXT_ATTR_UNITS_HUNDREDTHS_POINT() -> c_int;
+    pub fn expwxTEXT_ATTR_UNITS_MASK() -> c_int;
+    pub fn expwxTEXT_ATTR_UNITS_PERCENTAGE() -> c_int;
     pub fn expwxTEXT_ATTR_UNITS_PIXELS() -> c_int;
+    pub fn expwxTEXT_ATTR_UNITS_POINTS() -> c_int;
+    pub fn expwxTEXT_ATTR_UNITS_TENTHS_MM() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_BORDER_COLOUR() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_BORDER_DASHED() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_BORDER_DOTTED() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_BORDER_DOUBLE() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_BORDER_GROOVE() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_BORDER_INSET() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_BORDER_MEDIUM() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_BORDER_NONE() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_BORDER_OUTSET() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_BORDER_RIDGE() -> c_int;
     pub fn expwxTEXT_BOX_ATTR_BORDER_SOLID() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_BORDER_STYLE() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_BORDER_THICK() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_BORDER_THIN() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_BOX_STYLE_NAME() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_CLEAR() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_CLEAR_BOTH() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_CLEAR_LEFT() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_CLEAR_NONE() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_CLEAR_RIGHT() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_COLLAPSE_BORDERS() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_COLLAPSE_FULL() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_COLLAPSE_NONE() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_CORNER_RADIUS() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_FLOAT() -> c_int;
     pub fn expwxTEXT_BOX_ATTR_FLOAT_LEFT() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_FLOAT_NONE() -> c_int;
     pub fn expwxTEXT_BOX_ATTR_FLOAT_RIGHT() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_POSITION_ABSOLUTE() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_POSITION_FIXED() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_POSITION_MASK() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_POSITION_RELATIVE() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_POSITION_STATIC() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_VERTICAL_ALIGNMENT() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_VERTICAL_ALIGNMENT_BOTTOM() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_VERTICAL_ALIGNMENT_CENTRE() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_VERTICAL_ALIGNMENT_NONE() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_VERTICAL_ALIGNMENT_TOP() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_WHITESPACE() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_WHITESPACE_NONE() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_WHITESPACE_NORMAL() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_WHITESPACE_NO_WRAP() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_WHITESPACE_PREFORMATTED() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_WHITESPACE_PREFORMATTED_LINE() -> c_int;
+    pub fn expwxTEXT_BOX_ATTR_WHITESPACE_PREFORMATTED_WRAP() -> c_int;
     pub fn expwxTEXT_TYPE_ANY() -> c_int;
     pub fn expwxTEXT_TYPE_RTF() -> c_int;
     pub fn expwxTE_AUTO_URL() -> c_int;
+    pub fn expwxTE_BESTWRAP() -> c_int;
     pub fn expwxTE_CENTRE() -> c_int;
+    pub fn expwxTE_CHARWRAP() -> c_int;
+    pub fn expwxTE_DONTWRAP() -> c_int;
     pub fn expwxTE_HT_BEFORE() -> c_int;
     pub fn expwxTE_HT_BELOW() -> c_int;
     pub fn expwxTE_HT_BEYOND() -> c_int;
@@ -2539,6 +2731,14 @@ extern "C" {
     pub fn expwxWINDOW_VARIANT_MINI() -> c_int;
     pub fn expwxWINDOW_VARIANT_NORMAL() -> c_int;
     pub fn expwxWINDOW_VARIANT_SMALL() -> c_int;
+    pub fn expwxWIZARD_EX_HELPBUTTON() -> c_int;
+    pub fn expwxWIZARD_HALIGN_CENTRE() -> c_int;
+    pub fn expwxWIZARD_HALIGN_LEFT() -> c_int;
+    pub fn expwxWIZARD_HALIGN_RIGHT() -> c_int;
+    pub fn expwxWIZARD_TILE() -> c_int;
+    pub fn expwxWIZARD_VALIGN_BOTTOM() -> c_int;
+    pub fn expwxWIZARD_VALIGN_CENTRE() -> c_int;
+    pub fn expwxWIZARD_VALIGN_TOP() -> c_int;
     pub fn expwxWS_EX_VALIDATE_RECURSIVELY() -> c_int;
     pub fn expwxXML_ELEMENT_NODE() -> c_int;
     pub fn expwxXML_TEXT_NODE() -> c_int;
@@ -2581,7 +2781,7 @@ extern "C" {
     pub fn kwxUtf8Buffer_Data(buf: *mut c_void) -> *mut c_void;
     pub fn kwxUtf8Buffer_Delete(buf: *mut c_void);
     pub fn wxGetOsDescription() -> *mut c_void;
-    pub fn wxGetOsVersion(major: *mut c_void, minor: *mut c_void, micro: *mut c_void) -> c_int;
+    pub fn wxGetOsVersion(major: *mut c_int, minor: *mut c_int, micro: *mut c_int) -> c_int;
     pub fn wxCheckOsVersion(major: c_int, minor: c_int, micro: c_int) -> c_int;
     pub fn wxIsPlatformLittleEndian() -> c_int;
     pub fn wxIsPlatform64Bit() -> c_int;
@@ -2613,14 +2813,14 @@ extern "C" {
     pub fn wxGetUserName() -> *mut c_void;
     pub fn wxGetHomeDir() -> *mut c_void;
     pub fn wxGetUserHome(user: *mut c_void) -> *mut c_void;
-    pub fn wxGetDiskSpace(path: *mut c_void, total_bytes: *mut c_void, free_bytes: *mut c_void) -> c_int;
+    pub fn wxGetDiskSpace(path: *mut c_void, total_bytes: *mut i64, free_bytes: *mut i64) -> c_int;
     pub fn wxExecute(command: *mut c_void, flags: c_int, process: *mut c_void, execute_env: *mut c_void) -> c_long;
     pub fn wxExecuteWithOutput(command: *mut c_void, output: *mut c_void, flags: c_int, execute_env: *mut c_void) -> c_long;
     pub fn wxExecuteWithOutputAndError(command: *mut c_void, output: *mut c_void, errors: *mut c_void, flags: c_int, execute_env: *mut c_void) -> c_long;
     pub fn wxExecuteArgv(n: c_int, argv: *mut c_void, flags: c_int, process: *mut c_void, execute_env: *mut c_void) -> c_long;
     pub fn wxExecuteDDE(server: *mut c_void, topic: *mut c_void, command: *mut c_void) -> c_int;
     pub fn wxShutdown(flags: c_int) -> c_int;
-    pub fn wxKill(pid: c_long, sig: c_int, rc: *mut c_void, flags: c_int) -> c_int;
+    pub fn wxKill(pid: c_long, sig: c_int, rc: *mut c_int, flags: c_int) -> c_int;
     pub fn wxShell(command: *mut c_void) -> c_int;
     pub fn wxShellWithOutput(command: *mut c_void, output: *mut c_void) -> c_int;
     pub fn wxSleep(seconds: c_int);
@@ -2643,7 +2843,7 @@ extern "C" {
     pub fn wxYieldIfNeeded() -> c_int;
     pub fn wxMSWIsOnSecureScreen() -> c_int;
     pub fn wxFileSelector(message: *mut c_void, default_path: *mut c_void, default_filename: *mut c_void, default_extension: *mut c_void, wildcard: *mut c_void, flags: c_int, parent: *mut c_void, x: c_int, y: c_int) -> *mut c_void;
-    pub fn wxFileSelectorEx(message: *mut c_void, default_path: *mut c_void, default_filename: *mut c_void, index_default_extension: *mut c_void, wildcard: *mut c_void, flags: c_int, parent: *mut c_void, x: c_int, y: c_int) -> *mut c_void;
+    pub fn wxFileSelectorEx(message: *mut c_void, default_path: *mut c_void, default_filename: *mut c_void, index_default_extension: *mut c_int, wildcard: *mut c_void, flags: c_int, parent: *mut c_void, x: c_int, y: c_int) -> *mut c_void;
     pub fn wxLoadFileSelector(what: *mut c_void, extension: *mut c_void, default_name: *mut c_void, parent: *mut c_void) -> *mut c_void;
     pub fn wxSaveFileSelector(what: *mut c_void, extension: *mut c_void, default_name: *mut c_void, parent: *mut c_void) -> *mut c_void;
     pub fn wxIsStockID(id: c_int) -> c_int;
@@ -2651,6 +2851,10 @@ extern "C" {
     pub fn wxGetStockLabel(id: c_int, flags: c_long) -> *mut c_void;
     pub fn wxGetStockAccelerator(id: c_int) -> *mut c_void;
     pub fn wxGetStockHelpString(id: c_int, client: c_int) -> *mut c_void;
+    pub fn wxPersistentRegisterAndRestore(frame: *mut c_void, name: *mut c_void) -> c_int;
+    pub fn wxPersistentRegisterAndRestoreNoName(frame: *mut c_void) -> c_int;
+    pub fn wxPersistentRegisterAndRestoreTreebook(book: *mut c_void, name: *mut c_void) -> c_int;
+    pub fn wxPersistentRegisterAndRestoreTreebookNoName(book: *mut c_void) -> c_int;
     pub fn LogError(message: *mut c_void);
     pub fn LogFatalError(message: *mut c_void);
     pub fn LogWarning(message: *mut c_void);
@@ -2711,7 +2915,7 @@ extern "C" {
     pub fn wxIsalnum(character: c_int) -> c_int;
     pub fn wxIsdigit(character: c_int) -> c_int;
     pub fn wxIslower(character: c_int) -> c_int;
-    pub fn wxMakeFloatingPointValidator(value: *mut c_void, style: c_int) -> *mut c_void;
+    pub fn wxMakeFloatingPointValidator(value: *mut c_double, style: c_int) -> *mut c_void;
     pub fn wxMutexGuiEnter();
     pub fn wxMutexGuiLeave();
     pub fn wxPlatformIs(platform: c_int) -> c_int;
@@ -2719,6 +2923,7 @@ extern "C" {
     pub fn wxPostEvent(dest: *mut c_void, event: *mut c_void);
     pub fn wxPtrToUInt(pointer: *mut c_void) -> usize;
     pub fn wxPuts(str: *mut c_void) -> c_int;
+    pub fn wxRemoveFile(file: *mut c_void) -> c_int;
     pub fn wxRenameFile(old_path: *mut c_void, new_path: *mut c_void, overwrite: c_int) -> c_int;
     pub fn wxShowTip(parent: *mut c_void, tip_provider: *mut c_void) -> c_int;
     pub fn wxSizeRefFromVariant(variant: *mut c_void) -> *mut c_void;
@@ -2727,6 +2932,7 @@ extern "C" {
     pub fn wxStrtol(nptr: *mut c_void, base: c_int) -> c_long;
     pub fn kwxBeginBusyCursor();
     pub fn kwxBell();
+    pub fn kwxBitmapFromBase64(base64: *mut c_void, len: usize) -> *mut c_void;
     pub fn kwxEndBusyCursor();
     pub fn kwxFree(pObject: *mut c_void);
     pub fn kwxGetMousePosition() -> *mut c_void;
@@ -2740,6 +2946,7 @@ extern "C" {
     pub fn kwxSetPixelRGBA(buffer: *mut c_void, width: c_int, x: c_int, y: c_int, rgba: c_uint);
     pub fn kwxSetPixelRowRGB(buffer: *mut c_void, width: c_int, x: c_int, y: c_int, rgb0: c_int, rgb1: c_int, count: c_int);
     pub fn kwxSetPixelRowRGBA(buffer: *mut c_void, width: c_int, x: c_int, y: c_int, rgba0: c_uint, rgba1: c_uint, count: c_uint);
+    pub fn kwxSvgStringFromBase64(base64: *mut c_void, len: usize) -> *mut c_void;
     pub fn kwxSystemSettingsGetColour(systemColour: c_int) -> *mut c_void;
     pub fn kwxWakeUpIdle();
     pub fn wxAboutBox(info: *mut c_void, parent: *mut c_void);
@@ -2759,6 +2966,8 @@ extern "C" {
     pub fn wxGetNumberFromUser(message: *mut c_void, prompt: *mut c_void, caption: *mut c_void, value: c_long, min: c_long, max: c_long, parent: *mut c_void, x: c_int, y: c_int) -> c_long;
     pub fn wxGetPasswordFromUser(message: *const c_char, caption: *const c_char, defaultText: *const c_char, parent: *mut c_void, buffer: *const c_char) -> c_int;
     pub fn wxGetTextFromUser(message: *const c_char, caption: *const c_char, defaultText: *const c_char, parent: *mut c_void, x: c_int, y: c_int, center: c_int, buffer: *const c_char) -> c_int;
+    pub fn wxGetPasswordFromUserEx(message: *const c_char, caption: *const c_char, defaultText: *const c_char, parent: *mut c_void) -> *mut c_void;
+    pub fn wxGetTextFromUserEx(message: *const c_char, caption: *const c_char, defaultText: *const c_char, parent: *mut c_void, x: c_int, y: c_int, center: c_int) -> *mut c_void;
     pub fn wxIsDefined(name: *const c_char) -> c_int;
     pub fn wxVersionNumber() -> c_int;
     pub fn wxVersionString() -> *mut c_void;
@@ -2775,13 +2984,11 @@ extern "C" {
     pub fn kwxMessageOutputUseStdout();
     pub fn kwxMessageOutputReset();
     pub fn wxBase64EncodeBuffer(source: *mut c_void, src_length: usize) -> *mut c_void;
-    pub fn wxBase64DecodeBuffer(text: *mut c_void, mode: c_int, decoded_length: *mut c_void) -> *mut c_void;
+    pub fn wxBase64DecodeBuffer(text: *mut c_void, mode: c_int, decoded_length: *mut usize) -> *mut c_void;
     pub fn wxBase64EncodedSizeOf(src_length: usize) -> usize;
     pub fn wxBase64DecodedSizeOf(encoded_length: usize) -> usize;
     pub fn PushProvider(provider: *mut c_void);
     pub fn RemoveProvider(provider: *mut c_void) -> c_int;
-    pub fn expCP_DEFAULT_STYLE() -> c_int;
-    pub fn expCP_NO_TLW_RESIZE() -> c_int;
     pub fn kwxMessageBox(message: *mut c_void, caption: *mut c_void, style: c_int, parent: *mut c_void, x: c_int, y: c_int) -> c_int;
     pub fn expNB_DEFAULT() -> c_int;
     pub fn expNB_NOPAGETHEME() -> c_int;
@@ -2808,7 +3015,6 @@ extern "C" {
     pub fn expLB_RIGHT() -> c_int;
     pub fn expTBK_BUTTONBAR() -> c_int;
     pub fn expTBK_HORZ_LAYOUT() -> c_int;
-    pub fn expPGMAN_DEFAULT_STYLE() -> c_int;
     pub fn expPROPSHEET_DEFAULT() -> c_int;
     pub fn expPROPSHEET_NOTEBOOK() -> c_int;
     pub fn expPROPSHEET_TOOLBOOK() -> c_int;
@@ -2819,12 +3025,10 @@ extern "C" {
     pub fn expPROPSHEET_SHRINKTOFIT() -> c_int;
     pub fn kwxGetMousePositionPoint() -> *mut c_void;
     pub fn kwxSetActiveLogTarget(pLogger: *mut c_void) -> *mut c_void;
-    pub fn expTL_SINGLE() -> c_int;
     pub fn expTL_MULTIPLE() -> c_int;
     pub fn expTL_CHECKBOX() -> c_int;
     pub fn expTL_3STATE() -> c_int;
     pub fn expTL_USER_3STATE() -> c_int;
-    pub fn expTL_NO_HEADER() -> c_int;
     pub fn expTL_DEFAULT_STYLE() -> c_int;
     pub fn expWEBVIEW_ZOOM_TINY() -> c_int;
     pub fn expWEBVIEW_ZOOM_SMALL() -> c_int;
@@ -2833,8 +3037,6 @@ extern "C" {
     pub fn expWEBVIEW_ZOOM_LARGEST() -> c_int;
     pub fn expWEBVIEW_ZOOM_TYPE_LAYOUT() -> c_int;
     pub fn expWEBVIEW_ZOOM_TYPE_TEXT() -> c_int;
-    pub fn expWEBVIEW_RELOAD_DEFAULT() -> c_int;
-    pub fn expWEBVIEW_RELOAD_NO_CACHE() -> c_int;
     pub fn expWEBVIEW_FIND_WRAP() -> c_int;
     pub fn expWEBVIEW_FIND_ENTIRE_WORD() -> c_int;
     pub fn expWEBVIEW_FIND_MATCH_CASE() -> c_int;
@@ -2849,9 +3051,7 @@ extern "C" {
     pub fn expWEBVIEW_NAV_ERR_REQUEST() -> c_int;
     pub fn expWEBVIEW_NAV_ERR_USER_CANCELLED() -> c_int;
     pub fn expWEBVIEW_NAV_ERR_OTHER() -> c_int;
-    pub fn expWEBVIEW_NAV_ACTION_NONE() -> c_int;
     pub fn expWEBVIEW_NAV_ACTION_USER() -> c_int;
-    pub fn expWEBVIEW_NAV_ACTION_OTHER() -> c_int;
 
     // wxAccessible
     pub fn wxAccessible_Create(win: *mut c_void, pObject: *mut c_void) -> *mut c_void;
@@ -3897,6 +4097,11 @@ extern "C" {
     pub fn wxFileOutputStream_Delete(pObject: *mut c_void);
     pub fn wxFileOutputStream_IsOk(pObject: *mut c_void) -> c_int;
 
+    // wxStringOutputStream
+    pub fn wxStringOutputStream_Create() -> *mut c_void;
+    pub fn wxStringOutputStream_Delete(self_: *mut c_void);
+    pub fn wxStringOutputStream_GetString(self_: *mut c_void) -> *mut c_void;
+
     // wxFrame
     pub fn wxFrame_Centre(pObject: *mut c_void, orientation: c_int);
     pub fn wxFrame_GetIcon(pObject: *mut c_void) -> *mut c_void;
@@ -3969,6 +4174,7 @@ extern "C" {
     pub fn wxGenericDirCtrl_SetPath(pObject: *mut c_void, path: *mut c_void);
     pub fn wxGenericDirCtrl_ShowHidden(pObject: *mut c_void, show: c_int);
     pub fn wxGenericDirCtrl_UnselectAll(pObject: *mut c_void);
+    pub fn wxGenericDirCtrl_GetPathForItem(pObject: *mut c_void, item: *mut c_void) -> *mut c_void;
 
     // wxGenericDragImage
     pub fn wxGenericDragImage_Create(cursor: *mut c_void) -> *mut c_void;
@@ -4198,6 +4404,7 @@ extern "C" {
     pub fn wxHtmlWindow_SelectWord(pObject: *mut c_void, x: c_int, y: c_int);
     pub fn wxHtmlWindow_SelectionToText(pObject: *mut c_void) -> *mut c_void;
     pub fn wxHtmlWindow_SetBackgroundImage(pObject: *mut c_void, bmpBg: *mut c_void);
+    pub fn wxHtmlWindow_SetHTMLBackgroundImage(pObject: *mut c_void, bmpBg: *mut c_void);
     pub fn wxHtmlWindow_SetStandardFonts(pObject: *mut c_void, size: c_int, normal_face: *mut c_void, fixed_face: *mut c_void);
     pub fn wxHtmlWindow_ToText(pObject: *mut c_void) -> *mut c_void;
 
@@ -4532,6 +4739,7 @@ extern "C" {
     pub fn wxMenu_Detach(pObject: *mut c_void);
     pub fn wxMenu_LockAccels(locked: c_int);
     pub fn wxMenu_Append(pObject: *mut c_void, id: c_int, text: *mut c_void, help: *mut c_void, isCheckable: c_int);
+    pub fn wxMenu_AppendById(pObject: *mut c_void, id: c_int);
     pub fn wxMenu_Destroy(pObject: *mut c_void, itemid: c_int) -> c_int;
     pub fn wxMenu_AppendItem(pObject: *mut c_void, item: *mut c_void);
     pub fn wxMenu_AppendSeparator(pObject: *mut c_void);
@@ -4621,6 +4829,7 @@ extern "C" {
 
     // wxMenuItem
     pub fn wxMenuItem_CreateEx(id: c_int, text: *mut c_void, helpstr: *mut c_void, itemkind: c_int, submenu: *mut c_void) -> *mut c_void;
+    pub fn wxMenuItem_CreateExWithParent(parentMenu: *mut c_void, id: c_int, text: *mut c_void, helpstr: *mut c_void, itemkind: c_int, subMenu: *mut c_void) -> *mut c_void;
     pub fn wxMenuItem_CreateSeparator() -> *mut c_void;
     pub fn wxMenuItem_Check(pObject: *mut c_void, check: c_int);
     pub fn wxMenuItem_SetBitmaps(pObject: *mut c_void, bmpChecked: *mut c_void, bmpUnchecked: *mut c_void);
@@ -4651,6 +4860,7 @@ extern "C" {
     pub fn wxMenuItem_Toggle(pObject: *mut c_void);
     pub fn wxMenuItem_SetBitmap(pObject: *mut c_void, bmp: *mut c_void);
     pub fn wxMenuItem_GetBitmap(pObject: *mut c_void) -> *mut c_void;
+    pub fn wxMenuItem_GetAccel(pObject: *mut c_void) -> *mut c_void;
 
     // wxMouseEvent
     pub fn wxMouseEvent_GetButton(pObject: *mut c_void) -> c_int;
@@ -5434,6 +5644,8 @@ extern "C" {
     pub fn wxTextAttr_SetBackgroundColour(pObject: *mut c_void, colour: *mut c_void);
     pub fn wxTextAttr_SetFont(pObject: *mut c_void, font: *mut c_void);
     pub fn wxTextAttr_SetTextColour(pObject: *mut c_void, colour: *mut c_void);
+    pub fn wxTextAttr_SetTabs(pObject: *mut c_void, tabs: *mut c_void);
+    pub fn wxTextAttr_GetTabs(pObject: *mut c_void) -> *mut c_void;
 
     // wxTextCtrl
     pub fn wxTextCtrl_EmulateKeyPress(pObject: *mut c_void, keyevent: *mut c_void) -> c_int;
@@ -5469,7 +5681,7 @@ extern "C" {
     pub fn wxTextCtrl_IsModified(pObject: *mut c_void) -> c_int;
     pub fn wxTextCtrl_LoadFile(pObject: *mut c_void, file: *mut c_void, fileType: c_int) -> c_int;
     pub fn wxTextCtrl_Paste(pObject: *mut c_void);
-    pub fn wxTextCtrl_PositionToXY(pObject: *mut c_void, pos: c_long, arg: c_int) -> c_int;
+    pub fn wxTextCtrl_PositionToXY(pObject: *mut c_void, pos: c_long, x: *mut c_long, y: *mut c_long) -> c_int;
     pub fn wxTextCtrl_Redo(pObject: *mut c_void);
     pub fn wxTextCtrl_Remove(pObject: *mut c_void, from: c_long, toPos: c_long);
     pub fn wxTextCtrl_Replace(pObject: *mut c_void, from: c_long, toPos: c_long, value: *mut c_void);
@@ -6019,6 +6231,7 @@ extern "C" {
     pub fn wxFileSystem_FindNext(pObject: *mut c_void) -> *mut c_void;
     pub fn wxFileSystem_FileNameToURL(pObject: *mut c_void, file_name: *mut c_void) -> *mut c_void;
     pub fn wxFileSystem_URLToFileName(pObject: *mut c_void, url: *mut c_void) -> *mut c_void;
+    pub fn wxFileSystem_AddHandler(handler: *mut c_void);
 
     // wxFileName
     pub fn wxFileName_Create() -> *mut c_void;
@@ -6419,6 +6632,8 @@ extern "C" {
     pub fn wxVariant_ConvertToLong(pObject: *mut c_void, value: *mut c_long) -> c_int;
     pub fn wxVariant_ConvertToDouble(pObject: *mut c_void, value: *mut c_double) -> c_int;
     pub fn wxVariant_ConvertToBool(pObject: *mut c_void, value: *mut c_int) -> c_int;
+    pub fn wxVariant_Item(pObject: *mut c_void, index: usize) -> *mut c_void;
+    pub fn wxVariant_GetFont(pObject: *mut c_void) -> *mut c_void;
     pub fn wxVariant_GetColourPropertyValue(variant: *mut c_void) -> *mut c_void;
     pub fn wxVariant_Create() -> *mut c_void;
     pub fn wxVariant_Delete(pObject: *mut c_void);
@@ -7059,6 +7274,40 @@ extern "C" {
     pub fn wxGridTableMessage_SetCommandInt(pObject: *mut c_void, command_int: c_int);
     pub fn wxGridTableMessage_SetCommandInt2(pObject: *mut c_void, command_int2: c_int);
 
+    // kwxGridCellRendererHook
+    pub fn kwxGridCellRendererHook_Create(pObject: *mut c_void) -> *mut c_void;
+    pub fn kwxGridCellRendererHook_SetOnDraw(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxGridCellRendererHook_SetOnGetBestSize(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxGridCellRendererHook_SetGetBestSizeResult(pObject: *mut c_void, width: c_int, height: c_int);
+
+    // kwxGridCellActivatableEditorHook
+    pub fn kwxGridCellActivatableEditorHook_Create(pObject: *mut c_void) -> *mut c_void;
+    pub fn kwxGridCellActivatableEditorHook_SetOnTryActivate(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxGridCellActivatableEditorHook_SetOnDoActivate(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxGridCellActivatableEditorHook_SetTryActivateResult(pObject: *mut c_void, action: c_int);
+    pub fn kwxGridCellActivatableEditorHook_SetTryActivateValue(pObject: *mut c_void, value: *mut c_void);
+
+    // kwxGridColumnHeaderRendererHook
+    pub fn kwxGridColumnHeaderRendererHook_Create(pObject: *mut c_void) -> *mut c_void;
+    pub fn kwxGridColumnHeaderRendererHook_SetOnDrawLabel(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxGridColumnHeaderRendererHook_SetOnDrawBorder(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxGridColumnHeaderRendererHook_SetOnDrawHighlighted(pObject: *mut c_void, pFunction: *mut c_void);
+
+    // kwxGridCellAttrProviderHook
+    pub fn kwxGridCellAttrProviderHook_Create(pObject: *mut c_void) -> *mut c_void;
+    pub fn kwxGridCellAttrProviderHook_SetOnGetColumnHeaderRenderer(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxGridCellAttrProviderHook_SetGetColumnHeaderRendererResult(pObject: *mut c_void, renderer: *mut c_void);
+    pub fn kwxGridCellAttrProviderHook_SetOnGetAttr(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxGridCellAttrProviderHook_SetGetAttrResult(pObject: *mut c_void, attr: *mut c_void);
+    pub fn kwxGridCellAttrProviderHook_GetBaseAttr(pObject: *mut c_void, row: c_int, col: c_int, kind: c_int) -> *mut c_void;
+
+    // wxGridBlockCoordsArray
+    pub fn wxGridBlockCoordsArray_Create() -> *mut c_void;
+    pub fn wxGridBlockCoordsArray_Delete(pObject: *mut c_void);
+    pub fn wxGridBlockCoordsArray_GetCount(pObject: *mut c_void) -> c_int;
+    pub fn wxGridBlockCoordsArray_ItemTopLeft(pObject: *mut c_void, index: c_int, row: *mut c_int, col: *mut c_int);
+    pub fn wxGridBlockCoordsArray_ItemBottomRight(pObject: *mut c_void, index: c_int, row: *mut c_int, col: *mut c_int);
+
     // kwxAppConsole
     pub fn kwxAppConsole_Create(pObject: *mut c_void) -> *mut c_void;
     pub fn kwxAppConsole_Delete(pObject: *mut c_void);
@@ -7170,6 +7419,7 @@ extern "C" {
     pub fn wxPreferencesEditor_Create(title: *mut c_void) -> *mut c_void;
     pub fn wxPreferencesEditor_Delete(pObject: *mut c_void);
     pub fn wxPreferencesEditor_AddPage(pObject: *mut c_void, page: *mut c_void);
+    pub fn wxPreferencesEditor_AddStockPage(pObject: *mut c_void, page: *mut c_void);
     pub fn wxPreferencesEditor_Show(pObject: *mut c_void, parent: *mut c_void);
     pub fn wxPreferencesEditor_Dismiss(pObject: *mut c_void);
     pub fn wxPreferencesEditor_ShouldApplyChangesImmediately() -> c_int;
@@ -7177,6 +7427,7 @@ extern "C" {
 
     // wxStockPreferencesPage
     pub fn wxStockPreferencesPage_Create(kind: c_int) -> *mut c_void;
+    pub fn wxStockPreferencesPage_CreateWithState(kind: c_int, pObject: *mut c_void) -> *mut c_void;
     pub fn wxStockPreferencesPage_Delete(pObject: *mut c_void);
     pub fn wxStockPreferencesPage_GetKind(pObject: *mut c_void) -> c_int;
     pub fn wxStockPreferencesPage_SetOnCreateWindow(pObject: *mut c_void, pFunction: *mut c_void);
@@ -7314,8 +7565,15 @@ extern "C" {
     // kwxWizardPage
     pub fn kwxWizardPage_Create(pObject: *mut c_void) -> *mut c_void;
     pub fn kwxWizardPage_Delete(pObject: *mut c_void);
+    pub fn kwxWizardPage_Create2(pObject: *mut c_void, parent: *mut c_void, bitmap: *mut c_void) -> c_int;
     pub fn kwxWizardPage_SetOnGetNext(pObject: *mut c_void, pFunction: *mut c_void);
     pub fn kwxWizardPage_SetOnGetPrev(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxWizardPage_SetOnTransferDataFromWindow(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxWizardPage_SetOnTransferDataToWindow(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxWizardPage_SetOnGetNextOut(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxWizardPage_SetOnGetPrevOut(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxWizardPage_SetOnTransferDataFromWindowOut(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxWizardPage_SetOnTransferDataToWindowOut(pObject: *mut c_void, pFunction: *mut c_void);
 
     // kwxPopupTransientWindow
     pub fn kwxPopupTransientWindow_Create(pObject: *mut c_void, parent: *mut c_void, style: c_int) -> *mut c_void;
@@ -7324,6 +7582,10 @@ extern "C" {
     pub fn kwxPopupTransientWindow_SetOnShow(pObject: *mut c_void, pFunction: *mut c_void);
     pub fn kwxPopupTransientWindow_SetOnProcessLeftDown(pObject: *mut c_void, pFunction: *mut c_void);
     pub fn kwxPopupTransientWindow_SetOnOnDismiss(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxPopupTransientWindow_CallBasePopup(pObject: *mut c_void, focus: *mut c_void);
+    pub fn kwxPopupTransientWindow_CallBaseShow(pObject: *mut c_void, show: c_int) -> c_int;
+    pub fn kwxPopupTransientWindow_CallBaseProcessLeftDown(pObject: *mut c_void, event: *mut c_void) -> c_int;
+    pub fn kwxPopupTransientWindow_CallBaseOnDismiss(pObject: *mut c_void);
 
     // wxHtmlCell
     pub fn wxHtmlCell_Create() -> *mut c_void;
@@ -7471,15 +7733,16 @@ extern "C" {
     pub fn wxLog_SetVerbose(pObject: *mut c_void, bVerbose: c_int);
     pub fn wxLog_GetVerbose(pObject: *mut c_void) -> c_int;
     pub fn wxLog_DontCreateOnDemand(pObject: *mut c_void);
-    pub fn wxLog_AddTraceMask(pObject: *mut c_void, str: *mut c_void);
-    pub fn wxLog_RemoveTraceMask(pObject: *mut c_void, str: *mut c_void);
-    pub fn wxLog_SetTimestamp(pObject: *mut c_void, timestamp: *mut c_void);
+    pub fn wxLog_AddTraceMask(pObject: *mut c_void, str: *const c_char);
+    pub fn wxLog_RemoveTraceMask(pObject: *mut c_void, str: *const c_char);
+    pub fn wxLog_SetTimestamp(pObject: *mut c_void, timestamp: *const c_char);
     pub fn wxLog_GetTimestamp(pObject: *mut c_void) -> *mut c_void;
-    pub fn wxLog_IsAllowedTraceMask(pObject: *mut c_void, mask: *mut c_void) -> c_int;
+    pub fn wxLog_IsAllowedTraceMask(pObject: *mut c_void, mask: *const c_char) -> c_int;
     pub fn wxLog_EnableLogging(enable: c_int) -> c_int;
     pub fn wxLog_IsEnabled() -> c_int;
     pub fn wxLog_SetLogLevel(level: c_int);
     pub fn wxLog_GetLogLevel() -> c_int;
+    pub fn wxLog_DisableTimestamp();
     pub fn wxLog_GetComponentLevel(component: *mut c_void) -> c_int;
     pub fn wxLog_SetComponentLevel(component: *mut c_void, level: c_int);
     pub fn wxLog_IsLevelEnabled(level: c_int, component: *mut c_void) -> c_int;
@@ -7526,6 +7789,7 @@ extern "C" {
     // wxLogTextCtrl
     pub fn wxLogTextCtrl_Create(text: *mut c_void) -> *mut c_void;
     pub fn wxLogTextCtrl_Delete(pObject: *mut c_void);
+    pub fn wxLogTextCtrl_DisableTimestamp(pObject: *mut c_void);
 
     // wxLogWindow
     pub fn wxLogWindow_Create(parent: *mut c_void, title: *mut c_void, showit: c_int, passthrough: c_int) -> *mut c_void;
@@ -7945,6 +8209,7 @@ extern "C" {
     pub fn wxControl_GetSizeFromText(pObject: *mut c_void, text: *mut c_void, width: *mut c_int, height: *mut c_int);
     pub fn wxControl_GetSizeFromTextSize(pObject: *mut c_void, xlen: c_int, ylen: c_int, width: *mut c_int, height: *mut c_int);
     pub fn wxControl_RemoveMnemonics(str: *mut c_void) -> *mut c_void;
+    pub fn wxControl_Ellipsize(label: *mut c_void, dc: *mut c_void, mode: c_int, max_width: c_int, flags: c_int) -> *mut c_void;
     pub fn wxControl_EscapeMnemonics(str: *mut c_void) -> *mut c_void;
 
     // wxTextEntry
@@ -8321,6 +8586,7 @@ extern "C" {
     pub fn wxPropertyGridPageState_GetColumnCount(pObject: *mut c_void) -> c_int;
     pub fn wxPropertyGridPageState_GetColumnMinWidth(pObject: *mut c_void, column: c_int) -> c_int;
     pub fn wxPropertyGridPageState_GetColumnWidth(pObject: *mut c_void, column: c_uint) -> c_int;
+    pub fn wxPropertyGridPageState_GetColumnFullWidth(pObject: *mut c_void, property: *mut c_void, column: c_uint) -> c_int;
     pub fn wxPropertyGridPageState_GetVirtualWidth(pObject: *mut c_void) -> c_int;
     pub fn wxPropertyGridPageState_GetVirtualHeight(pObject: *mut c_void) -> c_int;
     pub fn wxPropertyGridPageState_GetActualVirtualHeight(pObject: *mut c_void) -> c_int;
@@ -8584,6 +8850,7 @@ extern "C" {
     // wxArrayStringProperty
     pub fn wxArrayStringProperty_Create(label: *mut c_void, name: *mut c_void, count: c_int, values: *mut c_void) -> *mut c_void;
     pub fn wxArrayStringProperty_Delete(pObject: *mut c_void);
+    pub fn wxArrayStringProperty_CreateFromArray(label: *mut c_void, name: *mut c_void, value: *mut c_void) -> *mut c_void;
 
     // wxFontProperty
     pub fn wxFontProperty_Create(label: *mut c_void, name: *mut c_void, value: *mut c_void) -> *mut c_void;
@@ -8596,18 +8863,23 @@ extern "C" {
     // wxMultiChoiceProperty
     pub fn wxMultiChoiceProperty_Create(label: *mut c_void, name: *mut c_void, count: c_int, values: *mut c_void) -> *mut c_void;
     pub fn wxMultiChoiceProperty_Delete(pObject: *mut c_void);
+    pub fn wxMultiChoiceProperty_CreateFromArray(label: *mut c_void, name: *mut c_void, value: *mut c_void) -> *mut c_void;
+    pub fn wxMultiChoiceProperty_CreateWithChoices(label: *mut c_void, name: *mut c_void, choices: *mut c_void, value: *mut c_void) -> *mut c_void;
 
     // wxEnumProperty
     pub fn wxEnumProperty_Create(label: *mut c_void, name: *mut c_void, label_count: c_int, labels: *mut c_void, value_count: c_int, values: *mut c_void, value: c_int) -> *mut c_void;
     pub fn wxEnumProperty_Delete(pObject: *mut c_void);
+    pub fn wxEnumProperty_CreateWithChoices(label: *mut c_void, name: *mut c_void, choices: *mut c_void, value: c_int) -> *mut c_void;
 
     // wxEditEnumProperty
     pub fn wxEditEnumProperty_Create(label: *mut c_void, name: *mut c_void, label_count: c_int, labels: *mut c_void, value_count: c_int, values: *mut c_void, value: *mut c_void) -> *mut c_void;
     pub fn wxEditEnumProperty_Delete(pObject: *mut c_void);
+    pub fn wxEditEnumProperty_CreateWithChoices(label: *mut c_void, name: *mut c_void, choices: *mut c_void, value: *mut c_void) -> *mut c_void;
 
     // wxFlagsProperty
     pub fn wxFlagsProperty_Create(label: *mut c_void, name: *mut c_void, label_count: c_int, labels: *mut c_void, value_count: c_int, values: *mut c_void, value: c_int) -> *mut c_void;
     pub fn wxFlagsProperty_Delete(pObject: *mut c_void);
+    pub fn wxFlagsProperty_CreateWithChoices(label: *mut c_void, name: *mut c_void, choices: *mut c_void, value: c_long) -> *mut c_void;
 
     // wxImageFileProperty
     pub fn wxImageFileProperty_Create(label: *mut c_void, name: *mut c_void, value: *mut c_void) -> *mut c_void;
@@ -8655,6 +8927,94 @@ extern "C" {
     // wxPropertyGridXmlHandler
     pub fn wxPropertyGridXmlHandler_Create() -> *mut c_void;
     pub fn wxPropertyGridXmlHandler_Delete(pObject: *mut c_void);
+
+    // wxPGChoices
+    pub fn wxPGChoices_Create() -> *mut c_void;
+    pub fn wxPGChoices_Delete(pObject: *mut c_void);
+    pub fn wxPGChoices_GetCount(pObject: *mut c_void) -> c_uint;
+    pub fn wxPGChoices_GetLabel(pObject: *mut c_void, index: c_uint) -> *mut c_void;
+    pub fn wxPGChoices_GetValue(pObject: *mut c_void, index: c_uint) -> c_int;
+    pub fn wxPGChoices_Item(pObject: *mut c_void, index: c_uint) -> *mut c_void;
+    pub fn wxPGChoices_Add(pObject: *mut c_void, label: *mut c_void, value: c_int) -> *mut c_void;
+    pub fn wxPGChoices_AddAsSorted(pObject: *mut c_void, label: *mut c_void, value: c_int) -> *mut c_void;
+    pub fn wxPGChoices_AddStrings(pObject: *mut c_void, labels: *mut c_void, values: *mut c_void);
+    pub fn wxPGChoices_Set(pObject: *mut c_void, labels: *mut c_void, values: *mut c_void);
+    pub fn wxPGChoices_RemoveAt(pObject: *mut c_void, index: c_uint, count: c_uint);
+    pub fn wxPGChoices_Index(pObject: *mut c_void, label: *mut c_void) -> c_int;
+    pub fn wxPGChoices_IndexValue(pObject: *mut c_void, value: c_int) -> c_int;
+    pub fn wxPGChoices_Clear(pObject: *mut c_void);
+    pub fn wxPGChoices_IsOk(pObject: *mut c_void) -> c_int;
+    pub fn wxPGChoices_Copy(pObject: *mut c_void) -> *mut c_void;
+
+    // wxPGChoiceEntry
+    pub fn wxPGChoiceEntry_SetValue(pObject: *mut c_void, value: c_int);
+    pub fn wxPGChoiceEntry_GetValue(pObject: *mut c_void) -> c_int;
+
+    // wxPGProperty
+    pub fn wxPGProperty_SetChoices(pObject: *mut c_void, choices: *mut c_void) -> c_int;
+    pub fn wxPGProperty_GetChoices(pObject: *mut c_void) -> *mut c_void;
+    pub fn wxPGProperty_GetBaseName(pObject: *mut c_void) -> *mut c_void;
+    pub fn wxPGProperty_AddChoice(pObject: *mut c_void, label: *mut c_void, value: c_int) -> c_int;
+    pub fn wxPGProperty_AddPrivateChild(pObject: *mut c_void, prop: *mut c_void);
+    pub fn wxPGProperty_AppendChild(pObject: *mut c_void, prop: *mut c_void) -> *mut c_void;
+    pub fn wxPGProperty_DeleteChoice(pObject: *mut c_void, index: c_int);
+    pub fn wxPGProperty_EnableCommonValue(pObject: *mut c_void, enable: c_int);
+    pub fn wxPGProperty_GetCell(pObject: *mut c_void, column: c_uint) -> *mut c_void;
+    pub fn wxPGProperty_GetDisplayedString(pObject: *mut c_void) -> *mut c_void;
+    pub fn wxPGProperty_GetIndexInParent(pObject: *mut c_void) -> c_uint;
+    pub fn wxPGProperty_HasAnyChild(pObject: *mut c_void) -> c_int;
+    pub fn wxPGProperty_InsertChoice(pObject: *mut c_void, label: *mut c_void, index: c_int, value: c_int) -> c_int;
+    pub fn wxPGProperty_IsCategory(pObject: *mut c_void) -> c_int;
+    pub fn wxPGProperty_IsEnabled(pObject: *mut c_void) -> c_int;
+    pub fn wxPGProperty_IsExpanded(pObject: *mut c_void) -> c_int;
+    pub fn wxPGProperty_IsValueUnspecified(pObject: *mut c_void) -> c_int;
+    pub fn wxPGProperty_RefreshEditor(pObject: *mut c_void);
+    pub fn wxPGProperty_SetAttribute(pObject: *mut c_void, name: *mut c_void, value: *mut c_void);
+    pub fn wxPGProperty_SetAutoUnspecified(pObject: *mut c_void, enable: c_int);
+    pub fn wxPGProperty_SetExpanded(pObject: *mut c_void, expanded: c_int);
+    pub fn wxPGProperty_GetY(pObject: *mut c_void) -> c_int;
+    pub fn wxPGProperty_GetValue(pObject: *mut c_void) -> *mut c_void;
+    pub fn wxPGProperty_GetHintText(pObject: *mut c_void) -> *mut c_void;
+    pub fn wxPGProperty_GetGrid(pObject: *mut c_void) -> *mut c_void;
+    pub fn wxPGProperty_GetGridIfDisplayed(pObject: *mut c_void) -> *mut c_void;
+    pub fn wxPGProperty_GetMainParent(pObject: *mut c_void) -> *mut c_void;
+    pub fn wxPGProperty_GetParent(pObject: *mut c_void) -> *mut c_void;
+    pub fn wxPGProperty_Item(pObject: *mut c_void, index: c_uint) -> *mut c_void;
+    pub fn wxPGProperty_GetChildCount(pObject: *mut c_void) -> c_int;
+    pub fn wxPGProperty_GetChoiceSelection(pObject: *mut c_void) -> c_int;
+    pub fn wxPGProperty_SetChoiceSelection(pObject: *mut c_void, selection: c_int);
+    pub fn wxPGProperty_Enable(pObject: *mut c_void, enable: c_int);
+    pub fn wxPGProperty_AreChildrenComponents(pObject: *mut c_void) -> c_int;
+    pub fn wxPGProperty_GetDisplayedCommonValueCount(pObject: *mut c_void) -> c_int;
+    pub fn wxPGProperty_SetLabel(pObject: *mut c_void, label: *mut c_void);
+    pub fn wxPGProperty_SetName(pObject: *mut c_void, name: *mut c_void);
+    pub fn wxPGProperty_GetLabel(pObject: *mut c_void) -> *mut c_void;
+    pub fn wxPGProperty_GetName(pObject: *mut c_void) -> *mut c_void;
+    pub fn wxPGProperty_GetValueAsString(pObject: *mut c_void) -> *mut c_void;
+    pub fn wxPGProperty_GetValueType(pObject: *mut c_void) -> *mut c_void;
+    pub fn wxPGProperty_SetHelpString(pObject: *mut c_void, helpString: *mut c_void);
+
+    // wxSystemColourProperty
+    pub fn wxSystemColourProperty_Create(label: *mut c_void, name: *mut c_void, value: *mut c_void) -> *mut c_void;
+    pub fn wxSystemColourProperty_Delete(pObject: *mut c_void);
+    pub fn wxSystemColourProperty_GetVal(pObject: *mut c_void) -> *mut c_void;
+    pub fn wxSystemColourProperty_GetColour(pObject: *mut c_void, index: c_int) -> *mut c_void;
+    pub fn wxSystemColourProperty_ColToInd(pObject: *mut c_void, colour: *mut c_void) -> c_int;
+
+    // wxCursorProperty
+    pub fn wxCursorProperty_Create(label: *mut c_void, name: *mut c_void, value: c_int) -> *mut c_void;
+    pub fn wxCursorProperty_Delete(pObject: *mut c_void);
+
+    // wxPropertyGridEvent
+    pub fn wxPropertyGridEvent_SetValidationFailureBehavior(pObject: *mut c_void, flags: c_int);
+    pub fn wxPropertyGridEvent_SetValidationFailureMessage(pObject: *mut c_void, message: *mut c_void);
+    pub fn wxPropertyGridEvent_GetValidationFailureBehavior(pObject: *mut c_void) -> c_int;
+    pub fn wxPropertyGridEvent_HasProperty(pObject: *mut c_void) -> c_int;
+    pub fn wxPropertyGridEvent_CanVeto(pObject: *mut c_void) -> c_int;
+    pub fn wxPropertyGridEvent_GetColumn(pObject: *mut c_void) -> c_uint;
+    pub fn wxPropertyGridEvent_GetValue(pObject: *mut c_void) -> *mut c_void;
+    pub fn wxPropertyGridEvent_Veto(pObject: *mut c_void, veto: c_int);
+    pub fn wxPropertyGridEvent_GetProperty(pObject: *mut c_void) -> *mut c_void;
 
     // kwxPGProperty
     pub fn kwxPGProperty_Create(pObject: *mut c_void, label: *mut c_void, name: *mut c_void, value: *mut c_void) -> *mut c_void;
@@ -8900,6 +9260,172 @@ extern "C" {
     pub fn wxWebView_SetEditable(pObject: *mut c_void, enable: c_int);
     pub fn wxWebView_IsEditable(pObject: *mut c_void) -> c_int;
 
+    // wxRichTextAttr
+    pub fn wxRichTextAttr_Create() -> *mut c_void;
+    pub fn wxRichTextAttr_CreateFromTextAttr(attr: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextAttr_CreateCopy(attr: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextAttr_Delete(self_: *mut c_void);
+    pub fn wxRichTextAttr_Copy(self_: *mut c_void, attr: *mut c_void);
+    pub fn wxRichTextAttr_GetTextBoxAttr(self_: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextAttr_SetTextBoxAttr(self_: *mut c_void, attr: *mut c_void);
+    pub fn wxRichTextAttr_HasTextBoxAttr(self_: *mut c_void) -> c_int;
+
+    // wxRichTextProperties
+    pub fn wxRichTextProperties_Create() -> *mut c_void;
+    pub fn wxRichTextProperties_CreateCopy(props: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextProperties_Delete(self_: *mut c_void);
+    pub fn wxRichTextProperties_Copy(self_: *mut c_void, props: *mut c_void);
+    pub fn wxRichTextProperties_Clear(self_: *mut c_void);
+    pub fn wxRichTextProperties_GetCount(self_: *mut c_void) -> usize;
+    pub fn wxRichTextProperties_HasProperty(self_: *mut c_void, name: *mut c_void) -> c_int;
+    pub fn wxRichTextProperties_Find(self_: *mut c_void, name: *mut c_void) -> c_int;
+    pub fn wxRichTextProperties_Remove(self_: *mut c_void, name: *mut c_void) -> c_int;
+    pub fn wxRichTextProperties_GetPropertyString(self_: *mut c_void, name: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextProperties_GetPropertyLong(self_: *mut c_void, name: *mut c_void) -> c_long;
+    pub fn wxRichTextProperties_GetPropertyBool(self_: *mut c_void, name: *mut c_void) -> c_int;
+    pub fn wxRichTextProperties_GetPropertyDouble(self_: *mut c_void, name: *mut c_void) -> c_double;
+    pub fn wxRichTextProperties_SetPropertyString(self_: *mut c_void, name: *mut c_void, value: *mut c_void);
+    pub fn wxRichTextProperties_SetPropertyLong(self_: *mut c_void, name: *mut c_void, value: c_long);
+    pub fn wxRichTextProperties_SetPropertyBool(self_: *mut c_void, name: *mut c_void, value: c_int);
+    pub fn wxRichTextProperties_SetPropertyDouble(self_: *mut c_void, name: *mut c_void, value: c_double);
+    pub fn wxRichTextProperties_GetPropertyNames(self_: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextProperties_RemoveProperties(self_: *mut c_void, props: *mut c_void);
+    pub fn wxRichTextProperties_MergeProperties(self_: *mut c_void, props: *mut c_void);
+
+    // wxRichTextStyleDefinition
+    pub fn wxRichTextStyleDefinition_Copy(self_: *mut c_void, def: *mut c_void);
+    pub fn wxRichTextStyleDefinition_Eq(self_: *mut c_void, def: *mut c_void) -> c_int;
+    pub fn wxRichTextStyleDefinition_SetName(self_: *mut c_void, name: *mut c_void);
+    pub fn wxRichTextStyleDefinition_GetName(self_: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextStyleDefinition_SetDescription(self_: *mut c_void, descr: *mut c_void);
+    pub fn wxRichTextStyleDefinition_GetDescription(self_: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextStyleDefinition_SetBaseStyle(self_: *mut c_void, name: *mut c_void);
+    pub fn wxRichTextStyleDefinition_GetBaseStyle(self_: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextStyleDefinition_SetStyle(self_: *mut c_void, style: *mut c_void);
+    pub fn wxRichTextStyleDefinition_GetStyle(self_: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextStyleDefinition_GetProperties(self_: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextStyleDefinition_SetProperties(self_: *mut c_void, props: *mut c_void);
+
+    // wxRichTextStyleSheet
+    pub fn wxRichTextStyleSheet_Create() -> *mut c_void;
+    pub fn wxRichTextStyleSheet_CreateCopy(sheet: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextStyleSheet_Delete(self_: *mut c_void);
+    pub fn wxRichTextStyleSheet_Init(self_: *mut c_void);
+    pub fn wxRichTextStyleSheet_Copy(self_: *mut c_void, sheet: *mut c_void);
+    pub fn wxRichTextStyleSheet_AddCharacterStyle(self_: *mut c_void, def: *mut c_void) -> c_int;
+    pub fn wxRichTextStyleSheet_AddParagraphStyle(self_: *mut c_void, def: *mut c_void) -> c_int;
+    pub fn wxRichTextStyleSheet_AddListStyle(self_: *mut c_void, def: *mut c_void) -> c_int;
+    pub fn wxRichTextStyleSheet_AddBoxStyle(self_: *mut c_void, def: *mut c_void) -> c_int;
+    pub fn wxRichTextStyleSheet_AddStyle(self_: *mut c_void, def: *mut c_void) -> c_int;
+    pub fn wxRichTextStyleSheet_RemoveCharacterStyle(self_: *mut c_void, def: *mut c_void, deleteStyle: c_int) -> c_int;
+    pub fn wxRichTextStyleSheet_RemoveParagraphStyle(self_: *mut c_void, def: *mut c_void, deleteStyle: c_int) -> c_int;
+    pub fn wxRichTextStyleSheet_RemoveListStyle(self_: *mut c_void, def: *mut c_void, deleteStyle: c_int) -> c_int;
+    pub fn wxRichTextStyleSheet_RemoveBoxStyle(self_: *mut c_void, def: *mut c_void, deleteStyle: c_int) -> c_int;
+    pub fn wxRichTextStyleSheet_RemoveStyle(self_: *mut c_void, def: *mut c_void, deleteStyle: c_int) -> c_int;
+    pub fn wxRichTextStyleSheet_FindCharacterStyle(self_: *mut c_void, name: *mut c_void, recurse: c_int) -> *mut c_void;
+    pub fn wxRichTextStyleSheet_FindParagraphStyle(self_: *mut c_void, name: *mut c_void, recurse: c_int) -> *mut c_void;
+    pub fn wxRichTextStyleSheet_FindListStyle(self_: *mut c_void, name: *mut c_void, recurse: c_int) -> *mut c_void;
+    pub fn wxRichTextStyleSheet_FindBoxStyle(self_: *mut c_void, name: *mut c_void, recurse: c_int) -> *mut c_void;
+    pub fn wxRichTextStyleSheet_FindStyle(self_: *mut c_void, name: *mut c_void, recurse: c_int) -> *mut c_void;
+    pub fn wxRichTextStyleSheet_GetCharacterStyleCount(self_: *mut c_void) -> usize;
+    pub fn wxRichTextStyleSheet_GetParagraphStyleCount(self_: *mut c_void) -> usize;
+    pub fn wxRichTextStyleSheet_GetListStyleCount(self_: *mut c_void) -> usize;
+    pub fn wxRichTextStyleSheet_GetBoxStyleCount(self_: *mut c_void) -> usize;
+    pub fn wxRichTextStyleSheet_GetCharacterStyle(self_: *mut c_void, index: usize) -> *mut c_void;
+    pub fn wxRichTextStyleSheet_GetParagraphStyle(self_: *mut c_void, index: usize) -> *mut c_void;
+    pub fn wxRichTextStyleSheet_GetListStyle(self_: *mut c_void, index: usize) -> *mut c_void;
+    pub fn wxRichTextStyleSheet_GetBoxStyle(self_: *mut c_void, index: usize) -> *mut c_void;
+    pub fn wxRichTextStyleSheet_DeleteStyles(self_: *mut c_void);
+    pub fn wxRichTextStyleSheet_InsertSheet(self_: *mut c_void, before: *mut c_void) -> c_int;
+    pub fn wxRichTextStyleSheet_AppendSheet(self_: *mut c_void, after: *mut c_void) -> c_int;
+    pub fn wxRichTextStyleSheet_Unlink(self_: *mut c_void);
+    pub fn wxRichTextStyleSheet_GetNextSheet(self_: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextStyleSheet_SetNextSheet(self_: *mut c_void, sheet: *mut c_void);
+    pub fn wxRichTextStyleSheet_GetPreviousSheet(self_: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextStyleSheet_SetPreviousSheet(self_: *mut c_void, sheet: *mut c_void);
+    pub fn wxRichTextStyleSheet_SetName(self_: *mut c_void, name: *mut c_void);
+    pub fn wxRichTextStyleSheet_GetName(self_: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextStyleSheet_SetDescription(self_: *mut c_void, descr: *mut c_void);
+    pub fn wxRichTextStyleSheet_GetDescription(self_: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextStyleSheet_GetProperties(self_: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextStyleSheet_SetProperties(self_: *mut c_void, props: *mut c_void);
+
+    // wxTextAttrDimension
+    pub fn wxTextAttrDimension_Reset(self_: *mut c_void);
+    pub fn wxTextAttrDimension_GetValue(self_: *mut c_void) -> c_int;
+    pub fn wxTextAttrDimension_SetValue(self_: *mut c_void, value: c_int);
+    pub fn wxTextAttrDimension_SetValueWithUnits(self_: *mut c_void, value: c_int, units: c_int);
+    pub fn wxTextAttrDimension_GetUnits(self_: *mut c_void) -> c_int;
+    pub fn wxTextAttrDimension_SetUnits(self_: *mut c_void, units: c_int);
+    pub fn wxTextAttrDimension_IsValid(self_: *mut c_void) -> c_int;
+
+    // wxTextAttrDimensions
+    pub fn wxTextAttrDimensions_Reset(self_: *mut c_void);
+    pub fn wxTextAttrDimensions_GetLeft(self_: *mut c_void) -> *mut c_void;
+    pub fn wxTextAttrDimensions_GetTop(self_: *mut c_void) -> *mut c_void;
+    pub fn wxTextAttrDimensions_GetRight(self_: *mut c_void) -> *mut c_void;
+    pub fn wxTextAttrDimensions_GetBottom(self_: *mut c_void) -> *mut c_void;
+    pub fn wxTextAttrDimensions_IsValid(self_: *mut c_void) -> c_int;
+
+    // wxTextAttrBorder
+    pub fn wxTextAttrBorder_Reset(self_: *mut c_void);
+    pub fn wxTextAttrBorder_SetStyle(self_: *mut c_void, style: c_int);
+    pub fn wxTextAttrBorder_GetStyle(self_: *mut c_void) -> c_int;
+    pub fn wxTextAttrBorder_SetColour(self_: *mut c_void, colour: *mut c_void);
+    pub fn wxTextAttrBorder_GetColour(self_: *mut c_void, colour: *mut c_void);
+    pub fn wxTextAttrBorder_SetColourLong(self_: *mut c_void, colour: c_ulong);
+    pub fn wxTextAttrBorder_GetColourLong(self_: *mut c_void) -> c_ulong;
+    pub fn wxTextAttrBorder_SetWidth(self_: *mut c_void, value: c_int, units: c_int);
+    pub fn wxTextAttrBorder_GetWidth(self_: *mut c_void) -> *mut c_void;
+    pub fn wxTextAttrBorder_HasStyle(self_: *mut c_void) -> c_int;
+    pub fn wxTextAttrBorder_HasColour(self_: *mut c_void) -> c_int;
+    pub fn wxTextAttrBorder_HasWidth(self_: *mut c_void) -> c_int;
+    pub fn wxTextAttrBorder_IsDefault(self_: *mut c_void) -> c_int;
+
+    // wxTextAttrBorders
+    pub fn wxTextAttrBorders_Reset(self_: *mut c_void);
+    pub fn wxTextAttrBorders_SetStyle(self_: *mut c_void, style: c_int);
+    pub fn wxTextAttrBorders_SetColour(self_: *mut c_void, colour: *mut c_void);
+    pub fn wxTextAttrBorders_SetColourLong(self_: *mut c_void, colour: c_ulong);
+    pub fn wxTextAttrBorders_SetWidth(self_: *mut c_void, value: c_int, units: c_int);
+    pub fn wxTextAttrBorders_GetLeft(self_: *mut c_void) -> *mut c_void;
+    pub fn wxTextAttrBorders_GetTop(self_: *mut c_void) -> *mut c_void;
+    pub fn wxTextAttrBorders_GetRight(self_: *mut c_void) -> *mut c_void;
+    pub fn wxTextAttrBorders_GetBottom(self_: *mut c_void) -> *mut c_void;
+    pub fn wxTextAttrBorders_IsValid(self_: *mut c_void) -> c_int;
+    pub fn wxTextAttrBorders_IsDefault(self_: *mut c_void) -> c_int;
+
+    // wxTextBoxAttr
+    pub fn wxTextBoxAttr_Reset(self_: *mut c_void);
+    pub fn wxTextBoxAttr_IsDefault(self_: *mut c_void) -> c_int;
+    pub fn wxTextBoxAttr_SetFlags(self_: *mut c_void, flags: c_int);
+    pub fn wxTextBoxAttr_GetFlags(self_: *mut c_void) -> c_int;
+    pub fn wxTextBoxAttr_HasFlag(self_: *mut c_void, flag: c_int) -> c_int;
+    pub fn wxTextBoxAttr_AddFlag(self_: *mut c_void, flag: c_int);
+    pub fn wxTextBoxAttr_RemoveFlag(self_: *mut c_void, flag: c_int);
+    pub fn wxTextBoxAttr_SetFloatMode(self_: *mut c_void, mode: c_int);
+    pub fn wxTextBoxAttr_GetFloatMode(self_: *mut c_void) -> c_int;
+    pub fn wxTextBoxAttr_IsFloating(self_: *mut c_void) -> c_int;
+    pub fn wxTextBoxAttr_SetClearMode(self_: *mut c_void, mode: c_int);
+    pub fn wxTextBoxAttr_GetClearMode(self_: *mut c_void) -> c_int;
+    pub fn wxTextBoxAttr_GetMargins(self_: *mut c_void) -> *mut c_void;
+    pub fn wxTextBoxAttr_SetMargins(self_: *mut c_void, margins: *mut c_void);
+    pub fn wxTextBoxAttr_GetPadding(self_: *mut c_void) -> *mut c_void;
+    pub fn wxTextBoxAttr_SetPadding(self_: *mut c_void, padding: *mut c_void);
+    pub fn wxTextBoxAttr_GetBorder(self_: *mut c_void) -> *mut c_void;
+    pub fn wxTextBoxAttr_GetLeftBorder(self_: *mut c_void) -> *mut c_void;
+    pub fn wxTextBoxAttr_GetTopBorder(self_: *mut c_void) -> *mut c_void;
+    pub fn wxTextBoxAttr_GetRightBorder(self_: *mut c_void) -> *mut c_void;
+    pub fn wxTextBoxAttr_GetBottomBorder(self_: *mut c_void) -> *mut c_void;
+    pub fn wxTextBoxAttr_GetWidth(self_: *mut c_void) -> *mut c_void;
+    pub fn wxTextBoxAttr_GetHeight(self_: *mut c_void) -> *mut c_void;
+    pub fn wxTextBoxAttr_GetLeft(self_: *mut c_void) -> *mut c_void;
+    pub fn wxTextBoxAttr_GetTop(self_: *mut c_void) -> *mut c_void;
+    pub fn wxTextBoxAttr_GetRight(self_: *mut c_void) -> *mut c_void;
+    pub fn wxTextBoxAttr_GetBottom(self_: *mut c_void) -> *mut c_void;
+    pub fn wxTextBoxAttr_GetBoxStyleName(self_: *mut c_void) -> *mut c_void;
+    pub fn wxTextBoxAttr_SetBoxStyleName(self_: *mut c_void, name: *mut c_void);
+
     // wxRichTextObject
     pub fn wxRichTextObject_GetParent(self_: *mut c_void) -> *mut c_void;
     pub fn wxRichTextObject_GetProperties(pObject: *mut c_void) -> *mut c_void;
@@ -8952,7 +9478,7 @@ extern "C" {
     pub fn wxRichTextParagraphLayoutBox_GetParagraphText(self_: *mut c_void, paragraphNumber: c_long) -> *mut c_void;
     pub fn wxRichTextParagraphLayoutBox_GetParagraphLength(self_: *mut c_void, paragraphNumber: c_long) -> c_int;
     pub fn wxRichTextParagraphLayoutBox_XYToPosition(self_: *mut c_void, x: c_long, y: c_long) -> c_long;
-    pub fn wxRichTextParagraphLayoutBox_PositionToXY(self_: *mut c_void, position: c_long, arg: c_int) -> c_int;
+    pub fn wxRichTextParagraphLayoutBox_PositionToXY(self_: *mut c_void, position: c_long, x: *mut c_long, y: *mut c_long) -> c_int;
     pub fn wxRichTextParagraphLayoutBox_SetDefaultStyle(self_: *mut c_void, style: *mut c_void) -> c_int;
     pub fn wxRichTextParagraphLayoutBox_GetDefaultStyle(self_: *mut c_void, style: *mut c_void);
     pub fn wxRichTextParagraphLayoutBox_SetBasicStyle(self_: *mut c_void, style: *mut c_void);
@@ -8963,11 +9489,86 @@ extern "C" {
     pub fn wxRichTextParagraphLayoutBox_SetPartialParagraph(self_: *mut c_void, partialParagraph: c_int);
     pub fn wxRichTextParagraphLayoutBox_GetPartialParagraph(self_: *mut c_void) -> c_int;
     pub fn wxRichTextParagraphLayoutBox_UpdateRanges(self_: *mut c_void);
+    pub fn wxRichTextParagraphLayoutBox_GetBuffer(self_: *mut c_void) -> *mut c_void;
 
     // wxRichTextBox
     pub fn wxRichTextBox_Create(parent: *mut c_void) -> *mut c_void;
     pub fn wxRichTextBox_Delete(self_: *mut c_void);
     pub fn wxRichTextBox_GetXMLNodeName(self_: *mut c_void) -> *mut c_void;
+
+    // wxRichTextTable
+    pub fn wxRichTextTable_Create(parent: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextTable_Delete(self_: *mut c_void);
+    pub fn wxRichTextTable_GetRowCount(self_: *mut c_void) -> c_int;
+    pub fn wxRichTextTable_SetRowCount(self_: *mut c_void, count: c_int);
+    pub fn wxRichTextTable_GetColumnCount(self_: *mut c_void) -> c_int;
+    pub fn wxRichTextTable_SetColumnCount(self_: *mut c_void, count: c_int);
+    pub fn wxRichTextTable_GetCell(self_: *mut c_void, row: c_int, col: c_int) -> *mut c_void;
+    pub fn wxRichTextTable_GetCellAtPosition(self_: *mut c_void, pos: c_long) -> *mut c_void;
+    pub fn wxRichTextTable_GetCellRowColumnPosition(self_: *mut c_void, pos: c_long, row: *mut c_int, col: *mut c_int) -> c_int;
+    pub fn wxRichTextTable_GetFocusedCell(self_: *mut c_void, row: *mut c_int, col: *mut c_int);
+    pub fn wxRichTextTable_ClearTable(self_: *mut c_void);
+    pub fn wxRichTextTable_CreateTable(self_: *mut c_void, rows: c_int, cols: c_int) -> c_int;
+    pub fn wxRichTextTable_DeleteRows(self_: *mut c_void, startRow: c_int, noRows: c_int) -> c_int;
+    pub fn wxRichTextTable_DeleteColumns(self_: *mut c_void, startCol: c_int, noCols: c_int) -> c_int;
+    pub fn wxRichTextTable_AddRows(self_: *mut c_void, startRow: c_int, noRows: c_int, attr: *mut c_void) -> c_int;
+    pub fn wxRichTextTable_AddColumns(self_: *mut c_void, startCol: c_int, noCols: c_int, attr: *mut c_void) -> c_int;
+    pub fn wxRichTextTable_Copy(self_: *mut c_void, obj: *mut c_void);
+
+    // wxRichTextCell
+    pub fn wxRichTextCell_Create(parent: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextCell_Delete(self_: *mut c_void);
+    pub fn wxRichTextCell_GetColSpan(self_: *mut c_void) -> c_int;
+    pub fn wxRichTextCell_SetColSpan(self_: *mut c_void, span: c_int);
+    pub fn wxRichTextCell_GetRowSpan(self_: *mut c_void) -> c_int;
+    pub fn wxRichTextCell_SetRowSpan(self_: *mut c_void, span: c_int);
+    pub fn wxRichTextCell_Copy(self_: *mut c_void, obj: *mut c_void);
+
+    // wxRichTextField
+    pub fn wxRichTextField_Create(fieldType: *mut c_void, parent: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextField_Delete(self_: *mut c_void);
+    pub fn wxRichTextField_SetFieldType(self_: *mut c_void, fieldType: *mut c_void);
+    pub fn wxRichTextField_GetFieldType(self_: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextField_UpdateField(self_: *mut c_void, buffer: *mut c_void) -> c_int;
+    pub fn wxRichTextField_Copy(self_: *mut c_void, obj: *mut c_void);
+
+    // wxRichTextFieldType
+    pub fn wxRichTextFieldType_SetName(self_: *mut c_void, name: *mut c_void);
+    pub fn wxRichTextFieldType_GetName(self_: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextFieldType_Copy(self_: *mut c_void, fieldType: *mut c_void);
+
+    // wxRichTextFieldTypeStandard
+    pub fn wxRichTextFieldTypeStandard_Create(name: *mut c_void, label: *mut c_void, displayStyle: c_int) -> *mut c_void;
+    pub fn wxRichTextFieldTypeStandard_CreateWithBitmap(name: *mut c_void, bitmap: *mut c_void, displayStyle: c_int) -> *mut c_void;
+    pub fn wxRichTextFieldTypeStandard_CreateDefault() -> *mut c_void;
+    pub fn wxRichTextFieldTypeStandard_Delete(self_: *mut c_void);
+    pub fn wxRichTextFieldTypeStandard_Copy(self_: *mut c_void, field: *mut c_void);
+    pub fn wxRichTextFieldTypeStandard_SetLabel(self_: *mut c_void, label: *mut c_void);
+    pub fn wxRichTextFieldTypeStandard_GetLabel(self_: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextFieldTypeStandard_SetBitmap(self_: *mut c_void, bitmap: *mut c_void);
+    pub fn wxRichTextFieldTypeStandard_GetBitmap(self_: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextFieldTypeStandard_GetDisplayStyle(self_: *mut c_void) -> c_int;
+    pub fn wxRichTextFieldTypeStandard_SetDisplayStyle(self_: *mut c_void, displayStyle: c_int);
+    pub fn wxRichTextFieldTypeStandard_GetFont(self_: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextFieldTypeStandard_SetFont(self_: *mut c_void, font: *mut c_void);
+    pub fn wxRichTextFieldTypeStandard_GetTextColour(self_: *mut c_void, colour: *mut c_void);
+    pub fn wxRichTextFieldTypeStandard_SetTextColour(self_: *mut c_void, colour: *mut c_void);
+    pub fn wxRichTextFieldTypeStandard_GetBorderColour(self_: *mut c_void, colour: *mut c_void);
+    pub fn wxRichTextFieldTypeStandard_SetBorderColour(self_: *mut c_void, colour: *mut c_void);
+    pub fn wxRichTextFieldTypeStandard_GetBackgroundColour(self_: *mut c_void, colour: *mut c_void);
+    pub fn wxRichTextFieldTypeStandard_SetBackgroundColour(self_: *mut c_void, colour: *mut c_void);
+    pub fn wxRichTextFieldTypeStandard_SetVerticalPadding(self_: *mut c_void, padding: c_int);
+    pub fn wxRichTextFieldTypeStandard_GetVerticalPadding(self_: *mut c_void) -> c_int;
+    pub fn wxRichTextFieldTypeStandard_SetHorizontalPadding(self_: *mut c_void, padding: c_int);
+    pub fn wxRichTextFieldTypeStandard_GetHorizontalPadding(self_: *mut c_void) -> c_int;
+    pub fn wxRichTextFieldTypeStandard_SetHorizontalMargin(self_: *mut c_void, margin: c_int);
+    pub fn wxRichTextFieldTypeStandard_GetHorizontalMargin(self_: *mut c_void) -> c_int;
+    pub fn wxRichTextFieldTypeStandard_SetVerticalMargin(self_: *mut c_void, margin: c_int);
+    pub fn wxRichTextFieldTypeStandard_GetVerticalMargin(self_: *mut c_void) -> c_int;
+
+    // wxRichTextDrawingHandler
+    pub fn wxRichTextDrawingHandler_SetName(self_: *mut c_void, name: *mut c_void);
+    pub fn wxRichTextDrawingHandler_GetName(self_: *mut c_void) -> *mut c_void;
 
     // wxRichTextImage
     pub fn wxRichTextImage_Create(parent: *mut c_void) -> *mut c_void;
@@ -8992,6 +9593,13 @@ extern "C" {
     // wxRichTextBuffer
     pub fn wxRichTextBuffer_Create() -> *mut c_void;
     pub fn wxRichTextBuffer_AddHandler(handler: *mut c_void);
+    pub fn wxRichTextBuffer_AddFieldType(fieldType: *mut c_void);
+    pub fn wxRichTextBuffer_RemoveFieldType(name: *mut c_void) -> c_int;
+    pub fn wxRichTextBuffer_FindFieldType(name: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextBuffer_AddDrawingHandler(handler: *mut c_void);
+    pub fn wxRichTextBuffer_InsertDrawingHandler(handler: *mut c_void);
+    pub fn wxRichTextBuffer_RemoveDrawingHandler(name: *mut c_void) -> c_int;
+    pub fn wxRichTextBuffer_FindDrawingHandler(name: *mut c_void) -> *mut c_void;
     pub fn wxRichTextBuffer_Delete(self_: *mut c_void);
     pub fn wxRichTextBuffer_AddParagraph(self_: *mut c_void, text: *mut c_void, paraStyle: *mut c_void, start: *mut c_long, end: *mut c_long);
     pub fn wxRichTextBuffer_DeleteRange(self_: *mut c_void, start: c_long, end: c_long) -> c_int;
@@ -9018,6 +9626,7 @@ extern "C" {
     pub fn wxRichTextBuffer_BeginSuppressUndo(self_: *mut c_void) -> c_int;
     pub fn wxRichTextBuffer_EndSuppressUndo(self_: *mut c_void) -> c_int;
     pub fn wxRichTextBuffer_SuppressingUndo(self_: *mut c_void) -> c_int;
+    pub fn wxRichTextBuffer_GetExtWildcard(combine: c_int, save: c_int, types: *mut c_void) -> *mut c_void;
 
     // wxRichTextFileHandler
     pub fn wxRichTextFileHandler_GetName(self_: *mut c_void) -> *mut c_void;
@@ -9050,6 +9659,8 @@ extern "C" {
     pub fn wxRichTextHTMLHandler_DeleteTemporaryImages(self_: *mut c_void) -> c_int;
     pub fn wxRichTextHTMLHandler_SetTempDir(self_: *mut c_void, tempDir: *mut c_void);
     pub fn wxRichTextHTMLHandler_GetTempDir(self_: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextHTMLHandler_SetFontSizeMapping(self_: *mut c_void, mapping: *mut c_void);
+    pub fn wxRichTextHTMLHandler_GetFontSizeMapping(self_: *mut c_void) -> *mut c_void;
 
     // wxRichTextEvent
     pub fn wxRichTextEvent_GetPosition(self_: *mut c_void) -> c_long;
@@ -9230,7 +9841,7 @@ extern "C" {
     pub fn wxRichTextCtrl_SetFont(self_: *mut c_void, font: *mut c_void) -> c_int;
     pub fn wxRichTextCtrl_SetFontStyle(self_: *mut c_void, start: c_long, end: c_long, font: *mut c_void) -> c_int;
     pub fn wxRichTextCtrl_XYToPosition(self_: *mut c_void, x: c_long, y: c_long) -> c_long;
-    pub fn wxRichTextCtrl_PositionToXY(self_: *mut c_void, pos: c_long, arg: c_int) -> c_int;
+    pub fn wxRichTextCtrl_PositionToXY(self_: *mut c_void, pos: c_long, x: *mut c_long, y: *mut c_long) -> c_int;
     pub fn wxRichTextCtrl_ShowPosition(self_: *mut c_void, position: c_long);
     pub fn wxRichTextCtrl_SetReadOnly(self_: *mut c_void, readOnly: c_int);
     pub fn wxRichTextCtrl_IsReadOnly(self_: *mut c_void) -> c_int;
@@ -9351,6 +9962,7 @@ extern "C" {
     pub fn wxRichTextFormattingDialog_GetStyleSheet(self_: *mut c_void) -> *mut c_void;
     pub fn wxRichTextFormattingDialog_UpdateDisplay(self_: *mut c_void) -> c_int;
     pub fn wxRichTextFormattingDialog_ApplyStyle(self_: *mut c_void, ctrl: *mut c_void, start: c_long, end: c_long, flags: c_int) -> c_int;
+    pub fn wxRichTextFormattingDialog_ApplyStyleToCtrl(self_: *mut c_void, ctrl: *mut c_void, flags: c_int) -> c_int;
     pub fn wxRichTextFormattingDialog_GetAttributes(self_: *mut c_void, attr: *mut c_void);
     pub fn wxRichTextFormattingDialog_SetAttributes(self_: *mut c_void, attr: *mut c_void);
     pub fn wxRichTextFormattingDialog_SetOptions(self_: *mut c_void, options: c_int);
@@ -9403,6 +10015,104 @@ extern "C" {
     pub fn wxRichTextBufferDataObject_GetRichTextBuffer(self_: *mut c_void) -> *mut c_void;
     pub fn wxRichTextBufferDataObject_GetRichTextBufferFormatId(self_: *mut c_void) -> *mut c_void;
     pub fn wxRichTextBufferDataObject_GetDataSize(self_: *mut c_void) -> usize;
+
+    // wxRichTextCharacterStyleDefinition
+    pub fn wxRichTextCharacterStyleDefinition_Create(name: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextCharacterStyleDefinition_Delete(self_: *mut c_void);
+
+    // wxRichTextParagraphStyleDefinition
+    pub fn wxRichTextParagraphStyleDefinition_Create(name: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextParagraphStyleDefinition_Delete(self_: *mut c_void);
+    pub fn wxRichTextParagraphStyleDefinition_SetNextStyle(self_: *mut c_void, name: *mut c_void);
+    pub fn wxRichTextParagraphStyleDefinition_GetNextStyle(self_: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextParagraphStyleDefinition_Copy(self_: *mut c_void, def: *mut c_void);
+
+    // wxRichTextListStyleDefinition
+    pub fn wxRichTextListStyleDefinition_Create(name: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextListStyleDefinition_Delete(self_: *mut c_void);
+    pub fn wxRichTextListStyleDefinition_Copy(self_: *mut c_void, def: *mut c_void);
+    pub fn wxRichTextListStyleDefinition_SetLevelAttributes(self_: *mut c_void, level: c_int, attr: *mut c_void);
+    pub fn wxRichTextListStyleDefinition_GetLevelAttributes(self_: *mut c_void, level: c_int) -> *mut c_void;
+    pub fn wxRichTextListStyleDefinition_SetAttributes(self_: *mut c_void, level: c_int, leftIndent: c_int, leftSubIndent: c_int, bulletStyle: c_int, bulletSymbol: *mut c_void);
+    pub fn wxRichTextListStyleDefinition_FindLevelForIndent(self_: *mut c_void, indent: c_int) -> c_int;
+    pub fn wxRichTextListStyleDefinition_CombineWithParagraphStyle(self_: *mut c_void, indent: c_int, paraStyle: *mut c_void, styleSheet: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextListStyleDefinition_GetCombinedStyle(self_: *mut c_void, indent: c_int, styleSheet: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextListStyleDefinition_GetCombinedStyleForLevel(self_: *mut c_void, level: c_int, styleSheet: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextListStyleDefinition_GetLevelCount(self_: *mut c_void) -> c_int;
+    pub fn wxRichTextListStyleDefinition_IsNumbered(self_: *mut c_void, level: c_int) -> c_int;
+
+    // wxRichTextBoxStyleDefinition
+    pub fn wxRichTextBoxStyleDefinition_Create(name: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextBoxStyleDefinition_Delete(self_: *mut c_void);
+    pub fn wxRichTextBoxStyleDefinition_Copy(self_: *mut c_void, def: *mut c_void);
+
+    // wxRichTextStyleListCtrl
+    pub fn wxRichTextStyleListCtrl_Create(parent: *mut c_void, id: c_int, x: c_int, y: c_int, w: c_int, h: c_int, style: c_long) -> *mut c_void;
+    pub fn wxRichTextStyleListCtrl_Delete(self_: *mut c_void);
+    pub fn wxRichTextStyleListCtrl_UpdateStyles(self_: *mut c_void);
+    pub fn wxRichTextStyleListCtrl_SetStyleSheet(self_: *mut c_void, styleSheet: *mut c_void);
+    pub fn wxRichTextStyleListCtrl_GetStyleSheet(self_: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextStyleListCtrl_SetRichTextCtrl(self_: *mut c_void, ctrl: *mut c_void);
+    pub fn wxRichTextStyleListCtrl_GetRichTextCtrl(self_: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextStyleListCtrl_SetStyleType(self_: *mut c_void, styleType: c_int);
+    pub fn wxRichTextStyleListCtrl_GetStyleType(self_: *mut c_void) -> c_int;
+    pub fn wxRichTextStyleListCtrl_GetStyleListBox(self_: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextStyleListCtrl_GetStyleChoice(self_: *mut c_void) -> *mut c_void;
+
+    // wxRichTextStyleComboCtrl
+    pub fn wxRichTextStyleComboCtrl_Create(parent: *mut c_void, id: c_int, x: c_int, y: c_int, w: c_int, h: c_int, style: c_long) -> *mut c_void;
+    pub fn wxRichTextStyleComboCtrl_Delete(self_: *mut c_void);
+    pub fn wxRichTextStyleComboCtrl_UpdateStyles(self_: *mut c_void);
+    pub fn wxRichTextStyleComboCtrl_SetStyleSheet(self_: *mut c_void, styleSheet: *mut c_void);
+    pub fn wxRichTextStyleComboCtrl_GetStyleSheet(self_: *mut c_void) -> *mut c_void;
+    pub fn wxRichTextStyleComboCtrl_SetRichTextCtrl(self_: *mut c_void, ctrl: *mut c_void);
+    pub fn wxRichTextStyleComboCtrl_GetRichTextCtrl(self_: *mut c_void) -> *mut c_void;
+
+    // wxRichTextObjectPropertiesDialog
+    pub fn wxRichTextObjectPropertiesDialog_Create(obj: *mut c_void, parent: *mut c_void, id: c_int, caption: *mut c_void, x: c_int, y: c_int, w: c_int, h: c_int, style: c_long) -> *mut c_void;
+    pub fn wxRichTextObjectPropertiesDialog_Delete(self_: *mut c_void);
+
+    // wxRichTextRange
+    pub fn wxRichTextRange_GetStart(pObject: *mut c_void) -> c_long;
+    pub fn wxRichTextRange_GetEnd(pObject: *mut c_void) -> c_long;
+    pub fn wxRichTextRange_GetLength(pObject: *mut c_void) -> c_long;
+
+    // kwxRichTextCtrl
+    pub fn kwxRichTextCtrl_Create(parent: *mut c_void, id: c_int, x: c_int, y: c_int, width: c_int, height: c_int, style: c_int) -> *mut c_void;
+    pub fn kwxRichTextCtrl_Delete(pObject: *mut c_void);
+    pub fn kwxRichTextCtrl_SetOnPrepareContent(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxRichTextCtrl_SetOnCanDeleteRange(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxRichTextCtrl_SetOnCanInsertContent(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxRichTextCtrl_SetCanDeleteRangeResult(pObject: *mut c_void, result: c_int);
+    pub fn kwxRichTextCtrl_SetCanInsertContentResult(pObject: *mut c_void, result: c_int);
+
+    // kwxRichTextFieldTypeStandard
+    pub fn kwxRichTextFieldTypeStandard_Create(pObject: *mut c_void, name: *mut c_void, label: *mut c_void, displayStyle: c_int) -> *mut c_void;
+    pub fn kwxRichTextFieldTypeStandard_Delete(pObject: *mut c_void);
+    pub fn kwxRichTextFieldTypeStandard_SetOnCanEditProperties(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxRichTextFieldTypeStandard_SetOnEditProperties(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxRichTextFieldTypeStandard_SetOnGetPropertiesMenuLabel(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxRichTextFieldTypeStandard_SetPropertiesMenuLabelResult(pObject: *mut c_void, label: *mut c_void);
+    pub fn kwxRichTextFieldTypeStandard_SetCanEditPropertiesResult(pObject: *mut c_void, result: c_int);
+    pub fn kwxRichTextFieldTypeStandard_SetEditPropertiesResult(pObject: *mut c_void, result: c_int);
+    pub fn kwxRichTextFieldTypeStandard_SetUpdateFieldResult(pObject: *mut c_void, result: c_int);
+    pub fn kwxRichTextFieldTypeStandard_SetIsTopLevelResult(pObject: *mut c_void, result: c_int);
+    pub fn kwxRichTextFieldTypeStandard_SetOnUpdateField(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxRichTextFieldTypeStandard_SetOnIsTopLevel(pObject: *mut c_void, pFunction: *mut c_void);
+
+    // kwxRichTextDrawingHandler
+    pub fn kwxRichTextDrawingHandler_Create(pObject: *mut c_void, name: *mut c_void) -> *mut c_void;
+    pub fn kwxRichTextDrawingHandler_Delete(pObject: *mut c_void);
+    pub fn kwxRichTextDrawingHandler_SetOnHasVirtualAttributes(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxRichTextDrawingHandler_SetOnGetVirtualAttributes(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxRichTextDrawingHandler_SetOnGetVirtualSubobjectAttributesCount(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxRichTextDrawingHandler_SetOnHasVirtualText(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxRichTextDrawingHandler_SetOnGetVirtualText(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn kwxRichTextDrawingHandler_SetVirtualTextResult(pObject: *mut c_void, text: *mut c_void);
+    pub fn kwxRichTextDrawingHandler_SetHasVirtualAttributesResult(pObject: *mut c_void, result: c_int);
+    pub fn kwxRichTextDrawingHandler_SetGetVirtualAttributesResult(pObject: *mut c_void, result: c_int);
+    pub fn kwxRichTextDrawingHandler_SetGetVirtualSubobjectAttributesCountResult(pObject: *mut c_void, result: c_int);
+    pub fn kwxRichTextDrawingHandler_SetHasVirtualTextResult(pObject: *mut c_void, result: c_int);
 
     // wxSpinDoubleEvent
     pub fn wxSpinDoubleEvent_Create(command_type: c_int, win_id: c_int, value: c_double) -> *mut c_void;
@@ -9468,6 +10178,13 @@ extern "C" {
     pub fn wxHyperlinkEvent_Delete(pObject: *mut c_void);
     pub fn wxHyperlinkEvent_GetURL(pObject: *mut c_void) -> *mut c_void;
     pub fn wxHyperlinkEvent_SetURL(pObject: *mut c_void, url: *mut c_void);
+
+    // wxTextUrlEvent
+    pub fn wxTextUrlEvent_Create(winid: c_int, evtMouse: *mut c_void, start: c_long, end: c_long) -> *mut c_void;
+    pub fn wxTextUrlEvent_Delete(pObject: *mut c_void);
+    pub fn wxTextUrlEvent_GetMouseEvent(pObject: *mut c_void) -> *mut c_void;
+    pub fn wxTextUrlEvent_GetURLStart(pObject: *mut c_void) -> c_long;
+    pub fn wxTextUrlEvent_GetURLEnd(pObject: *mut c_void) -> c_long;
 
     // wxThreadEvent
     pub fn wxThreadEvent_Create(event_type: c_int, id: c_int) -> *mut c_void;
@@ -9619,6 +10336,13 @@ extern "C" {
     pub fn wxWizardPage_GetBitmap(pObject: *mut c_void) -> *mut c_void;
     pub fn wxWizardPage_SetOnGetNext(pObject: *mut c_void, pFunction: *mut c_void);
     pub fn wxWizardPage_SetOnGetPrev(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn wxWizardPage_Create2(pObject: *mut c_void, parent: *mut c_void, bitmap: *mut c_void) -> c_int;
+    pub fn wxWizardPage_SetOnTransferDataFromWindow(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn wxWizardPage_SetOnTransferDataToWindow(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn wxWizardPage_SetOnGetNextOut(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn wxWizardPage_SetOnGetPrevOut(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn wxWizardPage_SetOnTransferDataFromWindowOut(pObject: *mut c_void, pFunction: *mut c_void);
+    pub fn wxWizardPage_SetOnTransferDataToWindowOut(pObject: *mut c_void, pFunction: *mut c_void);
 
     // wxMDIClientWindow
     pub fn wxMDIClientWindow_Create() -> *mut c_void;
@@ -9678,6 +10402,7 @@ extern "C" {
     pub fn wxGridCellBoolRenderer_Draw(pObject: *mut c_void, grid: *mut c_void, attr: *mut c_void, dc: *mut c_void, x: c_int, y: c_int, width: c_int, height: c_int, row: c_int, col: c_int, is_selected: c_int);
     pub fn wxGridCellBoolRenderer_GetPreferredSize(pObject: *mut c_void, grid: *mut c_void, attr: *mut c_void, dc: *mut c_void, row: c_int, col: c_int) -> *mut c_void;
     pub fn wxGridCellBoolRenderer_GetMaxBestSize(pObject: *mut c_void, grid: *mut c_void, attr: *mut c_void, dc: *mut c_void) -> *mut c_void;
+    pub fn wxGridCellBoolRenderer_Ctor() -> *mut c_void;
 
     // wxGridCellStringRenderer
     pub fn wxGridCellStringRenderer_Draw(pObject: *mut c_void, grid: *mut c_void, attr: *mut c_void, dc: *mut c_void, x: c_int, y: c_int, width: c_int, height: c_int, row: c_int, col: c_int, is_selected: c_int);
@@ -9701,48 +10426,6 @@ extern "C" {
     pub fn wxDataObject_GetDataSize(pObject: *mut c_void, format: *mut c_void) -> usize;
     pub fn wxDataObject_GetDataHere(pObject: *mut c_void, format: *mut c_void, buffer: *mut c_void) -> c_int;
     pub fn wxDataObject_SetData(pObject: *mut c_void, format: *mut c_void, length: c_int, buffer: *mut c_void) -> c_int;
-
-    // wxPGProperty
-    pub fn wxPGProperty_GetBaseName(pObject: *mut c_void) -> *mut c_void;
-    pub fn wxPGProperty_AddChoice(pObject: *mut c_void, label: *mut c_void, value: c_int) -> c_int;
-    pub fn wxPGProperty_AddPrivateChild(pObject: *mut c_void, prop: *mut c_void);
-    pub fn wxPGProperty_AppendChild(pObject: *mut c_void, prop: *mut c_void) -> *mut c_void;
-    pub fn wxPGProperty_DeleteChoice(pObject: *mut c_void, index: c_int);
-    pub fn wxPGProperty_EnableCommonValue(pObject: *mut c_void, enable: c_int);
-    pub fn wxPGProperty_GetCell(pObject: *mut c_void, column: c_uint) -> *mut c_void;
-    pub fn wxPGProperty_GetDisplayedString(pObject: *mut c_void) -> *mut c_void;
-    pub fn wxPGProperty_GetIndexInParent(pObject: *mut c_void) -> c_uint;
-    pub fn wxPGProperty_HasAnyChild(pObject: *mut c_void) -> c_int;
-    pub fn wxPGProperty_InsertChoice(pObject: *mut c_void, label: *mut c_void, index: c_int, value: c_int) -> c_int;
-    pub fn wxPGProperty_IsCategory(pObject: *mut c_void) -> c_int;
-    pub fn wxPGProperty_IsEnabled(pObject: *mut c_void) -> c_int;
-    pub fn wxPGProperty_IsExpanded(pObject: *mut c_void) -> c_int;
-    pub fn wxPGProperty_IsValueUnspecified(pObject: *mut c_void) -> c_int;
-    pub fn wxPGProperty_RefreshEditor(pObject: *mut c_void);
-    pub fn wxPGProperty_SetAttribute(pObject: *mut c_void, name: *mut c_void, value: *mut c_void);
-    pub fn wxPGProperty_SetAutoUnspecified(pObject: *mut c_void, enable: c_int);
-    pub fn wxPGProperty_SetExpanded(pObject: *mut c_void, expanded: c_int);
-    pub fn wxPGProperty_GetY(pObject: *mut c_void) -> c_int;
-    pub fn wxPGProperty_GetValue(pObject: *mut c_void) -> *mut c_void;
-    pub fn wxPGProperty_GetHintText(pObject: *mut c_void) -> *mut c_void;
-    pub fn wxPGProperty_GetGrid(pObject: *mut c_void) -> *mut c_void;
-    pub fn wxPGProperty_GetGridIfDisplayed(pObject: *mut c_void) -> *mut c_void;
-    pub fn wxPGProperty_GetMainParent(pObject: *mut c_void) -> *mut c_void;
-    pub fn wxPGProperty_GetParent(pObject: *mut c_void) -> *mut c_void;
-    pub fn wxPGProperty_Item(pObject: *mut c_void, index: c_uint) -> *mut c_void;
-    pub fn wxPGProperty_GetChildCount(pObject: *mut c_void) -> c_int;
-    pub fn wxPGProperty_GetChoiceSelection(pObject: *mut c_void) -> c_int;
-    pub fn wxPGProperty_SetChoiceSelection(pObject: *mut c_void, selection: c_int);
-    pub fn wxPGProperty_Enable(pObject: *mut c_void, enable: c_int);
-    pub fn wxPGProperty_AreChildrenComponents(pObject: *mut c_void) -> c_int;
-    pub fn wxPGProperty_GetDisplayedCommonValueCount(pObject: *mut c_void) -> c_int;
-    pub fn wxPGProperty_SetLabel(pObject: *mut c_void, label: *mut c_void);
-    pub fn wxPGProperty_SetName(pObject: *mut c_void, name: *mut c_void);
-    pub fn wxPGProperty_GetLabel(pObject: *mut c_void) -> *mut c_void;
-    pub fn wxPGProperty_GetName(pObject: *mut c_void) -> *mut c_void;
-    pub fn wxPGProperty_GetValueAsString(pObject: *mut c_void) -> *mut c_void;
-    pub fn wxPGProperty_GetValueType(pObject: *mut c_void) -> *mut c_void;
-    pub fn wxPGProperty_SetHelpString(pObject: *mut c_void, helpString: *mut c_void);
 
     // wxPrintAbortDialog
     pub fn wxPrintAbortDialog_Create(parent: *mut c_void, document_title: *mut c_void, x: c_int, y: c_int, width: c_int, height: c_int, style: c_int) -> *mut c_void;
@@ -9909,7 +10592,7 @@ extern "C" {
     pub fn kwxGridTableBase_SetOnSetValueAsBool(pObject: *mut c_void, pFunction: *mut c_void);
 
     // kwxLog
-    pub fn kwxLog_AddTraceMask(pObject: *mut c_void, str: *mut c_void);
+    pub fn kwxLog_AddTraceMask(pObject: *mut c_void, str: *const c_char);
     pub fn kwxLog_Create(pObject: *mut c_void, pFunction: *mut c_void) -> *mut c_void;
     pub fn kwxLog_Delete(pObject: *mut c_void);
     pub fn kwxLog_SetOnDoLogRecord(pObject: *mut c_void, pFunction: *mut c_void);
@@ -9922,13 +10605,13 @@ extern "C" {
     pub fn kwxLog_GetTimestamp(pObject: *mut c_void) -> *mut c_void;
     pub fn kwxLog_GetVerbose(pObject: *mut c_void) -> c_int;
     pub fn kwxLog_HasPendingMessages(pObject: *mut c_void) -> c_int;
-    pub fn kwxLog_IsAllowedTraceMask(pObject: *mut c_void, mask: *mut c_void) -> c_int;
+    pub fn kwxLog_IsAllowedTraceMask(pObject: *mut c_void, mask: *const c_char) -> c_int;
     pub fn kwxLog_IsEnabled(pObject: *mut c_void) -> c_int;
     pub fn kwxLog_OnLog(pObject: *mut c_void, level: c_int, szString: *mut c_void, timestamp: c_int);
-    pub fn kwxLog_RemoveTraceMask(pObject: *mut c_void, str: *mut c_void);
+    pub fn kwxLog_RemoveTraceMask(pObject: *mut c_void, str: *const c_char);
     pub fn kwxLog_Resume(pObject: *mut c_void);
     pub fn kwxLog_SetActiveTarget(pLogger: *mut c_void) -> *mut c_void;
-    pub fn kwxLog_SetTimestamp(pObject: *mut c_void, timestamp: *mut c_void);
+    pub fn kwxLog_SetTimestamp(pObject: *mut c_void, timestamp: *const c_char);
     pub fn kwxLog_SetVerbose(pObject: *mut c_void, bVerbose: c_int);
     pub fn kwxLog_Suspend(pObject: *mut c_void);
 
@@ -10716,6 +11399,7 @@ extern "C" {
     pub fn wxBitmapBundle_FromResources(name: *mut c_void) -> *mut c_void;
     pub fn wxBitmapBundle_FromBitmaps(bitmaps: *mut c_void) -> *mut c_void;
     pub fn wxBitmapBundle_GetBitmap(pObject: *mut c_void, width: c_int, height: c_int) -> *mut c_void;
+    pub fn wxBitmapBundle_GetIcon(pObject: *mut c_void, width: c_int, height: c_int) -> *mut c_void;
     pub fn wxBitmapBundle_GetDefaultSize(pObject: *mut c_void) -> *mut c_void;
     pub fn wxBitmapBundle_IsOk(pObject: *mut c_void) -> c_int;
     pub fn wxBitmapBundle_CreateFromData(data: *mut c_void, size: usize, bitmap_type: c_int) -> *mut c_void;
@@ -10793,6 +11477,8 @@ extern "C" {
     pub fn wxButton_Create(parent: *mut c_void, id: c_int, text: *mut c_void, left: c_int, top: c_int, width: c_int, height: c_int, style: c_int) -> *mut c_void;
     pub fn wxButton_SetBackgroundColour(pObject: *mut c_void, colour: *mut c_void) -> c_int;
     pub fn wxButton_SetDefault(pObject: *mut c_void);
+    pub fn wxButton_SetAuthNeeded(pObject: *mut c_void, show: c_int);
+    pub fn wxButton_GetAuthNeeded(pObject: *mut c_void) -> c_int;
 
     // wxCalculateLayoutEvent
     pub fn wxCalculateLayoutEvent_Create(id: c_int) -> *mut c_void;
@@ -10904,6 +11590,8 @@ extern "C" {
 
     // wxCheckBox
     pub fn wxCheckBox_Create(parent: *mut c_void, id: c_int, text: *mut c_void, left: c_int, top: c_int, width: c_int, height: c_int, style: c_int) -> *mut c_void;
+    pub fn wxCheckBox_CreateDefault() -> *mut c_void;
+    pub fn wxCheckBox_Create2(pObject: *mut c_void, parent: *mut c_void, id: c_int, text: *mut c_void, left: c_int, top: c_int, width: c_int, height: c_int, style: c_int) -> c_int;
     pub fn wxCheckBox_Delete(pObject: *mut c_void);
     pub fn wxCheckBox_GetValue(pObject: *mut c_void) -> c_int;
     pub fn wxCheckBox_SetValue(pObject: *mut c_void, value: c_int);
@@ -11079,6 +11767,10 @@ extern "C" {
 
     // wxContextHelpButton
     pub fn wxContextHelpButton_Create(parent: *mut c_void, id: c_int, x: c_int, y: c_int, width: c_int, height: c_int, style: c_long) -> *mut c_void;
+
+    // wxContextMenuEvent
+    pub fn wxContextMenuEvent_GetPosition(pObject: *mut c_void, x: *mut c_int, y: *mut c_int);
+    pub fn wxContextMenuEvent_SetPosition(pObject: *mut c_void, x: c_int, y: c_int);
 
     // wxCustomDataObject
     pub fn wxCustomDataObject_Create(format: *mut c_void) -> *mut c_void;
@@ -11298,15 +11990,20 @@ extern "C" {
     pub fn wxFileHistory_AddFileToHistory(pObject: *mut c_void, file: *mut c_void);
     pub fn wxFileHistory_AddFilesToMenu(pObject: *mut c_void, menu: *mut c_void);
     pub fn wxFileHistory_Create(maxFiles: c_int) -> *mut c_void;
+    pub fn wxFileHistory_CreateEx(maxFiles: c_int, idBase: c_int) -> *mut c_void;
     pub fn wxFileHistory_Delete(pObject: *mut c_void);
+    pub fn wxFileHistory_GetBaseId(pObject: *mut c_void) -> c_int;
     pub fn wxFileHistory_GetCount(pObject: *mut c_void) -> c_int;
     pub fn wxFileHistory_GetHistoryFile(pObject: *mut c_void, index: c_int) -> *mut c_void;
     pub fn wxFileHistory_GetMaxFiles(pObject: *mut c_void) -> c_int;
+    pub fn wxFileHistory_GetMenuPathStyle(pObject: *mut c_void) -> c_int;
     pub fn wxFileHistory_GetMenus(pObject: *mut c_void, ref_: *mut c_void) -> c_int;
     pub fn wxFileHistory_Load(pObject: *mut c_void, config: *mut c_void);
     pub fn wxFileHistory_RemoveFileFromHistory(pObject: *mut c_void, index: c_int);
     pub fn wxFileHistory_RemoveMenu(pObject: *mut c_void, menu: *mut c_void);
     pub fn wxFileHistory_Save(pObject: *mut c_void, config: *mut c_void);
+    pub fn wxFileHistory_SetBaseId(pObject: *mut c_void, baseId: c_int);
+    pub fn wxFileHistory_SetMenuPathStyle(pObject: *mut c_void, style: c_int);
     pub fn wxFileHistory_UseMenu(pObject: *mut c_void, menu: *mut c_void);
 
     // wxFileSystemHandler
@@ -11424,6 +12121,33 @@ extern "C" {
     pub fn wxGauge_SetValue(pObject: *mut c_void, pos: c_int);
     pub fn wxGauge_Pulse(self_: *mut c_void);
     pub fn wxGauge_IsVertical(self_: *mut c_void) -> c_int;
+
+    // wxGenericHyperlinkCtrl
+    pub fn wxGenericHyperlinkCtrl_Create(parent: *mut c_void, id: c_int, label: *mut c_void, url: *mut c_void, x: c_int, y: c_int, width: c_int, height: c_int, style: c_int) -> *mut c_void;
+    pub fn wxGenericHyperlinkCtrl_GetHoverColour(pObject: *mut c_void) -> *mut c_void;
+    pub fn wxGenericHyperlinkCtrl_GetNormalColour(pObject: *mut c_void) -> *mut c_void;
+    pub fn wxGenericHyperlinkCtrl_GetURL(pObject: *mut c_void) -> *mut c_void;
+    pub fn wxGenericHyperlinkCtrl_GetVisited(pObject: *mut c_void) -> c_int;
+    pub fn wxGenericHyperlinkCtrl_GetVisitedColour(pObject: *mut c_void) -> *mut c_void;
+    pub fn wxGenericHyperlinkCtrl_SetHoverColour(pObject: *mut c_void, colour: *mut c_void);
+    pub fn wxGenericHyperlinkCtrl_SetNormalColour(pObject: *mut c_void, colour: *mut c_void);
+    pub fn wxGenericHyperlinkCtrl_SetURL(pObject: *mut c_void, url: *mut c_void);
+    pub fn wxGenericHyperlinkCtrl_SetVisited(pObject: *mut c_void, visited: c_int);
+    pub fn wxGenericHyperlinkCtrl_SetVisitedColour(pObject: *mut c_void, colour: *mut c_void);
+
+    // wxGenericStaticBitmap
+    pub fn wxGenericStaticBitmap_Create(parent: *mut c_void, id: c_int, bitmap: *mut c_void, left: c_int, top: c_int, width: c_int, height: c_int, style: c_int) -> *mut c_void;
+    pub fn wxGenericStaticBitmap_Delete(pObject: *mut c_void);
+    pub fn wxGenericStaticBitmap_GetBitmap(pObject: *mut c_void, ref_: *mut c_void);
+    pub fn wxGenericStaticBitmap_GetIcon(pObject: *mut c_void, ref_: *mut c_void);
+    pub fn wxGenericStaticBitmap_SetBitmap(pObject: *mut c_void, bitmap: *mut c_void);
+    pub fn wxGenericStaticBitmap_SetIcon(pObject: *mut c_void, icon: *mut c_void);
+    pub fn wxGenericStaticBitmap_SetScaleMode(pObject: *mut c_void, scale_mode: c_int);
+    pub fn wxGenericStaticBitmap_GetScaleMode(pObject: *mut c_void) -> c_int;
+
+    // wxGenericStaticText
+    pub fn wxGenericStaticText_Create(parent: *mut c_void, id: c_int, text: *mut c_void, left: c_int, top: c_int, width: c_int, height: c_int, style: c_int) -> *mut c_void;
+    pub fn wxGenericStaticText_Wrap(pObject: *mut c_void, width: c_int);
 
     // wxGenericValidator
     pub fn wxGenericValidator_CreateInt(value: *mut c_void) -> *mut c_void;
@@ -11601,13 +12325,73 @@ extern "C" {
     pub fn wxGrid_GetSelectedCells(pObject: *mut c_void, array: *mut c_void);
     pub fn wxGrid_GetSelectionBlockTopLeft(pObject: *mut c_void, array: *mut c_void);
     pub fn wxGrid_GetSelectionBlockBottomRight(pObject: *mut c_void, array: *mut c_void);
+    pub fn wxGrid_GetSelectedBlocks(pObject: *mut c_void, array: *mut c_void);
     pub fn wxGrid_GetSelectedRows(pObject: *mut c_void, array: *mut c_void) -> c_int;
     pub fn wxGrid_GetSelectedCols(pObject: *mut c_void, array: *mut c_void) -> c_int;
     pub fn wxGrid_GetCellSize(pObject: *mut c_void, row: c_int, col: c_int, srow: *mut c_int, scol: *mut c_int);
     pub fn wxGrid_SetCellSize(pObject: *mut c_void, row: c_int, col: c_int, srow: c_int, scol: c_int);
+    pub fn wxGrid_FreezeTo(pObject: *mut c_void, row: c_int, col: c_int) -> c_int;
+    pub fn wxGrid_IsFrozen(pObject: *mut c_void) -> c_int;
+    pub fn wxGrid_SetGridFrozenBorderColour(pObject: *mut c_void, col: *mut c_void);
+    pub fn wxGrid_UseNativeColHeader(pObject: *mut c_void, native: c_int) -> c_int;
+    pub fn wxGrid_SetUseNativeColLabels(pObject: *mut c_void, native: c_int);
+    pub fn wxGrid_EnableHidingColumns(pObject: *mut c_void, enable: c_int) -> c_int;
+    pub fn wxGrid_CanHideColumns(pObject: *mut c_void) -> c_int;
+    pub fn wxGrid_EnableDragRowMove(pObject: *mut c_void, enable: c_int) -> c_int;
+    pub fn wxGrid_EnableDragColMove(pObject: *mut c_void, enable: c_int) -> c_int;
+    pub fn wxGrid_EnableDragCell(pObject: *mut c_void, enable: c_int);
+    pub fn wxGrid_EnableDragRowLabelSize(pObject: *mut c_void, enable: c_int);
+    pub fn wxGrid_EnableDragColLabelSize(pObject: *mut c_void, enable: c_int);
+    pub fn wxGrid_SetTabBehaviour(pObject: *mut c_void, behaviour: c_int);
+    pub fn wxGrid_SetCellOverflow(pObject: *mut c_void, row: c_int, col: c_int, allow: c_int);
+    pub fn wxGrid_SetDefaultCellOverflow(pObject: *mut c_void, allow: c_int);
+    pub fn wxGrid_SetCellFitMode(pObject: *mut c_void, row: c_int, col: c_int, fitMode: *mut c_void);
+    pub fn wxGrid_SetDefaultCellFitMode(pObject: *mut c_void, fitMode: *mut c_void);
+    pub fn wxGrid_GetCornerLabelAlignment(pObject: *mut c_void, horiz: *mut c_int, vert: *mut c_int);
+    pub fn wxGrid_SetCornerLabelAlignment(pObject: *mut c_void, horiz: c_int, vert: c_int);
+    pub fn wxGrid_GetCornerLabelTextOrientation(pObject: *mut c_void) -> c_int;
+    pub fn wxGrid_SetCornerLabelTextOrientation(pObject: *mut c_void, textOrientation: c_int);
+    pub fn wxGrid_GetCellHighlightPenWidth(pObject: *mut c_void) -> c_int;
+    pub fn wxGrid_SetCellHighlightPenWidth(pObject: *mut c_void, width: c_int);
+    pub fn wxGrid_GetCellHighlightROPenWidth(pObject: *mut c_void) -> c_int;
+    pub fn wxGrid_SetCellHighlightROPenWidth(pObject: *mut c_void, width: c_int);
+    pub fn wxGrid_DeselectCell(pObject: *mut c_void, row: c_int, col: c_int);
+    pub fn wxGrid_DeselectCol(pObject: *mut c_void, col: c_int);
+    pub fn wxGrid_DeselectRow(pObject: *mut c_void, row: c_int);
+    pub fn wxGrid_DisableOverlaySelection(pObject: *mut c_void);
+    pub fn wxGrid_ForceRefresh(pObject: *mut c_void);
+    pub fn wxGrid_AutoSizeRowLabelSize(pObject: *mut c_void, row: c_int);
+    pub fn wxGrid_AutoSizeColLabelSize(pObject: *mut c_void, col: c_int);
+    pub fn wxGrid_DisableRowResize(pObject: *mut c_void, row: c_int);
+    pub fn wxGrid_HideCol(pObject: *mut c_void, col: c_int);
+    pub fn wxGrid_ShowCol(pObject: *mut c_void, col: c_int);
+    pub fn wxGrid_HideRow(pObject: *mut c_void, row: c_int);
+    pub fn wxGrid_ShowRow(pObject: *mut c_void, row: c_int);
+    pub fn wxGrid_SetAttr(pObject: *mut c_void, row: c_int, col: c_int, attr: *mut c_void);
+    pub fn wxGrid_AssignTable(pObject: *mut c_void, table: *mut c_void, selmode: c_int);
+    pub fn wxGrid_GetRowPos(pObject: *mut c_void, idx: c_int) -> c_int;
+    pub fn wxGrid_GetColPos(pObject: *mut c_void, idx: c_int) -> c_int;
+    pub fn wxGrid_GetRowAt(pObject: *mut c_void, pos: c_int) -> c_int;
+    pub fn wxGrid_GetColAt(pObject: *mut c_void, pos: c_int) -> c_int;
+    pub fn wxGrid_SetColPos(pObject: *mut c_void, idx: c_int, pos: c_int);
+    pub fn wxGrid_ResetColPos(pObject: *mut c_void);
+    pub fn wxGrid_GetSelectionMode(pObject: *mut c_void) -> c_int;
+    pub fn wxGrid_GetSortingColumn(pObject: *mut c_void) -> c_int;
+    pub fn wxGrid_IsSortingBy(pObject: *mut c_void, col: c_int) -> c_int;
+    pub fn wxGrid_IsSortOrderAscending(pObject: *mut c_void) -> c_int;
+    pub fn wxGrid_SetSortingColumn(pObject: *mut c_void, col: c_int, ascending: c_int);
+    pub fn wxGrid_Render(pObject: *mut c_void, dc: *mut c_void, x: c_int, y: c_int, width: c_int, height: c_int, topLeftRow: c_int, topLeftCol: c_int, bottomRightRow: c_int, bottomRightCol: c_int, style: c_int);
+
+    // wxGridFitMode
+    pub fn wxGridFitMode_Create() -> *mut c_void;
+    pub fn wxGridFitMode_CreateClip() -> *mut c_void;
+    pub fn wxGridFitMode_CreateOverflow() -> *mut c_void;
+    pub fn wxGridFitMode_CreateEllipsize(ellipsizeMode: c_int) -> *mut c_void;
+    pub fn wxGridFitMode_Delete(pObject: *mut c_void);
 
     // wxGridCellAttr
     pub fn wxGridCellAttr_Ctor() -> *mut c_void;
+    pub fn wxGridCellAttr_Clone(pObject: *mut c_void) -> *mut c_void;
     pub fn wxGridCellAttr_DecRef(pObject: *mut c_void);
     pub fn wxGridCellAttr_GetAlignment(pObject: *mut c_void, hAlign: *mut c_int, vAlign: *mut c_int);
     pub fn wxGridCellAttr_GetBackgroundColour(pObject: *mut c_void, ref_: *mut c_void);
@@ -12110,6 +12894,7 @@ extern "C" {
 
     // wxMemoryFSHandler
     pub fn wxMemoryFSHandler_AddFile(filename: *mut c_void, textdata: *mut c_void);
+    pub fn wxMemoryFSHandler_Create() -> *mut c_void;
     pub fn wxMemoryFSHandler_AddFileBinary(filename: *mut c_void, binarydata: *mut c_void, size: usize);
     pub fn wxMemoryFSHandler_AddFileWithMimeType(filename: *mut c_void, textdata: *mut c_void, mimetype: *mut c_void);
     pub fn wxMemoryFSHandler_AddFileWithMimeTypeBinary(filename: *mut c_void, binarydata: *mut c_void, size: usize, mimetype: *mut c_void);
@@ -12322,6 +13107,7 @@ extern "C" {
     pub fn wxDatePickerCtrl_GetValue(pObject: *mut c_void, dateTime: *mut c_void);
     pub fn wxDatePickerCtrl_SetRange(pObject: *mut c_void, dt1: *mut c_void, dt2: *mut c_void);
     pub fn wxDatePickerCtrl_GetRange(pObject: *mut c_void, dt1: *mut c_void, dt2: *mut c_void) -> c_int;
+    pub fn wxDatePickerCtrl_SetNullText(pObject: *mut c_void, text: *mut c_void);
 
     // wxDirPickerCtrl
     pub fn wxDirPickerCtrl_Create(parent: *mut c_void, id: c_int, x: c_int, y: c_int, width: c_int, height: c_int, path: *mut c_void, message: *mut c_void, style: c_long) -> *mut c_void;
@@ -12433,6 +13219,8 @@ extern "C" {
     // wxPathList
     pub fn wxPathList_Add(pObject: *mut c_void, path: *mut c_void) -> c_int;
     pub fn wxPathList_FindValidPath(pObject: *mut c_void, filename: *mut c_void) -> *mut c_void;
+    pub fn wxPathList_Create() -> *mut c_void;
+    pub fn wxPathList_Delete(pObject: *mut c_void);
 
     // wxPen
     pub fn wxPen_Assign(pObject: *mut c_void, pen: *mut c_void);
@@ -13115,6 +13903,7 @@ extern "C" {
     pub fn wxSlider_SetSelection(pObject: *mut c_void, minPos: c_int, maxPos: c_int);
     pub fn wxSlider_SetThumbLength(pObject: *mut c_void, len: c_int);
     pub fn wxSlider_SetTick(pObject: *mut c_void, tickPos: c_int);
+    pub fn wxSlider_SetTickFreq(pObject: *mut c_void, freq: c_int);
     pub fn wxSlider_SetValue(pObject: *mut c_void, value: c_int);
 
     // wxSpinButton
@@ -13135,6 +13924,8 @@ extern "C" {
     pub fn wxSpinCtrl_GetValue(pObject: *mut c_void) -> c_int;
     pub fn wxSpinCtrl_SetRange(pObject: *mut c_void, min_val: c_int, max_val: c_int);
     pub fn wxSpinCtrl_SetValue(pObject: *mut c_void, val: c_int);
+    pub fn wxSpinCtrl_SetIncrement(pObject: *mut c_void, inc: c_int);
+    pub fn wxSpinCtrl_SetValueString(pObject: *mut c_void, value: *mut c_void);
 
     // wxSpinCtrlDouble
     pub fn wxSpinCtrlDouble_Create(parent: *mut c_void, id: c_int, value: *mut c_void, x: c_int, y: c_int, width: c_int, height: c_int, style: c_int, min: c_double, max: c_double, initial: c_double, inc: c_double) -> *mut c_void;
@@ -13194,9 +13985,12 @@ extern "C" {
     pub fn wxStaticBitmap_GetIcon(pObject: *mut c_void, ref_: *mut c_void);
     pub fn wxStaticBitmap_SetBitmap(pObject: *mut c_void, bitmap: *mut c_void);
     pub fn wxStaticBitmap_SetIcon(pObject: *mut c_void, icon: *mut c_void);
+    pub fn wxStaticBitmap_SetScaleMode(pObject: *mut c_void, scale_mode: c_int);
+    pub fn wxStaticBitmap_GetScaleMode(pObject: *mut c_void) -> c_int;
 
     // wxStaticBox
     pub fn wxStaticBox_Create(parent: *mut c_void, id: c_int, text: *mut c_void, left: c_int, top: c_int, width: c_int, height: c_int, style: c_int) -> *mut c_void;
+    pub fn wxStaticBox_CreateWithLabelWindow(parent: *mut c_void, id: c_int, label: *mut c_void, left: c_int, top: c_int, width: c_int, height: c_int, style: c_int) -> *mut c_void;
     pub fn wxStaticBox_GetBordersForSizer(self_: *mut c_void, borderTop: *mut c_int, borderOther: *mut c_int);
 
     // wxStaticBoxSizer
@@ -13236,6 +14030,10 @@ extern "C" {
     pub fn wxStopWatch_Pause(pObject: *mut c_void);
     pub fn wxStopWatch_Resume(pObject: *mut c_void);
     pub fn wxStopWatch_Time(pObject: *mut c_void) -> c_int;
+
+    // wxStreamToTextRedirector
+    pub fn wxStreamToTextRedirector_Create(textctrl: *mut c_void) -> *mut c_void;
+    pub fn wxStreamToTextRedirector_Delete(pObject: *mut c_void);
 
     // wxString
     pub fn wxString_Create(buffer: *const c_char) -> *mut c_void;
@@ -13445,6 +14243,10 @@ extern "C" {
     // wxWindowDestroyEvent
     pub fn wxWindowDestroyEvent_GetWindow(pObject: *mut c_void) -> *mut c_void;
 
+    // wxWindowUpdateLocker
+    pub fn wxWindowUpdateLocker_Create(win: *mut c_void) -> *mut c_void;
+    pub fn wxWindowUpdateLocker_Delete(pObject: *mut c_void);
+
     // wxWrapSizer
     pub fn wxWrapSizer_Create(orient: c_int, flags: c_int) -> *mut c_void;
     pub fn wxWrapSizer_GetOrientation(pObject: *mut c_void) -> c_int;
@@ -13466,9 +14268,14 @@ extern "C" {
     pub fn wxWizard_HasNextPage(pObject: *mut c_void, page: *mut c_void) -> c_int;
     pub fn wxWizard_HasPrevPage(pObject: *mut c_void, page: *mut c_void) -> c_int;
     pub fn wxWizard_GetBitmap(pObject: *mut c_void, ref_: *mut c_void);
+    pub fn wxWizard_CreateDefault() -> *mut c_void;
+    pub fn wxWizard_Create2(pObject: *mut c_void, parent: *mut c_void, id: c_int, text: *mut c_void, bitmap: *mut c_void, x: c_int, y: c_int, style: c_long) -> c_int;
+    pub fn wxWizard_SetBitmap(pObject: *mut c_void, bitmap: *mut c_void);
+    pub fn wxWizard_GetBitmapPlacement(pObject: *mut c_void) -> c_int;
 
     // wxWizardEvent
     pub fn wxWizardEvent_GetDirection(pObject: *mut c_void) -> c_int;
+    pub fn wxWizardEvent_GetPage(pObject: *mut c_void) -> *mut c_void;
 
     // wxWizardPageSimple
     pub fn wxWizardPageSimple_Create(parent: *mut c_void, prev: *mut c_void, next: *mut c_void, bitmap: *mut c_void) -> *mut c_void;
@@ -13477,13 +14284,6 @@ extern "C" {
     pub fn wxWizardPageSimple_GetPrev(pObject: *mut c_void) -> *mut c_void;
     pub fn wxWizardPageSimple_SetNext(pObject: *mut c_void, next: *mut c_void);
     pub fn wxWizardPageSimple_SetPrev(pObject: *mut c_void, prev: *mut c_void);
-
-    // wxPropertyGridEvent
-    pub fn wxPropertyGridEvent_HasProperty(pObject: *mut c_void) -> c_int;
-    pub fn wxPropertyGridEvent_CanVeto(pObject: *mut c_void) -> c_int;
-    pub fn wxPropertyGridEvent_GetColumn(pObject: *mut c_void) -> c_uint;
-    pub fn wxPropertyGridEvent_GetValue(pObject: *mut c_void) -> *mut c_void;
-    pub fn wxPropertyGridEvent_Veto(pObject: *mut c_void, veto: c_int);
-    pub fn wxPropertyGridEvent_GetProperty(pObject: *mut c_void) -> *mut c_void;
+    pub fn wxWizardPageSimple_CreateWithBundle(parent: *mut c_void, prev: *mut c_void, next: *mut c_void, bitmap: *mut c_void) -> *mut c_void;
 
 }

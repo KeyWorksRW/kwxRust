@@ -16,6 +16,13 @@ impl RichToolTip {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for RichToolTip {
     }
 }
 
+impl WxRichToolTip for RichToolTip {}
 use crate::support::WxStr;
 
 impl RichToolTip {
@@ -58,11 +66,11 @@ impl RichToolTip {
         unsafe { sys::wxRichToolTip_SetTipKind(self.as_ptr(), tip_kind as c_int) }
     }
 
-    pub fn set_background_colour(&self, colour: &impl WxObject, colour_end: &impl WxObject) {
+    pub fn set_background_colour(&self, colour: &impl WxColour, colour_end: &impl WxColour) {
         unsafe { sys::wxRichToolTip_SetBackgroundColour(self.as_ptr(), colour.as_ptr(), colour_end.as_ptr()) }
     }
 
-    pub fn set_background_colour_single(&self, colour: &impl WxObject) {
+    pub fn set_background_colour_single(&self, colour: &impl WxColour) {
         unsafe { sys::wxRichToolTip_SetBackgroundColourSingle(self.as_ptr(), colour.as_ptr()) }
     }
 
@@ -78,8 +86,15 @@ impl RichToolTip {
         unsafe { sys::wxRichToolTip_SetTimeout(self.as_ptr(), milliseconds as c_uint, show_delay as c_uint) }
     }
 
-    pub fn show_for(&self, win: &impl WxWindow, rect: &impl WxObject) {
+    pub fn show_for(&self, win: &impl WxWindow, rect: &impl WxRect) {
         unsafe { sys::wxRichToolTip_ShowFor(self.as_ptr(), win.as_ptr(), rect.as_ptr()) }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxRichToolTip_Delete(self.as_ptr()) }
     }
 
 }

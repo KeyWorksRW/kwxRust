@@ -16,6 +16,13 @@ impl PopupTransientWindow {
         Self(PopupWindow::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -75,6 +82,37 @@ impl PopupTransientWindow {
 
     pub fn set_on_on_dismiss(&self, p_function: *mut c_void) {
         unsafe { sys::wxPopupTransientWindow_SetOnOnDismiss(self.as_ptr(), p_function) }
+    }
+
+    /// Alternative constructor wrapping `kwxPopupTransientWindow_Create`; takes every
+    /// declared parameter.  `new`/`new_full` wrap the wxWidgets-own constructor.
+    pub fn new_with_state(p_object: *mut c_void, parent: &impl WxWindow, style: i32) -> Self {
+        let ptr = unsafe { sys::kwxPopupTransientWindow_Create(p_object, parent.as_ptr(), style as c_int) };
+        assert!(!ptr.is_null(), "kwxPopupTransientWindow_Create returned null");
+        Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::kwxPopupTransientWindow_Delete(self.as_ptr()) }
+    }
+
+    pub fn call_base_popup(&self, focus: &impl WxWindow) {
+        unsafe { sys::kwxPopupTransientWindow_CallBasePopup(self.as_ptr(), focus.as_ptr()) }
+    }
+
+    pub fn call_base_show(&self, show: bool) -> bool {
+        unsafe { sys::kwxPopupTransientWindow_CallBaseShow(self.as_ptr(), show as c_int) != 0 }
+    }
+
+    pub fn call_base_process_left_down(&self, event: &impl WxMouseEvent) -> bool {
+        unsafe { sys::kwxPopupTransientWindow_CallBaseProcessLeftDown(self.as_ptr(), event.as_ptr()) != 0 }
+    }
+
+    pub fn call_base_on_dismiss(&self) {
+        unsafe { sys::kwxPopupTransientWindow_CallBaseOnDismiss(self.as_ptr()) }
     }
 
 }

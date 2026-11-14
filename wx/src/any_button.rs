@@ -16,6 +16,13 @@ impl AnyButton {
         Self(Control::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,6 +45,7 @@ impl WxObject for AnyButton {
 impl WxControl for AnyButton {}
 impl WxWindow for AnyButton {}
 impl WxEvtHandler for AnyButton {}
+impl WxAnyButton for AnyButton {}
 
 use crate::bitmap::Bitmap;
 
@@ -114,27 +122,27 @@ impl AnyButton {
         }
     }
 
-    pub fn set_bitmap(&self, bitmap: &impl WxObject, dir: i32) {
+    pub fn set_bitmap(&self, bitmap: &impl WxBitmapBundle, dir: i32) {
         unsafe { sys::wxAnyButton_SetBitmap(self.as_ptr(), bitmap.as_ptr(), dir as c_int) }
     }
 
-    pub fn set_bitmap_label(&self, bitmap: &impl WxObject) {
+    pub fn set_bitmap_label(&self, bitmap: &impl WxBitmapBundle) {
         unsafe { sys::wxAnyButton_SetBitmapLabel(self.as_ptr(), bitmap.as_ptr()) }
     }
 
-    pub fn set_bitmap_pressed(&self, bitmap: &impl WxObject) {
+    pub fn set_bitmap_pressed(&self, bitmap: &impl WxBitmapBundle) {
         unsafe { sys::wxAnyButton_SetBitmapPressed(self.as_ptr(), bitmap.as_ptr()) }
     }
 
-    pub fn set_bitmap_disabled(&self, bitmap: &impl WxObject) {
+    pub fn set_bitmap_disabled(&self, bitmap: &impl WxBitmapBundle) {
         unsafe { sys::wxAnyButton_SetBitmapDisabled(self.as_ptr(), bitmap.as_ptr()) }
     }
 
-    pub fn set_bitmap_current(&self, bitmap: &impl WxObject) {
+    pub fn set_bitmap_current(&self, bitmap: &impl WxBitmapBundle) {
         unsafe { sys::wxAnyButton_SetBitmapCurrent(self.as_ptr(), bitmap.as_ptr()) }
     }
 
-    pub fn set_bitmap_focus(&self, bitmap: &impl WxObject) {
+    pub fn set_bitmap_focus(&self, bitmap: &impl WxBitmapBundle) {
         unsafe { sys::wxAnyButton_SetBitmapFocus(self.as_ptr(), bitmap.as_ptr()) }
     }
 

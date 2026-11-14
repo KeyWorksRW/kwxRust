@@ -16,6 +16,13 @@ impl SystemSettings {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,16 +42,17 @@ impl WxObject for SystemSettings {
     }
 }
 
+impl WxSystemSettings for SystemSettings {}
 
 use crate::colour::Colour;
 use crate::system_appearance::SystemAppearance;
 
 impl SystemSettings {
-    pub fn get_colour(&self, index: i32, ref_: &impl WxObject) {
+    pub fn get_colour(index: i32, ref_: &impl WxColour) {
         unsafe { sys::wxSystemSettings_GetColour(index as c_int, ref_.as_ptr()) }
     }
 
-    pub fn get_appearance(&self) -> Option<SystemAppearance> {
+    pub fn get_appearance() -> Option<SystemAppearance> {
         let ptr = unsafe { sys::wxSystemSettings_GetAppearance() };
         if ptr.is_null() {
             None
@@ -53,19 +61,19 @@ impl SystemSettings {
         }
     }
 
-    pub fn get_font(&self, index: i32, ref_: &impl WxObject) {
+    pub fn get_font(index: i32, ref_: &impl WxFont) {
         unsafe { sys::wxSystemSettings_GetFont(index as c_int, ref_.as_ptr()) }
     }
 
-    pub fn get_metric(&self, index: i32) -> i32 {
+    pub fn get_metric(index: i32) -> i32 {
         unsafe { sys::wxSystemSettings_GetMetric(index as c_int) as i32 }
     }
 
-    pub fn get_screen_type(&self) -> i32 {
+    pub fn get_screen_type() -> i32 {
         unsafe { sys::wxSystemSettings_GetScreenType() as i32 }
     }
 
-    pub fn select_light_dark(&self, col_for_light: &impl WxObject, col_for_dark: &impl WxObject) -> Option<Colour> {
+    pub fn select_light_dark(col_for_light: &impl WxColour, col_for_dark: &impl WxColour) -> Option<Colour> {
         let ptr = unsafe { sys::wxSystemSettings_SelectLightDark(col_for_light.as_ptr(), col_for_dark.as_ptr()) };
         if ptr.is_null() {
             None

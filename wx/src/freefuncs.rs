@@ -155,12 +155,12 @@ pub fn expSetDefaultAssertHandler() {
 }
 
 #[inline]
-pub fn Quantize(src: &impl WxObject, dest: &impl WxObject, desired_no_colours: i32, eight_bit_data: *mut c_void, flags: i32) -> bool {
+pub fn Quantize(src: &impl WxImage, dest: &impl WxImage, desired_no_colours: i32, eight_bit_data: *mut c_void, flags: i32) -> bool {
     unsafe { sys::Quantize(src.as_ptr(), dest.as_ptr(), desired_no_colours as c_int, eight_bit_data, flags as c_int) != 0 }
 }
 
 #[inline]
-pub fn QuantizePalette(src: &impl WxObject, dest: &impl WxObject, p_palette: *mut c_void, desired_no_colours: i32, eight_bit_data: *mut c_void, flags: i32) -> bool {
+pub fn QuantizePalette(src: &impl WxImage, dest: &impl WxImage, p_palette: *mut c_void, desired_no_colours: i32, eight_bit_data: *mut c_void, flags: i32) -> bool {
     unsafe { sys::QuantizePalette(src.as_ptr(), dest.as_ptr(), p_palette, desired_no_colours as c_int, eight_bit_data, flags as c_int) != 0 }
 }
 
@@ -216,8 +216,8 @@ pub fn wxGetOsDescription() -> String {
 }
 
 #[inline]
-pub fn wxGetOsVersion(major: *mut c_void, minor: *mut c_void, micro: *mut c_void) -> i32 {
-    unsafe { sys::wxGetOsVersion(major, minor, micro) as i32 }
+pub fn wxGetOsVersion(major: *mut i32, minor: *mut i32, micro: *mut i32) -> i32 {
+    unsafe { sys::wxGetOsVersion(major as *mut c_int, minor as *mut c_int, micro as *mut c_int) as i32 }
 }
 
 #[inline]
@@ -342,7 +342,7 @@ pub fn wxUnsetEnv(var: impl AsRef<str>) -> bool {
 }
 
 #[inline]
-pub fn wxGetEnvMap(env_map: &impl WxObject) -> bool {
+pub fn wxGetEnvMap(env_map: &impl WxArrayString) -> bool {
     unsafe { sys::wxGetEnvMap(env_map.as_ptr()) != 0 }
 }
 
@@ -383,31 +383,31 @@ pub fn wxGetUserHome(user: impl AsRef<str>) -> String {
 }
 
 #[inline]
-pub fn wxGetDiskSpace(path: impl AsRef<str>, total_bytes: *mut c_void, free_bytes: *mut c_void) -> bool {
+pub fn wxGetDiskSpace(path: impl AsRef<str>, total_bytes: *mut i64, free_bytes: *mut i64) -> bool {
     let path_wx = WxStr::new(path.as_ref());
-    unsafe { sys::wxGetDiskSpace(path_wx.as_ptr(), total_bytes, free_bytes) != 0 }
+    unsafe { sys::wxGetDiskSpace(path_wx.as_ptr(), total_bytes as *mut i64, free_bytes as *mut i64) != 0 }
 }
 
 #[inline]
-pub fn wxExecute(command: impl AsRef<str>, flags: i32, process: &impl WxProcess, execute_env: &impl WxObject) -> i64 {
+pub fn wxExecute(command: impl AsRef<str>, flags: i32, process: &impl WxProcess, execute_env: &impl WxExecuteEnv) -> i64 {
     let command_wx = WxStr::new(command.as_ref());
     unsafe { sys::wxExecute(command_wx.as_ptr(), flags as c_int, process.as_ptr(), execute_env.as_ptr()) as i64 }
 }
 
 #[inline]
-pub fn wxExecuteWithOutput(command: impl AsRef<str>, output: &impl WxObject, flags: i32, execute_env: &impl WxObject) -> i64 {
+pub fn wxExecuteWithOutput(command: impl AsRef<str>, output: &impl WxArrayString, flags: i32, execute_env: &impl WxExecuteEnv) -> i64 {
     let command_wx = WxStr::new(command.as_ref());
     unsafe { sys::wxExecuteWithOutput(command_wx.as_ptr(), output.as_ptr(), flags as c_int, execute_env.as_ptr()) as i64 }
 }
 
 #[inline]
-pub fn wxExecuteWithOutputAndError(command: impl AsRef<str>, output: &impl WxObject, errors: &impl WxObject, flags: i32, execute_env: &impl WxObject) -> i64 {
+pub fn wxExecuteWithOutputAndError(command: impl AsRef<str>, output: &impl WxArrayString, errors: &impl WxArrayString, flags: i32, execute_env: &impl WxExecuteEnv) -> i64 {
     let command_wx = WxStr::new(command.as_ref());
     unsafe { sys::wxExecuteWithOutputAndError(command_wx.as_ptr(), output.as_ptr(), errors.as_ptr(), flags as c_int, execute_env.as_ptr()) as i64 }
 }
 
 #[inline]
-pub fn wxExecuteArgv(n: i32, argv: *mut c_void, flags: i32, process: &impl WxProcess, execute_env: &impl WxObject) -> i64 {
+pub fn wxExecuteArgv(n: i32, argv: *mut c_void, flags: i32, process: &impl WxProcess, execute_env: &impl WxExecuteEnv) -> i64 {
     unsafe { sys::wxExecuteArgv(n as c_int, argv, flags as c_int, process.as_ptr(), execute_env.as_ptr()) as i64 }
 }
 
@@ -425,8 +425,8 @@ pub fn wxShutdown(flags: i32) -> bool {
 }
 
 #[inline]
-pub fn wxKill(pid: i32, sig: i32, rc: *mut c_void, flags: i32) -> i32 {
-    unsafe { sys::wxKill(pid as c_long, sig as c_int, rc, flags as c_int) as i32 }
+pub fn wxKill(pid: i32, sig: i32, rc: *mut i32, flags: i32) -> i32 {
+    unsafe { sys::wxKill(pid as c_long, sig as c_int, rc as *mut c_int, flags as c_int) as i32 }
 }
 
 #[inline]
@@ -436,7 +436,7 @@ pub fn wxShell(command: impl AsRef<str>) -> bool {
 }
 
 #[inline]
-pub fn wxShellWithOutput(command: impl AsRef<str>, output: &impl WxObject) -> bool {
+pub fn wxShellWithOutput(command: impl AsRef<str>, output: &impl WxArrayString) -> bool {
     let command_wx = WxStr::new(command.as_ref());
     unsafe { sys::wxShellWithOutput(command_wx.as_ptr(), output.as_ptr()) != 0 }
 }
@@ -574,12 +574,12 @@ pub fn wxFileSelector(message: impl AsRef<str>, default_path: impl AsRef<str>, d
 }
 
 #[inline]
-pub fn wxFileSelectorEx(message: impl AsRef<str>, default_path: impl AsRef<str>, default_filename: impl AsRef<str>, index_default_extension: *mut c_void, wildcard: impl AsRef<str>, flags: i32, parent: &impl WxWindow, x: i32, y: i32) -> String {
+pub fn wxFileSelectorEx(message: impl AsRef<str>, default_path: impl AsRef<str>, default_filename: impl AsRef<str>, index_default_extension: *mut i32, wildcard: impl AsRef<str>, flags: i32, parent: &impl WxWindow, x: i32, y: i32) -> String {
     let message_wx = WxStr::new(message.as_ref());
     let default_path_wx = WxStr::new(default_path.as_ref());
     let default_filename_wx = WxStr::new(default_filename.as_ref());
     let wildcard_wx = WxStr::new(wildcard.as_ref());
-    take_string(unsafe { sys::wxFileSelectorEx(message_wx.as_ptr(), default_path_wx.as_ptr(), default_filename_wx.as_ptr(), index_default_extension, wildcard_wx.as_ptr(), flags as c_int, parent.as_ptr(), x as c_int, y as c_int) })
+    take_string(unsafe { sys::wxFileSelectorEx(message_wx.as_ptr(), default_path_wx.as_ptr(), default_filename_wx.as_ptr(), index_default_extension as *mut c_int, wildcard_wx.as_ptr(), flags as c_int, parent.as_ptr(), x as c_int, y as c_int) })
 }
 
 #[inline]
@@ -627,6 +627,28 @@ pub fn wxGetStockAccelerator(id: i32) -> Option<AcceleratorEntry> {
 #[inline]
 pub fn wxGetStockHelpString(id: i32, client: i32) -> String {
     take_string(unsafe { sys::wxGetStockHelpString(id as c_int, client as c_int) })
+}
+
+#[inline]
+pub fn wxPersistentRegisterAndRestore(frame: &impl WxFrame, name: impl AsRef<str>) -> bool {
+    let name_wx = WxStr::new(name.as_ref());
+    unsafe { sys::wxPersistentRegisterAndRestore(frame.as_ptr(), name_wx.as_ptr()) != 0 }
+}
+
+#[inline]
+pub fn wxPersistentRegisterAndRestoreNoName(frame: &impl WxFrame) -> bool {
+    unsafe { sys::wxPersistentRegisterAndRestoreNoName(frame.as_ptr()) != 0 }
+}
+
+#[inline]
+pub fn wxPersistentRegisterAndRestoreTreebook(book: &impl WxTreebook, name: impl AsRef<str>) -> bool {
+    let name_wx = WxStr::new(name.as_ref());
+    unsafe { sys::wxPersistentRegisterAndRestoreTreebook(book.as_ptr(), name_wx.as_ptr()) != 0 }
+}
+
+#[inline]
+pub fn wxPersistentRegisterAndRestoreTreebookNoName(book: &impl WxTreebook) -> bool {
+    unsafe { sys::wxPersistentRegisterAndRestoreTreebookNoName(book.as_ptr()) != 0 }
 }
 
 #[inline]
@@ -697,12 +719,12 @@ pub fn LogTrace(mask: impl AsRef<str>, message: impl AsRef<str>) {
 }
 
 #[inline]
-pub fn wxCheckDynamicCast(obj: &impl WxObject, class_info: &impl WxObject) -> *mut c_void {
+pub fn wxCheckDynamicCast(obj: &impl WxObject, class_info: &impl WxClassInfo) -> *mut c_void {
     unsafe { sys::wxCheckDynamicCast(obj.as_ptr(), class_info.as_ptr()) }
 }
 
 #[inline]
-pub fn wxCheckCast(obj: &impl WxObject, class_info: &impl WxObject) -> *mut c_void {
+pub fn wxCheckCast(obj: &impl WxObject, class_info: &impl WxClassInfo) -> *mut c_void {
     unsafe { sys::wxCheckCast(obj.as_ptr(), class_info.as_ptr()) }
 }
 
@@ -730,7 +752,7 @@ pub fn wxGetSingleChoiceIndex(message: impl AsRef<str>, caption: impl AsRef<str>
 }
 
 #[inline]
-pub fn wxGetSingleChoiceIndexEx(message: impl AsRef<str>, caption: impl AsRef<str>, n: i32, choices: &impl WxObject, parent: &impl WxWindow, x: i32, y: i32, centre: bool, width: i32, height: i32, initial_selection: i32) -> i32 {
+pub fn wxGetSingleChoiceIndexEx(message: impl AsRef<str>, caption: impl AsRef<str>, n: i32, choices: &impl WxArrayString, parent: &impl WxWindow, x: i32, y: i32, centre: bool, width: i32, height: i32, initial_selection: i32) -> i32 {
     let message_wx = WxStr::new(message.as_ref());
     let caption_wx = WxStr::new(caption.as_ref());
     unsafe { sys::wxGetSingleChoiceIndexEx(message_wx.as_ptr(), caption_wx.as_ptr(), n as c_int, choices.as_ptr(), parent.as_ptr(), x as c_int, y as c_int, centre as c_int, width as c_int, height as c_int, initial_selection as c_int) as i32 }
@@ -747,7 +769,7 @@ pub fn wxEndBusyCursor() {
 }
 
 #[inline]
-pub fn wxJoin(array: &impl WxObject, separator: i32) -> String {
+pub fn wxJoin(array: &impl WxArrayString, separator: i32) -> String {
     take_string(unsafe { sys::wxJoin(array.as_ptr(), separator as c_int) })
 }
 
@@ -829,7 +851,7 @@ pub fn wxQueueEvent(dest: &impl WxEvtHandler, event: &impl WxEvent) {
 }
 
 #[inline]
-pub fn wxSetCursor(cursors: &impl WxObject) {
+pub fn wxSetCursor(cursors: &impl WxCursor) {
     unsafe { sys::wxSetCursor(cursors.as_ptr()) }
 }
 
@@ -924,7 +946,7 @@ pub fn wxGetSelectedChoices(selections: *mut c_void, choices: impl AsRef<str>, c
 }
 
 #[inline]
-pub fn wxGetSelectedChoicesEx(selections: *mut c_void, message: impl AsRef<str>, caption: impl AsRef<str>, n: i32, choices: &impl WxObject, parent: &impl WxWindow, x: i32, y: i32, centre: bool, width: i32, height: i32) -> i32 {
+pub fn wxGetSelectedChoicesEx(selections: *mut c_void, message: impl AsRef<str>, caption: impl AsRef<str>, n: i32, choices: &impl WxArrayString, parent: &impl WxWindow, x: i32, y: i32, centre: bool, width: i32, height: i32) -> i32 {
     let message_wx = WxStr::new(message.as_ref());
     let caption_wx = WxStr::new(caption.as_ref());
     unsafe { sys::wxGetSelectedChoicesEx(selections, message_wx.as_ptr(), caption_wx.as_ptr(), n as c_int, choices.as_ptr(), parent.as_ptr(), x as c_int, y as c_int, centre as c_int, width as c_int, height as c_int) as i32 }
@@ -947,7 +969,7 @@ pub fn wxGetSingleChoiceData(message: impl AsRef<str>, caption: impl AsRef<str>,
 }
 
 #[inline]
-pub fn wxGetSingleChoiceDataEx(message: impl AsRef<str>, caption: impl AsRef<str>, n: i32, choices: &impl WxObject, client_data: *mut c_void, parent: &impl WxWindow, x: i32, y: i32, centre: bool, width: i32, height: i32, initial_selection: i32) -> *mut c_void {
+pub fn wxGetSingleChoiceDataEx(message: impl AsRef<str>, caption: impl AsRef<str>, n: i32, choices: &impl WxArrayString, client_data: *mut c_void, parent: &impl WxWindow, x: i32, y: i32, centre: bool, width: i32, height: i32, initial_selection: i32) -> *mut c_void {
     let message_wx = WxStr::new(message.as_ref());
     let caption_wx = WxStr::new(caption.as_ref());
     unsafe { sys::wxGetSingleChoiceDataEx(message_wx.as_ptr(), caption_wx.as_ptr(), n as c_int, choices.as_ptr(), client_data, parent.as_ptr(), x as c_int, y as c_int, centre as c_int, width as c_int, height as c_int, initial_selection as c_int) }
@@ -995,8 +1017,8 @@ pub fn wxIslower(character: i32) -> bool {
 }
 
 #[inline]
-pub fn wxMakeFloatingPointValidator(value: *mut c_void, style: i32) -> *mut c_void {
-    unsafe { sys::wxMakeFloatingPointValidator(value, style as c_int) }
+pub fn wxMakeFloatingPointValidator(value: *mut f64, style: i32) -> *mut c_void {
+    unsafe { sys::wxMakeFloatingPointValidator(value as *mut c_double, style as c_int) }
 }
 
 #[inline]
@@ -1015,7 +1037,7 @@ pub fn wxPlatformIs(platform: i32) -> bool {
 }
 
 #[inline]
-pub fn wxPointRefFromVariant(variant: &impl WxObject) -> *mut c_void {
+pub fn wxPointRefFromVariant(variant: &impl WxVariant) -> *mut c_void {
     unsafe { sys::wxPointRefFromVariant(variant.as_ptr()) }
 }
 
@@ -1036,6 +1058,12 @@ pub fn wxPuts(str: impl AsRef<str>) -> i32 {
 }
 
 #[inline]
+pub fn wxRemoveFile(file: impl AsRef<str>) -> bool {
+    let file_wx = WxStr::new(file.as_ref());
+    unsafe { sys::wxRemoveFile(file_wx.as_ptr()) != 0 }
+}
+
+#[inline]
 pub fn wxRenameFile(old_path: impl AsRef<str>, new_path: impl AsRef<str>, overwrite: bool) -> bool {
     let old_path_wx = WxStr::new(old_path.as_ref());
     let new_path_wx = WxStr::new(new_path.as_ref());
@@ -1048,7 +1076,7 @@ pub fn wxShowTip(parent: &impl WxWindow, tip_provider: *mut c_void) -> bool {
 }
 
 #[inline]
-pub fn wxSizeRefFromVariant(variant: &impl WxObject) -> *mut c_void {
+pub fn wxSizeRefFromVariant(variant: &impl WxVariant) -> *mut c_void {
     unsafe { sys::wxSizeRefFromVariant(variant.as_ptr()) }
 }
 
@@ -1078,6 +1106,16 @@ pub fn kwxBeginBusyCursor() {
 #[inline]
 pub fn kwxBell() {
     unsafe { sys::kwxBell() }
+}
+
+#[inline]
+pub fn kwxBitmapFromBase64(base64: *mut c_void, len: usize) -> Option<Bitmap> {
+    let ptr = unsafe { sys::kwxBitmapFromBase64(base64, len) };
+    if ptr.is_null() {
+        None
+    } else {
+        Some(Bitmap::from_raw(ptr))
+    }
 }
 
 #[inline]
@@ -1151,6 +1189,11 @@ pub fn kwxSetPixelRowRGBA(buffer: *mut c_void, width: i32, x: i32, y: i32, rgba0
 }
 
 #[inline]
+pub fn kwxSvgStringFromBase64(base64: *mut c_void, len: usize) -> String {
+    take_string(unsafe { sys::kwxSvgStringFromBase64(base64, len) })
+}
+
+#[inline]
 pub fn kwxSystemSettingsGetColour(system_colour: i32) -> Option<Colour> {
     let ptr = unsafe { sys::kwxSystemSettingsGetColour(system_colour as c_int) };
     if ptr.is_null() {
@@ -1166,12 +1209,12 @@ pub fn kwxWakeUpIdle() {
 }
 
 #[inline]
-pub fn wxAboutBox(info: &impl WxObject, parent: &impl WxWindow) {
+pub fn wxAboutBox(info: &impl WxAboutDialogInfo, parent: &impl WxWindow) {
     unsafe { sys::wxAboutBox(info.as_ptr(), parent.as_ptr()) }
 }
 
 #[inline]
-pub fn wxDragIcon(icon: &impl WxObject, x: i32, y: i32) -> Option<DragImage> {
+pub fn wxDragIcon(icon: &impl WxIcon, x: i32, y: i32) -> Option<DragImage> {
     let ptr = unsafe { sys::wxDragIcon(icon.as_ptr(), x as c_int, y as c_int) };
     if ptr.is_null() {
         None
@@ -1202,7 +1245,7 @@ pub fn wxDragString(text: impl AsRef<str>, x: i32, y: i32) -> Option<DragImage> 
 }
 
 #[inline]
-pub fn wxDragTreeItem(tree_ctrl: &impl WxObject, id: &impl WxObject) -> Option<DragImage> {
+pub fn wxDragTreeItem(tree_ctrl: &impl WxTreeCtrl, id: &impl WxTreeItemId) -> Option<DragImage> {
     let ptr = unsafe { sys::wxDragTreeItem(tree_ctrl.as_ptr(), id.as_ptr()) };
     if ptr.is_null() {
         None
@@ -1212,7 +1255,7 @@ pub fn wxDragTreeItem(tree_ctrl: &impl WxObject, id: &impl WxObject) -> Option<D
 }
 
 #[inline]
-pub fn wxGenericDragIcon(icon: &impl WxObject) -> Option<GenericDragImage> {
+pub fn wxGenericDragIcon(icon: &impl WxIcon) -> Option<GenericDragImage> {
     let ptr = unsafe { sys::wxGenericDragIcon(icon.as_ptr()) };
     if ptr.is_null() {
         None
@@ -1243,7 +1286,7 @@ pub fn wxGenericDragString(text: impl AsRef<str>) -> Option<GenericDragImage> {
 }
 
 #[inline]
-pub fn wxGenericDragTreeItem(tree_ctrl: &impl WxObject, id: &impl WxObject) -> Option<GenericDragImage> {
+pub fn wxGenericDragTreeItem(tree_ctrl: &impl WxTreeCtrl, id: &impl WxTreeItemId) -> Option<GenericDragImage> {
     let ptr = unsafe { sys::wxGenericDragTreeItem(tree_ctrl.as_ptr(), id.as_ptr()) };
     if ptr.is_null() {
         None
@@ -1263,18 +1306,18 @@ pub fn wxGetApplicationPath() -> String {
 }
 
 #[inline]
-pub fn wxGetColourFromUser(parent: &impl WxWindow, col_init: &impl WxObject, colour: &impl WxObject) {
+pub fn wxGetColourFromUser(parent: &impl WxWindow, col_init: &impl WxColour, colour: &impl WxColour) {
     unsafe { sys::wxGetColourFromUser(parent.as_ptr(), col_init.as_ptr(), colour.as_ptr()) }
 }
 
 #[inline]
-pub fn wxGetColourFromUserEx(parent: &impl WxWindow, col_init: &impl WxObject, caption: impl AsRef<str>, colour: &impl WxObject) {
+pub fn wxGetColourFromUserEx(parent: &impl WxWindow, col_init: &impl WxColour, caption: impl AsRef<str>, colour: &impl WxColour) {
     let caption_wx = WxStr::new(caption.as_ref());
     unsafe { sys::wxGetColourFromUserEx(parent.as_ptr(), col_init.as_ptr(), caption_wx.as_ptr(), colour.as_ptr()) }
 }
 
 #[inline]
-pub fn wxGetFontFromUser(parent: &impl WxWindow, font_init: &impl WxObject, font: &impl WxObject) {
+pub fn wxGetFontFromUser(parent: &impl WxWindow, font_init: &impl WxFont, font: &impl WxFont) {
     unsafe { sys::wxGetFontFromUser(parent.as_ptr(), font_init.as_ptr(), font.as_ptr()) }
 }
 
@@ -1302,6 +1345,22 @@ pub fn wxGetTextFromUser(message: impl AsRef<str>, caption: impl AsRef<str>, def
     let default_text_c = std::ffi::CString::new(default_text.as_ref()).unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
     let buffer_c = std::ffi::CString::new(buffer.as_ref()).unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
     unsafe { sys::wxGetTextFromUser(message_c.as_ptr(), caption_c.as_ptr(), default_text_c.as_ptr(), parent.as_ptr(), x as c_int, y as c_int, center as c_int, buffer_c.as_ptr()) as i32 }
+}
+
+#[inline]
+pub fn wxGetPasswordFromUserEx(message: impl AsRef<str>, caption: impl AsRef<str>, default_text: impl AsRef<str>, parent: &impl WxWindow) -> String {
+    let message_c = std::ffi::CString::new(message.as_ref()).unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
+    let caption_c = std::ffi::CString::new(caption.as_ref()).unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
+    let default_text_c = std::ffi::CString::new(default_text.as_ref()).unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
+    take_string(unsafe { sys::wxGetPasswordFromUserEx(message_c.as_ptr(), caption_c.as_ptr(), default_text_c.as_ptr(), parent.as_ptr()) })
+}
+
+#[inline]
+pub fn wxGetTextFromUserEx(message: impl AsRef<str>, caption: impl AsRef<str>, default_text: impl AsRef<str>, parent: &impl WxWindow, x: i32, y: i32, center: i32) -> String {
+    let message_c = std::ffi::CString::new(message.as_ref()).unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
+    let caption_c = std::ffi::CString::new(caption.as_ref()).unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
+    let default_text_c = std::ffi::CString::new(default_text.as_ref()).unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
+    take_string(unsafe { sys::wxGetTextFromUserEx(message_c.as_ptr(), caption_c.as_ptr(), default_text_c.as_ptr(), parent.as_ptr(), x as c_int, y as c_int, center as c_int) })
 }
 
 #[inline]
@@ -1392,9 +1451,9 @@ pub fn wxBase64EncodeBuffer(source: *mut c_void, src_length: usize) -> String {
 }
 
 #[inline]
-pub fn wxBase64DecodeBuffer(text: impl AsRef<str>, mode: i32, decoded_length: *mut c_void) -> *mut c_void {
+pub fn wxBase64DecodeBuffer(text: impl AsRef<str>, mode: i32, decoded_length: *mut usize) -> *mut c_void {
     let text_wx = WxStr::new(text.as_ref());
-    unsafe { sys::wxBase64DecodeBuffer(text_wx.as_ptr(), mode as c_int, decoded_length) }
+    unsafe { sys::wxBase64DecodeBuffer(text_wx.as_ptr(), mode as c_int, decoded_length as *mut usize) }
 }
 
 #[inline]
@@ -1415,16 +1474,6 @@ pub fn PushProvider(provider: &impl WxArtProvider) {
 #[inline]
 pub fn RemoveProvider(provider: &impl WxArtProvider) -> bool {
     unsafe { sys::RemoveProvider(provider.as_ptr()) != 0 }
-}
-
-#[inline]
-pub fn expCP_DEFAULT_STYLE() -> i32 {
-    unsafe { sys::expCP_DEFAULT_STYLE() as i32 }
-}
-
-#[inline]
-pub fn expCP_NO_TLW_RESIZE() -> i32 {
-    unsafe { sys::expCP_NO_TLW_RESIZE() as i32 }
 }
 
 #[inline]
@@ -1560,11 +1609,6 @@ pub fn expTBK_HORZ_LAYOUT() -> i32 {
 }
 
 #[inline]
-pub fn expPGMAN_DEFAULT_STYLE() -> i32 {
-    unsafe { sys::expPGMAN_DEFAULT_STYLE() as i32 }
-}
-
-#[inline]
 pub fn expPROPSHEET_DEFAULT() -> i32 {
     unsafe { sys::expPROPSHEET_DEFAULT() as i32 }
 }
@@ -1620,11 +1664,6 @@ pub fn kwxSetActiveLogTarget(p_logger: *mut c_void) -> *mut c_void {
 }
 
 #[inline]
-pub fn expTL_SINGLE() -> i32 {
-    unsafe { sys::expTL_SINGLE() as i32 }
-}
-
-#[inline]
 pub fn expTL_MULTIPLE() -> i32 {
     unsafe { sys::expTL_MULTIPLE() as i32 }
 }
@@ -1642,11 +1681,6 @@ pub fn expTL_3STATE() -> i32 {
 #[inline]
 pub fn expTL_USER_3STATE() -> i32 {
     unsafe { sys::expTL_USER_3STATE() as i32 }
-}
-
-#[inline]
-pub fn expTL_NO_HEADER() -> i32 {
-    unsafe { sys::expTL_NO_HEADER() as i32 }
 }
 
 #[inline]
@@ -1687,16 +1721,6 @@ pub fn expWEBVIEW_ZOOM_TYPE_LAYOUT() -> i32 {
 #[inline]
 pub fn expWEBVIEW_ZOOM_TYPE_TEXT() -> i32 {
     unsafe { sys::expWEBVIEW_ZOOM_TYPE_TEXT() as i32 }
-}
-
-#[inline]
-pub fn expWEBVIEW_RELOAD_DEFAULT() -> i32 {
-    unsafe { sys::expWEBVIEW_RELOAD_DEFAULT() as i32 }
-}
-
-#[inline]
-pub fn expWEBVIEW_RELOAD_NO_CACHE() -> i32 {
-    unsafe { sys::expWEBVIEW_RELOAD_NO_CACHE() as i32 }
 }
 
 #[inline]
@@ -1770,17 +1794,7 @@ pub fn expWEBVIEW_NAV_ERR_OTHER() -> i32 {
 }
 
 #[inline]
-pub fn expWEBVIEW_NAV_ACTION_NONE() -> i32 {
-    unsafe { sys::expWEBVIEW_NAV_ACTION_NONE() as i32 }
-}
-
-#[inline]
 pub fn expWEBVIEW_NAV_ACTION_USER() -> i32 {
     unsafe { sys::expWEBVIEW_NAV_ACTION_USER() as i32 }
-}
-
-#[inline]
-pub fn expWEBVIEW_NAV_ACTION_OTHER() -> i32 {
-    unsafe { sys::expWEBVIEW_NAV_ACTION_OTHER() as i32 }
 }
 

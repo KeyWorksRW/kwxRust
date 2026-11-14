@@ -16,6 +16,13 @@ impl RibbonButtonBarEvent {
         Self(CommandEvent::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -37,6 +44,7 @@ impl WxObject for RibbonButtonBarEvent {
 
 impl WxCommandEvent for RibbonButtonBarEvent {}
 impl WxEvent for RibbonButtonBarEvent {}
+impl WxRibbonButtonBarEvent for RibbonButtonBarEvent {}
 
 use crate::ribbon_button_bar::RibbonButtonBar;
 use crate::ribbon_button_bar_button_base::RibbonButtonBarButtonBase;
@@ -60,15 +68,15 @@ impl RibbonButtonBarEvent {
         }
     }
 
-    pub fn popup_menu(&self, menu: &impl WxObject) -> bool {
+    pub fn popup_menu(&self, menu: &impl WxMenu) -> bool {
         unsafe { sys::wxRibbonButtonBarEvent_PopupMenu(self.as_ptr(), menu.as_ptr()) != 0 }
     }
 
-    pub fn set_bar(&self, bar: &impl WxObject) {
+    pub fn set_bar(&self, bar: &impl WxRibbonButtonBar) {
         unsafe { sys::wxRibbonButtonBarEvent_SetBar(self.as_ptr(), bar.as_ptr()) }
     }
 
-    pub fn set_button(&self, button: &impl WxObject) {
+    pub fn set_button(&self, button: &impl WxRibbonButtonBarButtonBase) {
         unsafe { sys::wxRibbonButtonBarEvent_SetButton(self.as_ptr(), button.as_ptr()) }
     }
 

@@ -16,6 +16,13 @@ impl AcceleratorEntry {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for AcceleratorEntry {
     }
 }
 
+impl WxAcceleratorEntry for AcceleratorEntry {}
 use crate::menu_item::MenuItem;
 use crate::support::WxStr;
 use crate::support::take_string;
@@ -47,7 +55,7 @@ impl AcceleratorEntry {
         Self::from_raw(ptr)
     }
 
-    pub fn set_menu_item(&self, item: &impl WxObject) {
+    pub fn set_menu_item(&self, item: &impl WxMenuItem) {
         unsafe { sys::wxAcceleratorEntry_SetMenuItem(self.as_ptr(), item.as_ptr()) }
     }
 
@@ -64,7 +72,7 @@ impl AcceleratorEntry {
         unsafe { sys::wxAcceleratorEntry_IsOk(self.as_ptr()) != 0 }
     }
 
-    pub fn matches_event(&self, event: &impl WxObject) -> bool {
+    pub fn matches_event(&self, event: &impl WxKeyEvent) -> bool {
         unsafe { sys::wxAcceleratorEntry_MatchesEvent(self.as_ptr(), event.as_ptr()) != 0 }
     }
 
@@ -91,6 +99,13 @@ impl AcceleratorEntry {
         let ptr = unsafe { sys::wxAcceleratorEntry_Create(flags as c_int, key_code as c_int, cmd as c_int) };
         assert!(!ptr.is_null(), "wxAcceleratorEntry_Create returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxAcceleratorEntry_Delete(self.as_ptr()) }
     }
 
     pub fn get_command(&self) -> i32 {

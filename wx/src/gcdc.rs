@@ -16,6 +16,13 @@ impl GCDC {
         Self(DC::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -36,6 +43,7 @@ impl WxObject for GCDC {
 }
 
 impl WxDC for GCDC {}
+impl WxGCDC for GCDC {}
 
 use crate::graphics_context::GraphicsContext;
 
@@ -52,16 +60,23 @@ impl GCDC {
         Self::from_raw(ptr)
     }
 
-    pub fn create_from_memory(dc: &impl WxObject) -> Self {
+    pub fn create_from_memory(dc: &impl WxMemoryDC) -> Self {
         let ptr = unsafe { sys::wxGCDC_CreateFromMemory(dc.as_ptr()) };
         assert!(!ptr.is_null(), "wxGCDC_CreateFromMemory returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn create_from_printer(dc: &impl WxObject) -> Self {
+    pub fn create_from_printer(dc: &impl WxPrinterDC) -> Self {
         let ptr = unsafe { sys::wxGCDC_CreateFromPrinter(dc.as_ptr()) };
         assert!(!ptr.is_null(), "wxGCDC_CreateFromPrinter returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxGCDC_Delete(self.as_ptr()) }
     }
 
     pub fn get_graphics_context(&self) -> Option<GraphicsContext> {
@@ -73,7 +88,7 @@ impl GCDC {
         }
     }
 
-    pub fn set_graphics_context(&self, gc: &impl WxObject) {
+    pub fn set_graphics_context(&self, gc: &impl WxGraphicsContext) {
         unsafe { sys::wxGCDC_SetGraphicsContext(self.as_ptr(), gc.as_ptr()) }
     }
 

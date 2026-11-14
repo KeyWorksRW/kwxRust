@@ -16,6 +16,13 @@ impl IconBundle {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,11 +42,12 @@ impl WxObject for IconBundle {
     }
 }
 
+impl WxIconBundle for IconBundle {}
 use crate::support::Size;
 use crate::support::WxStr;
 
 impl IconBundle {
-    pub fn add_icon(&self, icon: &impl WxObject) {
+    pub fn add_icon(&self, icon: &impl WxIcon) {
         unsafe { sys::wxIconBundle_AddIcon(self.as_ptr(), icon.as_ptr()) }
     }
 
@@ -48,7 +56,7 @@ impl IconBundle {
         unsafe { sys::wxIconBundle_AddIconFromFile(self.as_ptr(), file_wx.as_ptr(), type_ as c_int) }
     }
 
-    pub fn assign(&self, ref_: &impl WxObject) {
+    pub fn assign(&self, ref_: &impl WxIconBundle) {
         unsafe { sys::wxIconBundle_Assign(self.as_ptr(), ref_.as_ptr()) }
     }
 
@@ -65,7 +73,7 @@ impl IconBundle {
         Self::from_raw(ptr)
     }
 
-    pub fn create_from_icon(icon: &impl WxObject) -> Self {
+    pub fn create_from_icon(icon: &impl WxIcon) -> Self {
         let ptr = unsafe { sys::wxIconBundle_CreateFromIcon(icon.as_ptr()) };
         assert!(!ptr.is_null(), "wxIconBundle_CreateFromIcon returned null");
         Self::from_raw(ptr)
@@ -83,7 +91,14 @@ impl IconBundle {
         Self::from_raw(ptr)
     }
 
-    pub fn get_icon(&self, size: Size, flags: i32, ref_: &impl WxObject) {
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxIconBundle_Delete(self.as_ptr()) }
+    }
+
+    pub fn get_icon(&self, size: Size, flags: i32, ref_: &impl WxIcon) {
         unsafe { sys::wxIconBundle_GetIcon(self.as_ptr(), size.width as c_int, size.height as c_int, flags as c_int, ref_.as_ptr()) }
     }
 

@@ -16,6 +16,13 @@ impl DataViewItemArray {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for DataViewItemArray {
     }
 }
 
+impl WxDataViewItemArray for DataViewItemArray {}
 impl DataViewItemArray {
     pub fn new() -> Self {
         let ptr = unsafe { sys::wxDataViewItemArray_Create() };
@@ -48,19 +56,26 @@ impl DataViewItemArray {
         Self::from_raw(ptr)
     }
 
-    pub fn get_count(&self, arr: &impl WxObject) -> usize {
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxDataViewItemArray_Delete(self.as_ptr()) }
+    }
+
+    pub fn get_count(&self, arr: &impl WxDataViewItemArray) -> usize {
         unsafe { sys::wxDataViewItemArray_GetCount(arr.as_ptr()) as usize }
     }
 
-    pub fn item(&self, arr: &impl WxObject, index: usize, item: &impl WxObject) {
+    pub fn item(&self, arr: &impl WxDataViewItemArray, index: usize, item: &impl WxDataViewItem) {
         unsafe { sys::wxDataViewItemArray_Item(arr.as_ptr(), index, item.as_ptr()) }
     }
 
-    pub fn add(&self, arr: &impl WxObject, item: &impl WxObject) {
+    pub fn add(&self, arr: &impl WxDataViewItemArray, item: &impl WxDataViewItem) {
         unsafe { sys::wxDataViewItemArray_Add(arr.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn clear(&self, arr: &impl WxObject) {
+    pub fn clear(&self, arr: &impl WxDataViewItemArray) {
         unsafe { sys::wxDataViewItemArray_Clear(arr.as_ptr()) }
     }
 

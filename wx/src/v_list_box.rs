@@ -16,6 +16,13 @@ impl VListBox {
         Self(VScrolledWindow::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -82,7 +89,7 @@ impl VListBox {
         unsafe { sys::wxVListBox_GetSelection(self.as_ptr()) as i32 }
     }
 
-    pub fn get_selection_background(&self, colour: &impl WxObject) {
+    pub fn get_selection_background(&self, colour: &impl WxColour) {
         unsafe { sys::wxVListBox_GetSelectionBackground(self.as_ptr(), colour.as_ptr()) }
     }
 
@@ -122,7 +129,7 @@ impl VListBox {
         unsafe { sys::wxVListBox_SetSelection(self.as_ptr(), selection as c_int) }
     }
 
-    pub fn set_selection_background(&self, col: &impl WxObject) {
+    pub fn set_selection_background(&self, col: &impl WxColour) {
         unsafe { sys::wxVListBox_SetSelectionBackground(self.as_ptr(), col.as_ptr()) }
     }
 
@@ -152,6 +159,13 @@ impl VListBox {
         let ptr = unsafe { sys::kwxVListBox_Create(p_object, parent.as_ptr(), id as c_int, rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int, style as c_long) };
         assert!(!ptr.is_null(), "kwxVListBox_Create returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::kwxVListBox_Delete(self.as_ptr()) }
     }
 
 }

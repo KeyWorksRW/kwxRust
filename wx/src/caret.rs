@@ -16,6 +16,13 @@ impl Caret {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for Caret {
     }
 }
 
+impl WxCaret for Caret {}
 use crate::support::Point;
 use crate::support::Size;
 use crate::window::Window;
@@ -52,7 +60,7 @@ impl Caret {
         Self::from_raw(ptr)
     }
 
-    pub fn get_blink_time(&self) -> i32 {
+    pub fn get_blink_time() -> i32 {
         unsafe { sys::wxCaret_GetBlinkTime() as i32 }
     }
 
@@ -99,7 +107,7 @@ impl Caret {
         unsafe { sys::wxCaret_Move(self.as_ptr(), point.x as c_int, point.y as c_int) }
     }
 
-    pub fn set_blink_time(&self, milliseconds: i32) {
+    pub fn set_blink_time(milliseconds: i32) {
         unsafe { sys::wxCaret_SetBlinkTime(milliseconds as c_int) }
     }
 

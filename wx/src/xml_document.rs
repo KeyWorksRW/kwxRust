@@ -16,6 +16,13 @@ impl XmlDocument {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for XmlDocument {
     }
 }
 
+impl WxXmlDocument for XmlDocument {}
 
 use crate::support::WxStr;
 use crate::support::take_string;
@@ -76,6 +84,13 @@ impl XmlDocument {
         Self::from_raw(ptr)
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxXmlDocument_Delete(self.as_ptr()) }
+    }
+
     pub fn load(&self, file_name: impl AsRef<str>, flags: i32) -> bool {
         let file_name_wx = WxStr::new(file_name.as_ref());
         unsafe { sys::wxXmlDocument_Load(self.as_ptr(), file_name_wx.as_ptr(), flags as c_int) != 0 }
@@ -104,7 +119,7 @@ impl XmlDocument {
         }
     }
 
-    pub fn set_root(&self, root: &impl WxObject) {
+    pub fn set_root(&self, root: &impl WxXmlNode) {
         unsafe { sys::wxXmlDocument_SetRoot(self.as_ptr(), root.as_ptr()) }
     }
 
@@ -143,11 +158,11 @@ impl XmlDocument {
         unsafe { sys::wxXmlDocument_SetFileType(self.as_ptr(), file_type as c_int) }
     }
 
-    pub fn append_to_prolog(&self, node: &impl WxObject) {
+    pub fn append_to_prolog(&self, node: &impl WxXmlNode) {
         unsafe { sys::wxXmlDocument_AppendToProlog(self.as_ptr(), node.as_ptr()) }
     }
 
-    pub fn append_child(&self, child: &impl WxObject) -> bool {
+    pub fn append_child(&self, child: &impl WxXmlNode) -> bool {
         unsafe { sys::wxXmlDocument_AppendChild(self.as_ptr(), child.as_ptr()) != 0 }
     }
 

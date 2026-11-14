@@ -16,6 +16,13 @@ impl MemoryDC {
         Self(DC::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -36,6 +43,7 @@ impl WxObject for MemoryDC {
 }
 
 impl WxDC for MemoryDC {}
+impl WxMemoryDC for MemoryDC {}
 
 impl MemoryDC {
     pub fn new() -> Self {
@@ -64,6 +72,13 @@ impl MemoryDC {
         let ptr = unsafe { sys::wxMemoryDC_CreateWithBitmap(bitmap.as_ptr()) };
         assert!(!ptr.is_null(), "wxMemoryDC_CreateWithBitmap returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxMemoryDC_Delete(self.as_ptr()) }
     }
 
     pub fn select_object(&self, bitmap: &impl WxBitmap) {

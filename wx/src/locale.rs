@@ -16,6 +16,13 @@ impl Locale {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for Locale {
     }
 }
 
+impl WxLocale for Locale {}
 use crate::support::WxStr;
 use crate::support::take_string;
 
@@ -75,35 +83,35 @@ impl Locale {
         take_string(unsafe { sys::wxLocale_GetPluralString(self.as_ptr(), orig_string_wx.as_ptr(), plural_string_wx.as_ptr(), count as c_int, domain_wx.as_ptr()) })
     }
 
-    pub fn get_system_language(&self) -> i32 {
+    pub fn get_system_language() -> i32 {
         unsafe { sys::wxLocale_GetSystemLanguage() as i32 }
     }
 
-    pub fn get_system_encoding(&self) -> i32 {
+    pub fn get_system_encoding() -> i32 {
         unsafe { sys::wxLocale_GetSystemEncoding() as i32 }
     }
 
-    pub fn get_system_encoding_name(&self) -> String {
+    pub fn get_system_encoding_name() -> String {
         take_string(unsafe { sys::wxLocale_GetSystemEncodingName() })
     }
 
-    pub fn get_info(&self, index: i32, category: i32) -> String {
+    pub fn get_info(index: i32, category: i32) -> String {
         take_string(unsafe { sys::wxLocale_GetInfo(index as c_int, category as c_int) })
     }
 
-    pub fn get_os_info(&self, index: i32, category: i32) -> String {
+    pub fn get_os_info(index: i32, category: i32) -> String {
         take_string(unsafe { sys::wxLocale_GetOSInfo(index as c_int, category as c_int) })
     }
 
-    pub fn is_available(&self, language: i32) -> bool {
+    pub fn is_available(language: i32) -> bool {
         unsafe { sys::wxLocale_IsAvailable(language as c_int) != 0 }
     }
 
-    pub fn get_language_name(&self, language: i32) -> String {
+    pub fn get_language_name(language: i32) -> String {
         take_string(unsafe { sys::wxLocale_GetLanguageName(language as c_int) })
     }
 
-    pub fn get_language_canonical_name(&self, language: i32) -> String {
+    pub fn get_language_canonical_name(language: i32) -> String {
         take_string(unsafe { sys::wxLocale_GetLanguageCanonicalName(language as c_int) })
     }
 
@@ -127,6 +135,13 @@ impl Locale {
         let ptr = unsafe { sys::wxLocale_Create(name as c_int, flags as c_int) };
         assert!(!ptr.is_null(), "wxLocale_Create returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxLocale_Delete(self.as_ptr()) }
     }
 
     pub fn get_locale(&self) -> Option<Locale> {

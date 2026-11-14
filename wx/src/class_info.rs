@@ -16,6 +16,13 @@ impl ClassInfo {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,11 +42,12 @@ impl WxObject for ClassInfo {
     }
 }
 
+impl WxClassInfo for ClassInfo {}
 use crate::support::WxStr;
 use crate::support::take_string;
 
 impl ClassInfo {
-    pub fn find_class(&self, name: impl AsRef<str>) -> Option<ClassInfo> {
+    pub fn find_class(name: impl AsRef<str>) -> Option<ClassInfo> {
         let name_wx = WxStr::new(name.as_ref());
         let ptr = unsafe { sys::wxClassInfo_FindClass(name_wx.as_ptr()) };
         if ptr.is_null() {
@@ -65,7 +73,7 @@ impl ClassInfo {
         unsafe { sys::wxClassInfo_GetSize(self.as_ptr()) as i32 }
     }
 
-    pub fn is_kind_of_ex(&self, class_info: &impl WxObject) -> bool {
+    pub fn is_kind_of_ex(&self, class_info: &impl WxClassInfo) -> bool {
         unsafe { sys::wxClassInfo_IsKindOfEx(self.as_ptr(), class_info.as_ptr()) != 0 }
     }
 

@@ -16,6 +16,13 @@ impl ColorPickerCtrl {
         Self(Control::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,25 +45,26 @@ impl WxObject for ColorPickerCtrl {
 impl WxControl for ColorPickerCtrl {}
 impl WxWindow for ColorPickerCtrl {}
 impl WxEvtHandler for ColorPickerCtrl {}
+impl WxColorPickerCtrl for ColorPickerCtrl {}
 
 impl ColorPickerCtrl {
-    pub fn new(parent: &impl WxWindow, colour: &impl WxObject, x: i32, y: i32, width: i32, height: i32) -> Self {
+    pub fn new(parent: &impl WxWindow, colour: &impl WxColour, x: i32, y: i32, width: i32, height: i32) -> Self {
         let ptr = unsafe { sys::wxColorPickerCtrl_Create(parent.as_ptr(), -1, colour.as_ptr(), x as c_int, y as c_int, width as c_int, height as c_int, 0) };
         assert!(!ptr.is_null(), "wxColorPickerCtrl_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(parent: &impl WxWindow, id: i32, colour: &impl WxObject, x: i32, y: i32, width: i32, height: i32, style: i32) -> Self {
+    pub fn new_full(parent: &impl WxWindow, id: i32, colour: &impl WxColour, x: i32, y: i32, width: i32, height: i32, style: i32) -> Self {
         let ptr = unsafe { sys::wxColorPickerCtrl_Create(parent.as_ptr(), id as c_int, colour.as_ptr(), x as c_int, y as c_int, width as c_int, height as c_int, style as c_int) };
         assert!(!ptr.is_null(), "wxColorPickerCtrl_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn get_colour(&self, colour: &impl WxObject) {
+    pub fn get_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxColorPickerCtrl_GetColour(self.as_ptr(), colour.as_ptr()) }
     }
 
-    pub fn set_colour(&self, colour: &impl WxObject) {
+    pub fn set_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxColorPickerCtrl_SetColour(self.as_ptr(), colour.as_ptr()) }
     }
 

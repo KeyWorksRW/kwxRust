@@ -16,6 +16,13 @@ impl ListCtrl {
         Self(Control::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -50,15 +57,15 @@ use crate::support::take_string;
 use crate::text_ctrl::TextCtrl;
 
 impl ListCtrl {
-    pub fn assign_image_list(&self, images: &impl WxObject, which: i32) {
+    pub fn assign_image_list(&self, images: &impl WxImageList, which: i32) {
         unsafe { sys::wxListCtrl_AssignImageList(self.as_ptr(), images.as_ptr(), which as c_int) }
     }
 
-    pub fn get_column2(&self, col: i32, item: &impl WxObject) {
+    pub fn get_column2(&self, col: i32, item: &impl WxListItem) {
         unsafe { sys::wxListCtrl_GetColumn2(self.as_ptr(), col as c_int, item.as_ptr()) }
     }
 
-    pub fn get_item2(&self, info: &impl WxObject) {
+    pub fn get_item2(&self, info: &impl WxListItem) {
         unsafe { sys::wxListCtrl_GetItem2(self.as_ptr(), info.as_ptr()) }
     }
 
@@ -75,7 +82,7 @@ impl ListCtrl {
         unsafe { sys::wxListCtrl_RefreshItems(self.as_ptr(), from as c_long, to_pos as c_long) }
     }
 
-    pub fn sort_items2(&self, closure: &impl WxObject) -> bool {
+    pub fn sort_items2(&self, closure: &impl WxClosure) -> bool {
         unsafe { sys::wxListCtrl_SortItems2(self.as_ptr(), closure.as_ptr()) != 0 }
     }
 
@@ -104,7 +111,7 @@ impl ListCtrl {
         }
     }
 
-    pub fn set_item_text_colour(&self, item: i32, col: &impl WxObject) {
+    pub fn set_item_text_colour(&self, item: i32, col: &impl WxColour) {
         unsafe { sys::wxListCtrl_SetItemTextColour(self.as_ptr(), item as c_long, col.as_ptr()) }
     }
 
@@ -117,11 +124,11 @@ impl ListCtrl {
         }
     }
 
-    pub fn set_item_background_colour(&self, item: i32, col: &impl WxObject) {
+    pub fn set_item_background_colour(&self, item: i32, col: &impl WxColour) {
         unsafe { sys::wxListCtrl_SetItemBackgroundColour(self.as_ptr(), item as c_long, col.as_ptr()) }
     }
 
-    pub fn set_item_font(&self, item: i32, font: &impl WxObject) {
+    pub fn set_item_font(&self, item: i32, font: &impl WxFont) {
         unsafe { sys::wxListCtrl_SetItemFont(self.as_ptr(), item as c_long, font.as_ptr()) }
     }
 
@@ -146,7 +153,7 @@ impl ListCtrl {
         unsafe { sys::wxListCtrl_EnableAlternateRowColours(self.as_ptr(), enable as c_int) }
     }
 
-    pub fn set_alternate_row_colour(&self, colour: &impl WxObject) {
+    pub fn set_alternate_row_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxListCtrl_SetAlternateRowColour(self.as_ptr(), colour.as_ptr()) }
     }
 
@@ -232,7 +239,7 @@ impl ListCtrl {
         unsafe { sys::wxListCtrl_FindItemByPosition(self.as_ptr(), start as c_int, point.x as c_int, point.y as c_int, direction as c_int) as i32 }
     }
 
-    pub fn get_column(&self, col: i32, item: &impl WxObject) -> bool {
+    pub fn get_column(&self, col: i32, item: &impl WxListItem) -> bool {
         unsafe { sys::wxListCtrl_GetColumn(self.as_ptr(), col as c_int, item.as_ptr()) != 0 }
     }
 
@@ -266,7 +273,7 @@ impl ListCtrl {
         }
     }
 
-    pub fn get_item(&self, info: &impl WxObject) -> bool {
+    pub fn get_item(&self, info: &impl WxListItem) -> bool {
         unsafe { sys::wxListCtrl_GetItem(self.as_ptr(), info.as_ptr()) != 0 }
     }
 
@@ -330,7 +337,7 @@ impl ListCtrl {
         unsafe { sys::wxListCtrl_GetSelectedItemCount(self.as_ptr()) as i32 }
     }
 
-    pub fn get_text_colour(&self, ref_: &impl WxObject) {
+    pub fn get_text_colour(&self, ref_: &impl WxColour) {
         unsafe { sys::wxListCtrl_GetTextColour(self.as_ptr(), ref_.as_ptr()) }
     }
 
@@ -347,11 +354,11 @@ impl ListCtrl {
         unsafe { sys::wxListCtrl_InsertColumn(self.as_ptr(), col as c_int, heading_wx.as_ptr(), format as c_int, width as c_int) as i32 }
     }
 
-    pub fn insert_column_from_info(&self, col: i32, info: &impl WxObject) -> i32 {
+    pub fn insert_column_from_info(&self, col: i32, info: &impl WxListItem) -> i32 {
         unsafe { sys::wxListCtrl_InsertColumnFromInfo(self.as_ptr(), col as c_int, info.as_ptr()) as i32 }
     }
 
-    pub fn insert_item(&self, info: &impl WxObject) -> i32 {
+    pub fn insert_item(&self, info: &impl WxListItem) -> i32 {
         unsafe { sys::wxListCtrl_InsertItem(self.as_ptr(), info.as_ptr()) as i32 }
     }
 
@@ -381,11 +388,11 @@ impl ListCtrl {
         unsafe { sys::wxListCtrl_ScrollList(self.as_ptr(), dx as c_int, dy as c_int) != 0 }
     }
 
-    pub fn set_background_colour(&self, col: &impl WxObject) -> bool {
+    pub fn set_background_colour(&self, col: &impl WxColour) -> bool {
         unsafe { sys::wxListCtrl_SetBackgroundColour(self.as_ptr(), col.as_ptr()) != 0 }
     }
 
-    pub fn set_column(&self, col: i32, item: &impl WxObject) -> bool {
+    pub fn set_column(&self, col: i32, item: &impl WxListItem) -> bool {
         unsafe { sys::wxListCtrl_SetColumn(self.as_ptr(), col as c_int, item.as_ptr()) != 0 }
     }
 
@@ -393,11 +400,11 @@ impl ListCtrl {
         unsafe { sys::wxListCtrl_SetColumnWidth(self.as_ptr(), col as c_int, width as c_int) != 0 }
     }
 
-    pub fn set_foreground_colour(&self, col: &impl WxObject) -> i32 {
+    pub fn set_foreground_colour(&self, col: &impl WxColour) -> i32 {
         unsafe { sys::wxListCtrl_SetForegroundColour(self.as_ptr(), col.as_ptr()) as i32 }
     }
 
-    pub fn set_image_list(&self, image_list: &impl WxObject, which: i32) {
+    pub fn set_image_list(&self, image_list: &impl WxImageList, which: i32) {
         unsafe { sys::wxListCtrl_SetImageList(self.as_ptr(), image_list.as_ptr(), which as c_int) }
     }
 
@@ -410,7 +417,7 @@ impl ListCtrl {
         unsafe { sys::wxListCtrl_SetItemData(self.as_ptr(), item as c_int, data as c_int) != 0 }
     }
 
-    pub fn set_item_from_info(&self, info: &impl WxObject) -> bool {
+    pub fn set_item_from_info(&self, info: &impl WxListItem) -> bool {
         unsafe { sys::wxListCtrl_SetItemFromInfo(self.as_ptr(), info.as_ptr()) != 0 }
     }
 
@@ -435,7 +442,7 @@ impl ListCtrl {
         unsafe { sys::wxListCtrl_SetSingleStyle(self.as_ptr(), style as c_int, add as c_int) }
     }
 
-    pub fn set_text_colour(&self, col: &impl WxObject) {
+    pub fn set_text_colour(&self, col: &impl WxColour) {
         unsafe { sys::wxListCtrl_SetTextColour(self.as_ptr(), col.as_ptr()) }
     }
 
@@ -491,7 +498,7 @@ impl ListCtrl {
         unsafe { sys::wxListCtrl_SetItemCount(self.as_ptr(), count as c_long) }
     }
 
-    pub fn set_header_attr(&self, attr: &impl WxObject) -> bool {
+    pub fn set_header_attr(&self, attr: &impl WxItemAttr) -> bool {
         unsafe { sys::wxListCtrl_SetHeaderAttr(self.as_ptr(), attr.as_ptr()) != 0 }
     }
 

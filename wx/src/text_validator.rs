@@ -16,6 +16,13 @@ impl TextValidator {
         Self(Validator::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -121,6 +128,14 @@ impl TextValidator {
 
     pub fn set_style(&self, style: i32) {
         unsafe { sys::wxTextValidator_SetStyle(self.as_ptr(), style as c_int) }
+    }
+
+    /// Alternative constructor wrapping `kwxTextValidator_Create`; takes every
+    /// declared parameter.  `new`/`new_full` wrap the wxWidgets-own constructor.
+    pub fn new_with_state(p_object: *mut c_void, p_function: *mut c_void, text: *mut c_void, style: i32) -> Self {
+        let ptr = unsafe { sys::kwxTextValidator_Create(p_object, p_function, text, style as c_int) };
+        assert!(!ptr.is_null(), "kwxTextValidator_Create returned null");
+        Self::from_raw(ptr)
     }
 
 }

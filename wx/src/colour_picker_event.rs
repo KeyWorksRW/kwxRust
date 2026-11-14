@@ -16,6 +16,13 @@ impl ColourPickerEvent {
         Self(CommandEvent::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -37,20 +44,28 @@ impl WxObject for ColourPickerEvent {
 
 impl WxCommandEvent for ColourPickerEvent {}
 impl WxEvent for ColourPickerEvent {}
+impl WxColourPickerEvent for ColourPickerEvent {}
 
 use crate::colour::Colour;
 
 impl ColourPickerEvent {
-    pub fn new(generator: &impl WxObject, colour: &impl WxObject, command_type: i32) -> Self {
+    pub fn new(generator: &impl WxObject, colour: &impl WxColour, command_type: i32) -> Self {
         let ptr = unsafe { sys::wxColourPickerEvent_Create(generator.as_ptr(), -1, colour.as_ptr(), command_type as c_int) };
         assert!(!ptr.is_null(), "wxColourPickerEvent_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(generator: &impl WxObject, id: i32, colour: &impl WxObject, command_type: i32) -> Self {
+    pub fn new_full(generator: &impl WxObject, id: i32, colour: &impl WxColour, command_type: i32) -> Self {
         let ptr = unsafe { sys::wxColourPickerEvent_Create(generator.as_ptr(), id as c_int, colour.as_ptr(), command_type as c_int) };
         assert!(!ptr.is_null(), "wxColourPickerEvent_Create returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxColourPickerEvent_Delete(self.as_ptr()) }
     }
 
     pub fn get_colour(&self) -> Option<Colour> {
@@ -62,7 +77,7 @@ impl ColourPickerEvent {
         }
     }
 
-    pub fn set_colour(&self, colour: &impl WxObject) {
+    pub fn set_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxColourPickerEvent_SetColour(self.as_ptr(), colour.as_ptr()) }
     }
 

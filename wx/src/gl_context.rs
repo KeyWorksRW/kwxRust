@@ -16,6 +16,13 @@ impl GLContext {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,26 +42,27 @@ impl WxObject for GLContext {
     }
 }
 
+impl WxGLContext for GLContext {}
 impl GLContext {
-    pub fn new(win: &impl WxObject, other: &impl WxObject) -> Self {
+    pub fn new(win: &impl WxGLCanvas, other: &impl WxGLContext) -> Self {
         let ptr = unsafe { sys::wxGLContext_Create(win.as_ptr(), other.as_ptr()) };
         assert!(!ptr.is_null(), "wxGLContext_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(win: &impl WxObject, other: &impl WxObject) -> Self {
+    pub fn new_full(win: &impl WxGLCanvas, other: &impl WxGLContext) -> Self {
         let ptr = unsafe { sys::wxGLContext_Create(win.as_ptr(), other.as_ptr()) };
         assert!(!ptr.is_null(), "wxGLContext_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn create_from_null(win: &impl WxObject) -> Self {
+    pub fn create_from_null(win: &impl WxGLCanvas) -> Self {
         let ptr = unsafe { sys::wxGLContext_CreateFromNull(win.as_ptr()) };
         assert!(!ptr.is_null(), "wxGLContext_CreateFromNull returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn set_current(&self, win: &impl WxObject) -> bool {
+    pub fn set_current(&self, win: &impl WxGLCanvas) -> bool {
         unsafe { sys::wxGLContext_SetCurrent(self.as_ptr(), win.as_ptr()) != 0 }
     }
 

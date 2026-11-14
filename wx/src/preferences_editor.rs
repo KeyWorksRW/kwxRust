@@ -16,6 +16,13 @@ impl PreferencesEditor {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for PreferencesEditor {
     }
 }
 
+impl WxPreferencesEditor for PreferencesEditor {}
 use crate::support::WxStr;
 
 impl PreferencesEditor {
@@ -52,8 +60,19 @@ impl PreferencesEditor {
         Self::from_raw(ptr)
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxPreferencesEditor_Delete(self.as_ptr()) }
+    }
+
     pub fn add_page(&self, page: &impl WxPreferencesPage) {
         unsafe { sys::wxPreferencesEditor_AddPage(self.as_ptr(), page.as_ptr()) }
+    }
+
+    pub fn add_stock_page(&self, page: &impl WxStockPreferencesPage) {
+        unsafe { sys::wxPreferencesEditor_AddStockPage(self.as_ptr(), page.as_ptr()) }
     }
 
     pub fn show(&self, parent: &impl WxWindow) {
@@ -64,11 +83,11 @@ impl PreferencesEditor {
         unsafe { sys::wxPreferencesEditor_Dismiss(self.as_ptr()) }
     }
 
-    pub fn should_apply_changes_immediately(&self) -> bool {
+    pub fn should_apply_changes_immediately() -> bool {
         unsafe { sys::wxPreferencesEditor_ShouldApplyChangesImmediately() != 0 }
     }
 
-    pub fn shown_modally(&self) -> bool {
+    pub fn shown_modally() -> bool {
         unsafe { sys::wxPreferencesEditor_ShownModally() != 0 }
     }
 

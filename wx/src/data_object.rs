@@ -16,6 +16,13 @@ impl DataObject {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -52,19 +59,19 @@ impl DataObject {
         unsafe { sys::wxDataObject_GetFormatCount(self.as_ptr(), direction as c_int) as i32 }
     }
 
-    pub fn is_supported(&self, format: &impl WxObject, direction: i32) -> bool {
+    pub fn is_supported(&self, format: &impl WxDataFormat, direction: i32) -> bool {
         unsafe { sys::wxDataObject_IsSupported(self.as_ptr(), format.as_ptr(), direction as c_int) != 0 }
     }
 
-    pub fn get_data_size(&self, format: &impl WxObject) -> usize {
+    pub fn get_data_size(&self, format: &impl WxDataFormat) -> usize {
         unsafe { sys::wxDataObject_GetDataSize(self.as_ptr(), format.as_ptr()) as usize }
     }
 
-    pub fn get_data_here(&self, format: &impl WxObject, buffer: *mut c_void) -> bool {
+    pub fn get_data_here(&self, format: &impl WxDataFormat, buffer: *mut c_void) -> bool {
         unsafe { sys::wxDataObject_GetDataHere(self.as_ptr(), format.as_ptr(), buffer) != 0 }
     }
 
-    pub fn set_data(&self, format: &impl WxObject, length: i32, buffer: *mut c_void) -> bool {
+    pub fn set_data(&self, format: &impl WxDataFormat, length: i32, buffer: *mut c_void) -> bool {
         unsafe { sys::wxDataObject_SetData(self.as_ptr(), format.as_ptr(), length as c_int, buffer) != 0 }
     }
 

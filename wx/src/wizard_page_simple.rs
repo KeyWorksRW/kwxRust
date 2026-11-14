@@ -16,6 +16,13 @@ impl WizardPageSimple {
         Self(WizardPage::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,17 +46,18 @@ impl WxWizardPage for WizardPageSimple {}
 impl WxPanel for WizardPageSimple {}
 impl WxWindow for WizardPageSimple {}
 impl WxEvtHandler for WizardPageSimple {}
+impl WxWizardPageSimple for WizardPageSimple {}
 
 use crate::bitmap::Bitmap;
 
 impl WizardPageSimple {
-    pub fn new(parent: &impl WxObject, prev: &impl WxWizardPage, next: &impl WxWizardPage, bitmap: &impl WxBitmap) -> Self {
+    pub fn new(parent: &impl WxWizard, prev: &impl WxWizardPage, next: &impl WxWizardPage, bitmap: &impl WxBitmap) -> Self {
         let ptr = unsafe { sys::wxWizardPageSimple_Create(parent.as_ptr(), prev.as_ptr(), next.as_ptr(), bitmap.as_ptr()) };
         assert!(!ptr.is_null(), "wxWizardPageSimple_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(parent: &impl WxObject, prev: &impl WxWizardPage, next: &impl WxWizardPage, bitmap: &impl WxBitmap) -> Self {
+    pub fn new_full(parent: &impl WxWizard, prev: &impl WxWizardPage, next: &impl WxWizardPage, bitmap: &impl WxBitmap) -> Self {
         let ptr = unsafe { sys::wxWizardPageSimple_Create(parent.as_ptr(), prev.as_ptr(), next.as_ptr(), bitmap.as_ptr()) };
         assert!(!ptr.is_null(), "wxWizardPageSimple_Create returned null");
         Self::from_raw(ptr)
@@ -82,12 +90,18 @@ impl WizardPageSimple {
         }
     }
 
-    pub fn set_next(&self, next: &impl WxObject) {
+    pub fn set_next(&self, next: &impl WxWizardPageSimple) {
         unsafe { sys::wxWizardPageSimple_SetNext(self.as_ptr(), next.as_ptr()) }
     }
 
-    pub fn set_prev(&self, prev: &impl WxObject) {
+    pub fn set_prev(&self, prev: &impl WxWizardPageSimple) {
         unsafe { sys::wxWizardPageSimple_SetPrev(self.as_ptr(), prev.as_ptr()) }
+    }
+
+    pub fn create_with_bundle(parent: &impl WxWizard, prev: &impl WxWizardPage, next: &impl WxWizardPage, bitmap: &impl WxBitmapBundle) -> Self {
+        let ptr = unsafe { sys::wxWizardPageSimple_CreateWithBundle(parent.as_ptr(), prev.as_ptr(), next.as_ptr(), bitmap.as_ptr()) };
+        assert!(!ptr.is_null(), "wxWizardPageSimple_CreateWithBundle returned null");
+        Self::from_raw(ptr)
     }
 
 }

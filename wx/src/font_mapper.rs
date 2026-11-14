@@ -16,6 +16,13 @@ impl FontMapper {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for FontMapper {
     }
 }
 
+impl WxFontMapper for FontMapper {}
 use crate::support::WxStr;
 use crate::support::take_string;
 
@@ -56,7 +64,7 @@ impl FontMapper {
         unsafe { sys::wxFontMapper_CharsetToEncoding(self.as_ptr(), charset_wx.as_ptr(), interactive as c_int) as i32 }
     }
 
-    pub fn get(&self) -> Option<FontMapper> {
+    pub fn get() -> Option<FontMapper> {
         let ptr = unsafe { sys::wxFontMapper_Get() };
         if ptr.is_null() {
             None
@@ -65,19 +73,19 @@ impl FontMapper {
         }
     }
 
-    pub fn get_encoding(&self, n: usize) -> i32 {
+    pub fn get_encoding(n: usize) -> i32 {
         unsafe { sys::wxFontMapper_GetEncoding(n) as i32 }
     }
 
-    pub fn get_encoding_description(&self, encoding: i32) -> String {
+    pub fn get_encoding_description(encoding: i32) -> String {
         take_string(unsafe { sys::wxFontMapper_GetEncodingDescription(encoding as c_int) })
     }
 
-    pub fn get_encoding_name(&self, encoding: i32) -> String {
+    pub fn get_encoding_name(encoding: i32) -> String {
         take_string(unsafe { sys::wxFontMapper_GetEncodingName(encoding as c_int) })
     }
 
-    pub fn get_supported_encodings_count(&self) -> usize {
+    pub fn get_supported_encodings_count() -> usize {
         unsafe { sys::wxFontMapper_GetSupportedEncodingsCount() as usize }
     }
 

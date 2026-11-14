@@ -16,6 +16,13 @@ impl ArchiveOutputStream {
         Self(FilterOutputStream::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -43,16 +50,23 @@ impl WxArchiveOutputStream for ArchiveOutputStream {}
 use crate::support::WxStr;
 
 impl ArchiveOutputStream {
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxArchiveOutputStream_Delete(self.as_ptr()) }
+    }
+
     pub fn put_next_entry(&self, entry: &impl WxArchiveEntry) -> bool {
         unsafe { sys::wxArchiveOutputStream_PutNextEntry(self.as_ptr(), entry.as_ptr()) != 0 }
     }
 
-    pub fn put_next_entry_date(&self, entry_name: impl AsRef<str>, dt: &impl WxObject, size: i32) -> bool {
+    pub fn put_next_entry_date(&self, entry_name: impl AsRef<str>, dt: &impl WxDateTime, size: i32) -> bool {
         let entry_name_wx = WxStr::new(entry_name.as_ref());
         unsafe { sys::wxArchiveOutputStream_PutNextEntryDate(self.as_ptr(), entry_name_wx.as_ptr(), dt.as_ptr(), size as c_int) != 0 }
     }
 
-    pub fn put_next_dir_entry_date(&self, entry_name: impl AsRef<str>, dt: &impl WxObject) -> bool {
+    pub fn put_next_dir_entry_date(&self, entry_name: impl AsRef<str>, dt: &impl WxDateTime) -> bool {
         let entry_name_wx = WxStr::new(entry_name.as_ref());
         unsafe { sys::wxArchiveOutputStream_PutNextDirEntryDate(self.as_ptr(), entry_name_wx.as_ptr(), dt.as_ptr()) != 0 }
     }

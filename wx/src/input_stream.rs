@@ -16,6 +16,13 @@ impl InputStream {
         Self(StreamBase::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -41,6 +48,13 @@ impl WxInputStream for InputStream {}
 impl InputStream {
     pub fn can_read(&self) -> bool {
         unsafe { sys::wxInputStream_CanRead(self.as_ptr()) != 0 }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxInputStream_Delete(self.as_ptr()) }
     }
 
     pub fn tell_i(&self) -> i32 {

@@ -16,6 +16,13 @@ impl TextAttr {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -36,16 +43,17 @@ impl WxObject for TextAttr {
 }
 
 impl WxTextAttr for TextAttr {}
+use crate::array_int::ArrayInt;
 use crate::support::WxStr;
 
 impl TextAttr {
-    pub fn new(col_text: &impl WxObject, col_back: &impl WxObject, font: &impl WxObject) -> Self {
+    pub fn new(col_text: &impl WxColour, col_back: &impl WxColour, font: &impl WxFont) -> Self {
         let ptr = unsafe { sys::wxTextAttr_Create(col_text.as_ptr(), col_back.as_ptr(), font.as_ptr()) };
         assert!(!ptr.is_null(), "wxTextAttr_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(col_text: &impl WxObject, col_back: &impl WxObject, font: &impl WxObject) -> Self {
+    pub fn new_full(col_text: &impl WxColour, col_back: &impl WxColour, font: &impl WxFont) -> Self {
         let ptr = unsafe { sys::wxTextAttr_Create(col_text.as_ptr(), col_back.as_ptr(), font.as_ptr()) };
         assert!(!ptr.is_null(), "wxTextAttr_Create returned null");
         Self::from_raw(ptr)
@@ -126,15 +134,22 @@ impl TextAttr {
         Self::from_raw(ptr)
     }
 
-    pub fn get_background_colour(&self, colour: &impl WxObject) {
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxTextAttr_Delete(self.as_ptr()) }
+    }
+
+    pub fn get_background_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxTextAttr_GetBackgroundColour(self.as_ptr(), colour.as_ptr()) }
     }
 
-    pub fn get_font(&self, font: &impl WxObject) {
+    pub fn get_font(&self, font: &impl WxFont) {
         unsafe { sys::wxTextAttr_GetFont(self.as_ptr(), font.as_ptr()) }
     }
 
-    pub fn get_text_colour(&self, colour: &impl WxObject) {
+    pub fn get_text_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxTextAttr_GetTextColour(self.as_ptr(), colour.as_ptr()) }
     }
 
@@ -154,16 +169,29 @@ impl TextAttr {
         unsafe { sys::wxTextAttr_IsDefault(self.as_ptr()) != 0 }
     }
 
-    pub fn set_background_colour(&self, colour: &impl WxObject) {
+    pub fn set_background_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxTextAttr_SetBackgroundColour(self.as_ptr(), colour.as_ptr()) }
     }
 
-    pub fn set_font(&self, font: &impl WxObject) {
+    pub fn set_font(&self, font: &impl WxFont) {
         unsafe { sys::wxTextAttr_SetFont(self.as_ptr(), font.as_ptr()) }
     }
 
-    pub fn set_text_colour(&self, colour: &impl WxObject) {
+    pub fn set_text_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxTextAttr_SetTextColour(self.as_ptr(), colour.as_ptr()) }
+    }
+
+    pub fn set_tabs(&self, tabs: &impl WxArrayInt) {
+        unsafe { sys::wxTextAttr_SetTabs(self.as_ptr(), tabs.as_ptr()) }
+    }
+
+    pub fn get_tabs(&self) -> Option<ArrayInt> {
+        let ptr = unsafe { sys::wxTextAttr_GetTabs(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(ArrayInt::from_raw(ptr))
+        }
     }
 
 }

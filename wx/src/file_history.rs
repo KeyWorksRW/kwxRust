@@ -16,6 +16,13 @@ impl FileHistory {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for FileHistory {
     }
 }
 
+impl WxFileHistory for FileHistory {}
 
 use crate::support::WxStr;
 use crate::support::take_string;
@@ -45,7 +53,7 @@ impl FileHistory {
         unsafe { sys::wxFileHistory_AddFileToHistory(self.as_ptr(), file_wx.as_ptr()) }
     }
 
-    pub fn add_files_to_menu(&self, menu: &impl WxObject) {
+    pub fn add_files_to_menu(&self, menu: &impl WxMenu) {
         unsafe { sys::wxFileHistory_AddFilesToMenu(self.as_ptr(), menu.as_ptr()) }
     }
 
@@ -61,6 +69,23 @@ impl FileHistory {
         Self::from_raw(ptr)
     }
 
+    pub fn create_ex(max_files: i32, id_base: i32) -> Self {
+        let ptr = unsafe { sys::wxFileHistory_CreateEx(max_files as c_int, id_base as c_int) };
+        assert!(!ptr.is_null(), "wxFileHistory_CreateEx returned null");
+        Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxFileHistory_Delete(self.as_ptr()) }
+    }
+
+    pub fn get_base_id(&self) -> i32 {
+        unsafe { sys::wxFileHistory_GetBaseId(self.as_ptr()) as i32 }
+    }
+
     pub fn get_count(&self) -> i32 {
         unsafe { sys::wxFileHistory_GetCount(self.as_ptr()) as i32 }
     }
@@ -71,6 +96,10 @@ impl FileHistory {
 
     pub fn get_max_files(&self) -> i32 {
         unsafe { sys::wxFileHistory_GetMaxFiles(self.as_ptr()) as i32 }
+    }
+
+    pub fn get_menu_path_style(&self) -> i32 {
+        unsafe { sys::wxFileHistory_GetMenuPathStyle(self.as_ptr()) as i32 }
     }
 
     pub fn get_menus(&self, ref_: *mut c_void) -> i32 {
@@ -85,7 +114,7 @@ impl FileHistory {
         unsafe { sys::wxFileHistory_RemoveFileFromHistory(self.as_ptr(), index as c_int) }
     }
 
-    pub fn remove_menu(&self, menu: &impl WxObject) {
+    pub fn remove_menu(&self, menu: &impl WxMenu) {
         unsafe { sys::wxFileHistory_RemoveMenu(self.as_ptr(), menu.as_ptr()) }
     }
 
@@ -93,7 +122,15 @@ impl FileHistory {
         unsafe { sys::wxFileHistory_Save(self.as_ptr(), config.as_ptr()) }
     }
 
-    pub fn use_menu(&self, menu: &impl WxObject) {
+    pub fn set_base_id(&self, base_id: i32) {
+        unsafe { sys::wxFileHistory_SetBaseId(self.as_ptr(), base_id as c_int) }
+    }
+
+    pub fn set_menu_path_style(&self, style: i32) {
+        unsafe { sys::wxFileHistory_SetMenuPathStyle(self.as_ptr(), style as c_int) }
+    }
+
+    pub fn use_menu(&self, menu: &impl WxMenu) {
         unsafe { sys::wxFileHistory_UseMenu(self.as_ptr(), menu.as_ptr()) }
     }
 

@@ -16,6 +16,13 @@ impl GridCellFloatEditor {
         Self(GridCellTextEditor::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,9 +45,10 @@ impl WxObject for GridCellFloatEditor {
 impl WxGridCellTextEditor for GridCellFloatEditor {}
 impl WxGridCellEditor for GridCellFloatEditor {}
 impl WxGridCellWorker for GridCellFloatEditor {}
+impl WxGridCellFloatEditor for GridCellFloatEditor {}
 
 impl GridCellFloatEditor {
-    pub fn ctor(&self, width: i32, precision: i32) -> Option<GridCellFloatEditor> {
+    pub fn ctor(width: i32, precision: i32) -> Option<GridCellFloatEditor> {
         let ptr = unsafe { sys::wxGridCellFloatEditor_Ctor(width as c_int, precision as c_int) };
         if ptr.is_null() {
             None

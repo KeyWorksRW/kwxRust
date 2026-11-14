@@ -16,6 +16,13 @@ impl TextFile {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for TextFile {
     }
 }
 
+impl WxTextFile for TextFile {}
 use crate::support::WxStr;
 use crate::support::take_string;
 
@@ -56,6 +64,13 @@ impl TextFile {
         let ptr = unsafe { sys::wxTextFile_CreateFromFile(file_name_wx.as_ptr()) };
         assert!(!ptr.is_null(), "wxTextFile_CreateFromFile returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxTextFile_Delete(self.as_ptr()) }
     }
 
     pub fn exists(&self) -> bool {
@@ -162,12 +177,12 @@ impl TextFile {
         unsafe { sys::wxTextFile_WriteAs(self.as_ptr(), line_type as c_int) != 0 }
     }
 
-    pub fn translate(&self, text: impl AsRef<str>, line_type: i32) -> String {
+    pub fn translate(text: impl AsRef<str>, line_type: i32) -> String {
         let text_wx = WxStr::new(text.as_ref());
         take_string(unsafe { sys::wxTextFile_Translate(text_wx.as_ptr(), line_type as c_int) })
     }
 
-    pub fn get_eol(&self, line_type: i32) -> String {
+    pub fn get_eol(line_type: i32) -> String {
         take_string(unsafe { sys::wxTextFile_GetEol(line_type as c_int) })
     }
 

@@ -16,6 +16,13 @@ impl GLCanvas {
         Self(ScrolledWindow::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,38 +46,39 @@ impl WxScrolledWindow for GLCanvas {}
 impl WxPanel for GLCanvas {}
 impl WxWindow for GLCanvas {}
 impl WxEvtHandler for GLCanvas {}
+impl WxGLCanvas for GLCanvas {}
 
 use crate::support::WxStr;
 
 impl GLCanvas {
-    pub fn new(parent: &impl WxWindow, window_id: i32, attributes: *mut c_void, x: i32, y: i32, width: i32, height: i32, title: impl AsRef<str>, palette: &impl WxObject) -> Self {
+    pub fn new(parent: &impl WxWindow, window_id: i32, attributes: *mut c_void, x: i32, y: i32, width: i32, height: i32, title: impl AsRef<str>, palette: &impl WxPalette) -> Self {
         let title_wx = WxStr::new(title.as_ref());
         let ptr = unsafe { sys::wxGLCanvas_Create(parent.as_ptr(), window_id as c_int, attributes, x as c_int, y as c_int, width as c_int, height as c_int, 0, title_wx.as_ptr(), palette.as_ptr()) };
         assert!(!ptr.is_null(), "wxGLCanvas_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(parent: &impl WxWindow, window_id: i32, attributes: *mut c_void, x: i32, y: i32, width: i32, height: i32, style: i32, title: impl AsRef<str>, palette: &impl WxObject) -> Self {
+    pub fn new_full(parent: &impl WxWindow, window_id: i32, attributes: *mut c_void, x: i32, y: i32, width: i32, height: i32, style: i32, title: impl AsRef<str>, palette: &impl WxPalette) -> Self {
         let title_wx = WxStr::new(title.as_ref());
         let ptr = unsafe { sys::wxGLCanvas_Create(parent.as_ptr(), window_id as c_int, attributes, x as c_int, y as c_int, width as c_int, height as c_int, style as c_int, title_wx.as_ptr(), palette.as_ptr()) };
         assert!(!ptr.is_null(), "wxGLCanvas_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn is_display_supported(&self, attributes: *mut c_void) -> bool {
+    pub fn is_display_supported(attributes: *mut c_void) -> bool {
         unsafe { sys::wxGLCanvas_IsDisplaySupported(attributes) != 0 }
     }
 
-    pub fn is_extension_supported(&self, extension: impl AsRef<str>) -> bool {
+    pub fn is_extension_supported(extension: impl AsRef<str>) -> bool {
         let extension_wx = WxStr::new(extension.as_ref());
         unsafe { sys::wxGLCanvas_IsExtensionSupported(extension_wx.as_ptr()) != 0 }
     }
 
-    pub fn set_colour(&self, colour: &impl WxObject) -> bool {
+    pub fn set_colour(&self, colour: &impl WxColour) -> bool {
         unsafe { sys::wxGLCanvas_SetColour(self.as_ptr(), colour.as_ptr()) != 0 }
     }
 
-    pub fn set_current(&self, ctxt: &impl WxObject) -> bool {
+    pub fn set_current(&self, ctxt: &impl WxGLContext) -> bool {
         unsafe { sys::wxGLCanvas_SetCurrent(self.as_ptr(), ctxt.as_ptr()) != 0 }
     }
 

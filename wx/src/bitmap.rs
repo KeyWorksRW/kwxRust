@@ -16,6 +16,13 @@ impl Bitmap {
         Self(GDIObject::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -46,7 +53,7 @@ use crate::support::Size;
 use crate::support::WxStr;
 
 impl Bitmap {
-    pub fn create_from_image(image: &impl WxObject, depth: i32) -> Self {
+    pub fn create_from_image(image: &impl WxImage, depth: i32) -> Self {
         let ptr = unsafe { sys::wxBitmap_CreateFromImage(image.as_ptr(), depth as c_int) };
         assert!(!ptr.is_null(), "wxBitmap_CreateFromImage returned null");
         Self::from_raw(ptr)
@@ -130,7 +137,7 @@ impl Bitmap {
         }
     }
 
-    pub fn set_palette(&self, palette: &impl WxObject) {
+    pub fn set_palette(&self, palette: &impl WxPalette) {
         unsafe { sys::wxBitmap_SetPalette(self.as_ptr(), palette.as_ptr()) }
     }
 
@@ -146,11 +153,11 @@ impl Bitmap {
         unsafe { sys::wxBitmap_ResetAlpha(self.as_ptr()) }
     }
 
-    pub fn copy_from_icon(&self, icon: &impl WxObject) -> bool {
+    pub fn copy_from_icon(&self, icon: &impl WxIcon) -> bool {
         unsafe { sys::wxBitmap_CopyFromIcon(self.as_ptr(), icon.as_ptr()) != 0 }
     }
 
-    pub fn new_from_png_data(&self, data: *mut c_void, size: usize) -> Option<Bitmap> {
+    pub fn new_from_png_data(data: *mut c_void, size: usize) -> Option<Bitmap> {
         let ptr = unsafe { sys::wxBitmap_NewFromPNGData(data, size) };
         if ptr.is_null() {
             None
@@ -159,15 +166,15 @@ impl Bitmap {
         }
     }
 
-    pub fn add_handler(&self, handler: &impl WxImageHandler) {
+    pub fn add_handler(handler: &impl WxImageHandler) {
         unsafe { sys::wxBitmap_AddHandler(handler.as_ptr()) }
     }
 
-    pub fn create_with_dip_size(&self, sz: &impl WxObject, scale: f64, depth: i32) -> bool {
+    pub fn create_with_dip_size(&self, sz: &impl WxSize, scale: f64, depth: i32) -> bool {
         unsafe { sys::wxBitmap_CreateWithDIPSize(self.as_ptr(), sz.as_ptr(), scale as c_double, depth as c_int) != 0 }
     }
 
-    pub fn clean_up_handlers(&self) {
+    pub fn clean_up_handlers() {
         unsafe { sys::wxBitmap_CleanUpHandlers() }
     }
 
@@ -195,13 +202,10 @@ impl Bitmap {
         Self::from_raw(ptr)
     }
 
-    pub fn create_from_xpm(&self) -> Option<Bitmap> {
-        let ptr = unsafe { sys::wxBitmap_CreateFromXPM(self.as_ptr()) };
-        if ptr.is_null() {
-            None
-        } else {
-            Some(Bitmap::from_raw(ptr))
-        }
+    pub fn create_from_xpm(data: *mut c_void) -> Self {
+        let ptr = unsafe { sys::wxBitmap_CreateFromXPM(data) };
+        assert!(!ptr.is_null(), "wxBitmap_CreateFromXPM returned null");
+        Self::from_raw(ptr)
     }
 
     pub fn create_load(name: impl AsRef<str>, type_: i32) -> Self {
@@ -223,16 +227,23 @@ impl Bitmap {
         Self::from_raw(ptr)
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxBitmap_Delete(self.as_ptr()) }
+    }
+
     pub fn find_handler_by_extension(&self, type_: i32) -> *mut c_void {
         unsafe { sys::wxBitmap_FindHandlerByExtension(self.as_ptr(), type_ as c_int) }
     }
 
-    pub fn find_handler_by_name(&self, name: impl AsRef<str>) -> *mut c_void {
+    pub fn find_handler_by_name(name: impl AsRef<str>) -> *mut c_void {
         let name_wx = WxStr::new(name.as_ref());
         unsafe { sys::wxBitmap_FindHandlerByName(name_wx.as_ptr()) }
     }
 
-    pub fn find_handler_by_type(&self, type_: i32) -> *mut c_void {
+    pub fn find_handler_by_type(type_: i32) -> *mut c_void {
         unsafe { sys::wxBitmap_FindHandlerByType(type_ as c_int) }
     }
 
@@ -261,11 +272,11 @@ impl Bitmap {
         unsafe { sys::wxBitmap_GetWidth(self.as_ptr()) as i32 }
     }
 
-    pub fn init_standard_handlers(&self) {
+    pub fn init_standard_handlers() {
         unsafe { sys::wxBitmap_InitStandardHandlers() }
     }
 
-    pub fn insert_handler(&self, handler: &impl WxEvtHandler) {
+    pub fn insert_handler(handler: &impl WxEvtHandler) {
         unsafe { sys::wxBitmap_InsertHandler(handler.as_ptr()) }
     }
 
@@ -278,17 +289,17 @@ impl Bitmap {
         unsafe { sys::wxBitmap_IsOk(self.as_ptr()) != 0 }
     }
 
-    pub fn remove_handler(&self, name: impl AsRef<str>) -> bool {
+    pub fn remove_handler(name: impl AsRef<str>) -> bool {
         let name_wx = WxStr::new(name.as_ref());
         unsafe { sys::wxBitmap_RemoveHandler(name_wx.as_ptr()) != 0 }
     }
 
-    pub fn save_file(&self, name: impl AsRef<str>, type_: i32, cmap: &impl WxObject) -> i32 {
+    pub fn save_file(&self, name: impl AsRef<str>, type_: i32, cmap: &impl WxPalette) -> i32 {
         let name_wx = WxStr::new(name.as_ref());
         unsafe { sys::wxBitmap_SaveFile(self.as_ptr(), name_wx.as_ptr(), type_ as c_int, cmap.as_ptr()) as i32 }
     }
 
-    pub fn set_mask(&self, mask: &impl WxObject) {
+    pub fn set_mask(&self, mask: &impl WxMask) {
         unsafe { sys::wxBitmap_SetMask(self.as_ptr(), mask.as_ptr()) }
     }
 

@@ -16,6 +16,13 @@ impl Validator {
         Self(EvtHandler::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -53,8 +60,15 @@ impl Validator {
         Self::from_raw(ptr)
     }
 
-    pub fn is_silent(&self) -> bool {
+    pub fn is_silent() -> bool {
         unsafe { sys::wxValidator_IsSilent() != 0 }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxValidator_Delete(self.as_ptr()) }
     }
 
     pub fn get_window(&self) -> Option<Window> {
@@ -66,7 +80,7 @@ impl Validator {
         }
     }
 
-    pub fn suppress_bell_on_error(&self, do_it: bool) {
+    pub fn suppress_bell_on_error(do_it: bool) {
         unsafe { sys::wxValidator_SuppressBellOnError(do_it as c_int) }
     }
 
@@ -100,6 +114,14 @@ impl Validator {
 
     pub fn set_on_transfer_to_window(&self, p_function: *mut c_void) {
         unsafe { sys::wxValidator_SetOnTransferToWindow(self.as_ptr(), p_function) }
+    }
+
+    /// Alternative constructor wrapping `kwxValidator_Create`; takes every
+    /// declared parameter.  `new`/`new_full` wrap the wxWidgets-own constructor.
+    pub fn new_with_state(p_object: *mut c_void) -> Self {
+        let ptr = unsafe { sys::kwxValidator_Create(p_object) };
+        assert!(!ptr.is_null(), "kwxValidator_Create returned null");
+        Self::from_raw(ptr)
     }
 
 }

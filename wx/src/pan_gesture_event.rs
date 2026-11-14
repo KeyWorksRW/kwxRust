@@ -16,6 +16,13 @@ impl PanGestureEvent {
         Self(GestureEvent::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -37,6 +44,7 @@ impl WxObject for PanGestureEvent {
 
 impl WxGestureEvent for PanGestureEvent {}
 impl WxEvent for PanGestureEvent {}
+impl WxPanGestureEvent for PanGestureEvent {}
 
 impl PanGestureEvent {
     pub fn get_delta(&self) -> Option<crate::point::Point> {
@@ -48,7 +56,7 @@ impl PanGestureEvent {
         }
     }
 
-    pub fn set_delta(&self, delta: &impl WxObject) {
+    pub fn set_delta(&self, delta: &impl WxPoint) {
         unsafe { sys::wxPanGestureEvent_SetDelta(self.as_ptr(), delta.as_ptr()) }
     }
 

@@ -16,6 +16,13 @@ impl RearrangeCtrl {
         Self(Panel::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,19 +45,20 @@ impl WxObject for RearrangeCtrl {
 impl WxPanel for RearrangeCtrl {}
 impl WxWindow for RearrangeCtrl {}
 impl WxEvtHandler for RearrangeCtrl {}
+impl WxRearrangeCtrl for RearrangeCtrl {}
 
 use crate::array_int::ArrayInt;
 use crate::rearrange_list::RearrangeList;
 use crate::support::Rect;
 
 impl RearrangeCtrl {
-    pub fn new(parent: &impl WxWindow, order: &impl WxObject, items: &impl WxObject) -> Self {
+    pub fn new(parent: &impl WxWindow, order: &impl WxArrayInt, items: &impl WxArrayString) -> Self {
         let ptr = unsafe { sys::wxRearrangeCtrl_Create(parent.as_ptr(), -1, Rect::default().x as c_int, Rect::default().y as c_int, Rect::default().width as c_int, Rect::default().height as c_int, order.as_ptr(), items.as_ptr(), 0) };
         assert!(!ptr.is_null(), "wxRearrangeCtrl_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(parent: &impl WxWindow, id: i32, rect: Rect, order: &impl WxObject, items: &impl WxObject, style: i32) -> Self {
+    pub fn new_full(parent: &impl WxWindow, id: i32, rect: Rect, order: &impl WxArrayInt, items: &impl WxArrayString, style: i32) -> Self {
         let ptr = unsafe { sys::wxRearrangeCtrl_Create(parent.as_ptr(), id as c_int, rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int, order.as_ptr(), items.as_ptr(), style as c_int) };
         assert!(!ptr.is_null(), "wxRearrangeCtrl_Create returned null");
         Self::from_raw(ptr)

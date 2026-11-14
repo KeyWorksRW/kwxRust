@@ -16,6 +16,13 @@ impl DirFilterListCtrl {
         Self(Choice::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,19 +46,20 @@ impl WxChoice for DirFilterListCtrl {}
 impl WxControl for DirFilterListCtrl {}
 impl WxWindow for DirFilterListCtrl {}
 impl WxEvtHandler for DirFilterListCtrl {}
+impl WxDirFilterListCtrl for DirFilterListCtrl {}
 
 use crate::support::Point;
 use crate::support::Size;
 use crate::support::WxStr;
 
 impl DirFilterListCtrl {
-    pub fn new(parent: &impl WxObject, point: Point, size: Size) -> Self {
+    pub fn new(parent: &impl WxGenericDirCtrl, point: Point, size: Size) -> Self {
         let ptr = unsafe { sys::wxDirFilterListCtrl_Create(parent.as_ptr(), -1, point.x as c_int, point.y as c_int, size.width as c_int, size.height as c_int, 0) };
         assert!(!ptr.is_null(), "wxDirFilterListCtrl_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(parent: &impl WxObject, id: i32, point: Point, size: Size, style: i32) -> Self {
+    pub fn new_full(parent: &impl WxGenericDirCtrl, id: i32, point: Point, size: Size, style: i32) -> Self {
         let ptr = unsafe { sys::wxDirFilterListCtrl_Create(parent.as_ptr(), id as c_int, point.x as c_int, point.y as c_int, size.width as c_int, size.height as c_int, style as c_long) };
         assert!(!ptr.is_null(), "wxDirFilterListCtrl_Create returned null");
         Self::from_raw(ptr)
@@ -60,6 +68,13 @@ impl DirFilterListCtrl {
     pub fn fill_filter_list(&self, filter: impl AsRef<str>, default_filter: i32) {
         let filter_wx = WxStr::new(filter.as_ref());
         unsafe { sys::wxDirFilterListCtrl_FillFilterList(self.as_ptr(), filter_wx.as_ptr(), default_filter as c_int) }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxDirFilterListCtrl_Delete(self.as_ptr()) }
     }
 
 }

@@ -16,6 +16,13 @@ impl SecretValue {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for SecretValue {
     }
 }
 
+impl WxSecretValue for SecretValue {}
 use crate::support::WxStr;
 use crate::support::take_string;
 
@@ -57,7 +65,7 @@ impl SecretValue {
         unsafe { sys::wxSecretValue_GetSize(self.as_ptr()) as usize }
     }
 
-    pub fn wipe_string(&self, str: impl AsRef<str>) {
+    pub fn wipe_string(str: impl AsRef<str>) {
         let str_wx = WxStr::new(str.as_ref());
         unsafe { sys::wxSecretValue_WipeString(str_wx.as_ptr()) }
     }
@@ -66,6 +74,13 @@ impl SecretValue {
         let ptr = unsafe { sys::wxSecretValue_CreateDefault() };
         assert!(!ptr.is_null(), "wxSecretValue_CreateDefault returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxSecretValue_Delete(self.as_ptr()) }
     }
 
     pub fn is_ok(&self) -> bool {

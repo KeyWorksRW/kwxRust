@@ -16,6 +16,13 @@ impl GraphicsMatrix {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,8 +42,9 @@ impl WxObject for GraphicsMatrix {
     }
 }
 
+impl WxGraphicsMatrix for GraphicsMatrix {}
 impl GraphicsMatrix {
-    pub fn concat(&self, matrix: &impl WxObject) {
+    pub fn concat(&self, matrix: &impl WxGraphicsMatrix) {
         unsafe { sys::wxGraphicsMatrix_Concat(self.as_ptr(), matrix.as_ptr()) }
     }
 
@@ -52,6 +60,13 @@ impl GraphicsMatrix {
         Self::from_raw(ptr)
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxGraphicsMatrix_Delete(self.as_ptr()) }
+    }
+
     pub fn get(&self, a: *mut f64, b: *mut f64, c: *mut f64, d: *mut f64, tx: *mut f64, ty: *mut f64) {
         unsafe { sys::wxGraphicsMatrix_Get(self.as_ptr(), a as *mut c_double, b as *mut c_double, c as *mut c_double, d as *mut c_double, tx as *mut c_double, ty as *mut c_double) }
     }
@@ -64,7 +79,7 @@ impl GraphicsMatrix {
         unsafe { sys::wxGraphicsMatrix_Invert(self.as_ptr()) }
     }
 
-    pub fn is_equal(&self, t: &impl WxObject) -> bool {
+    pub fn is_equal(&self, t: &impl WxGraphicsMatrix) -> bool {
         unsafe { sys::wxGraphicsMatrix_IsEqual(self.as_ptr(), t.as_ptr()) != 0 }
     }
 

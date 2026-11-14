@@ -16,6 +16,13 @@ impl FileSystem {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for FileSystem {
     }
 }
 
+impl WxFileSystem for FileSystem {}
 
 use crate::fs_file::FSFile;
 use crate::support::WxStr;
@@ -51,6 +59,13 @@ impl FileSystem {
         let ptr = unsafe { sys::wxFileSystem_Create() };
         assert!(!ptr.is_null(), "wxFileSystem_Create returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxFileSystem_Delete(self.as_ptr()) }
     }
 
     pub fn change_path_to(&self, location: impl AsRef<str>, is_dir: bool) {
@@ -89,6 +104,10 @@ impl FileSystem {
     pub fn url_to_file_name(&self, url: impl AsRef<str>) -> String {
         let url_wx = WxStr::new(url.as_ref());
         take_string(unsafe { sys::wxFileSystem_URLToFileName(self.as_ptr(), url_wx.as_ptr()) })
+    }
+
+    pub fn add_handler(handler: *mut c_void) {
+        unsafe { sys::wxFileSystem_AddHandler(handler) }
     }
 
 }

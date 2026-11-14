@@ -16,6 +16,13 @@ impl XmlNode {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for XmlNode {
     }
 }
 
+impl WxXmlNode for XmlNode {}
 use crate::support::WxStr;
 use crate::support::take_string;
 use crate::xml_attribute::XmlAttribute;
@@ -54,6 +62,13 @@ impl XmlNode {
         let ptr = unsafe { sys::wxXmlNode_Create(node_type as c_int, name_wx.as_ptr(), content_wx.as_ptr(), line_number as c_int) };
         assert!(!ptr.is_null(), "wxXmlNode_Create returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxXmlNode_Delete(self.as_ptr()) }
     }
 
     pub fn get_type(&self) -> i32 {
@@ -109,7 +124,7 @@ impl XmlNode {
         unsafe { sys::wxXmlNode_AddAttribute(self.as_ptr(), name_wx.as_ptr(), value_wx.as_ptr()) }
     }
 
-    pub fn add_attribute_object(&self, attribute: &impl WxObject) {
+    pub fn add_attribute_object(&self, attribute: &impl WxXmlAttribute) {
         unsafe { sys::wxXmlNode_AddAttributeObject(self.as_ptr(), attribute.as_ptr()) }
     }
 
@@ -136,19 +151,19 @@ impl XmlNode {
         }
     }
 
-    pub fn add_child(&self, child: &impl WxObject) {
+    pub fn add_child(&self, child: &impl WxXmlNode) {
         unsafe { sys::wxXmlNode_AddChild(self.as_ptr(), child.as_ptr()) }
     }
 
-    pub fn insert_child(&self, child: &impl WxObject, following_node: &impl WxObject) -> bool {
+    pub fn insert_child(&self, child: &impl WxXmlNode, following_node: &impl WxXmlNode) -> bool {
         unsafe { sys::wxXmlNode_InsertChild(self.as_ptr(), child.as_ptr(), following_node.as_ptr()) != 0 }
     }
 
-    pub fn insert_child_after(&self, child: &impl WxObject, preceding_node: &impl WxObject) -> bool {
+    pub fn insert_child_after(&self, child: &impl WxXmlNode, preceding_node: &impl WxXmlNode) -> bool {
         unsafe { sys::wxXmlNode_InsertChildAfter(self.as_ptr(), child.as_ptr(), preceding_node.as_ptr()) != 0 }
     }
 
-    pub fn remove_child(&self, child: &impl WxObject) -> bool {
+    pub fn remove_child(&self, child: &impl WxXmlNode) -> bool {
         unsafe { sys::wxXmlNode_RemoveChild(self.as_ptr(), child.as_ptr()) != 0 }
     }
 
@@ -161,7 +176,7 @@ impl XmlNode {
         }
     }
 
-    pub fn set_next(&self, next_node: &impl WxObject) {
+    pub fn set_next(&self, next_node: &impl WxXmlNode) {
         unsafe { sys::wxXmlNode_SetNext(self.as_ptr(), next_node.as_ptr()) }
     }
 
@@ -174,7 +189,7 @@ impl XmlNode {
         }
     }
 
-    pub fn set_parent(&self, parent: &impl WxObject) {
+    pub fn set_parent(&self, parent: &impl WxXmlNode) {
         unsafe { sys::wxXmlNode_SetParent(self.as_ptr(), parent.as_ptr()) }
     }
 
