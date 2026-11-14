@@ -16,6 +16,13 @@ impl Brush {
         Self(GDIObject::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -36,9 +43,10 @@ impl WxObject for Brush {
 }
 
 impl WxGDIObject for Brush {}
+impl WxBrush for Brush {}
 
 impl Brush {
-    pub fn assign(&self, brush: &impl WxObject) {
+    pub fn assign(&self, brush: &impl WxBrush) {
         unsafe { sys::wxBrush_Assign(self.as_ptr(), brush.as_ptr()) }
     }
 
@@ -54,7 +62,7 @@ impl Brush {
         Self::from_raw(ptr)
     }
 
-    pub fn create_from_colour(col: &impl WxObject, style: i32) -> Self {
+    pub fn create_from_colour(col: &impl WxColour, style: i32) -> Self {
         let ptr = unsafe { sys::wxBrush_CreateFromColour(col.as_ptr(), style as c_int) };
         assert!(!ptr.is_null(), "wxBrush_CreateFromColour returned null");
         Self::from_raw(ptr)
@@ -66,7 +74,14 @@ impl Brush {
         Self::from_raw(ptr)
     }
 
-    pub fn get_colour(&self, ref_: &impl WxObject) {
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxBrush_Delete(self.as_ptr()) }
+    }
+
+    pub fn get_colour(&self, ref_: &impl WxColour) {
         unsafe { sys::wxBrush_GetColour(self.as_ptr(), ref_.as_ptr()) }
     }
 
@@ -78,7 +93,7 @@ impl Brush {
         unsafe { sys::wxBrush_GetStyle(self.as_ptr()) as i32 }
     }
 
-    pub fn is_equal(&self, brush: &impl WxObject) -> bool {
+    pub fn is_equal(&self, brush: &impl WxBrush) -> bool {
         unsafe { sys::wxBrush_IsEqual(self.as_ptr(), brush.as_ptr()) != 0 }
     }
 
@@ -86,7 +101,7 @@ impl Brush {
         unsafe { sys::wxBrush_IsOk(self.as_ptr()) != 0 }
     }
 
-    pub fn set_colour(&self, col: &impl WxObject) {
+    pub fn set_colour(&self, col: &impl WxColour) {
         unsafe { sys::wxBrush_SetColour(self.as_ptr(), col.as_ptr()) }
     }
 

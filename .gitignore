@@ -8,6 +8,7 @@ bin/
 build-shared/
 
 # Rust
+tests/quick/target/
 /target/
 **/*.rs.bk
 Cargo.lock
@@ -17,7 +18,13 @@ Cargo.lock
 *.swo
 *~
 .idea/
+*.exe
+*.dll
+*.so
+*.dylib
 
 # OS
 .DS_Store
 Thumbs.db
+
+tests/quick_prob/

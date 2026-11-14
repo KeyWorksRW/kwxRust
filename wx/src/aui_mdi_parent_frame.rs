@@ -16,6 +16,13 @@ impl AuiMDIParentFrame {
         Self(Frame::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,6 +46,7 @@ impl WxFrame for AuiMDIParentFrame {}
 impl WxTopLevelWindow for AuiMDIParentFrame {}
 impl WxWindow for AuiMDIParentFrame {}
 impl WxEvtHandler for AuiMDIParentFrame {}
+impl WxAuiMDIParentFrame for AuiMDIParentFrame {}
 
 use crate::aui_mdi_child_frame::AuiMDIChildFrame;
 use crate::aui_notebook::AuiNotebook;
@@ -72,7 +80,7 @@ impl AuiMDIParentFrame {
         }
     }
 
-    pub fn set_active_child(&self, child: &impl WxObject) {
+    pub fn set_active_child(&self, child: &impl WxAuiMDIChildFrame) {
         unsafe { sys::wxAuiMDIParentFrame_SetActiveChild(self.as_ptr(), child.as_ptr()) }
     }
 
@@ -101,7 +109,7 @@ impl AuiMDIParentFrame {
         }
     }
 
-    pub fn set_menu_bar(&self, menu_bar: &impl WxObject) {
+    pub fn set_menu_bar(&self, menu_bar: &impl WxMenuBar) {
         unsafe { sys::wxAuiMDIParentFrame_SetMenuBar(self.as_ptr(), menu_bar.as_ptr()) }
     }
 

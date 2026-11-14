@@ -16,6 +16,13 @@ impl Printout {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -44,11 +51,11 @@ impl Printout {
         unsafe { sys::wxPrintout_GetDC(p_object) }
     }
 
-    pub fn fit_this_size_to_page_margins(&self, image_size: &impl WxObject, page_setup_data: &impl WxObject) {
+    pub fn fit_this_size_to_page_margins(&self, image_size: &impl WxSize, page_setup_data: &impl WxPageSetupDialogData) {
         unsafe { sys::wxPrintout_FitThisSizeToPageMargins(self.as_ptr(), image_size.as_ptr(), page_setup_data.as_ptr()) }
     }
 
-    pub fn get_logical_page_margins_rect(&self, page_setup_data: &impl WxObject) -> Option<crate::rect::Rect> {
+    pub fn get_logical_page_margins_rect(&self, page_setup_data: &impl WxPageSetupDialogData) -> Option<crate::rect::Rect> {
         let ptr = unsafe { sys::wxPrintout_GetLogicalPageMarginsRect(self.as_ptr(), page_setup_data.as_ptr()) };
         if ptr.is_null() {
             None
@@ -119,6 +126,13 @@ impl Printout {
         let ptr = unsafe { sys::kwxPrintout_Create(title, self_, fn_begin_document, fn_end_document, fn_begin_printing, fn_end_printing, fn_prepare_printing, fn_print_page, fn_has_page, do_on_page_info) };
         assert!(!ptr.is_null(), "kwxPrintout_Create returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::kwxPrintout_Delete(self.as_ptr()) }
     }
 
 }

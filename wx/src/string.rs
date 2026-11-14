@@ -16,6 +16,13 @@ impl String {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for String {
     }
 }
 
+impl WxString for String {}
 impl String {
     pub fn new(buffer: impl AsRef<str>) -> Self {
         let buffer_c = std::ffi::CString::new(buffer.as_ref()).unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
@@ -62,6 +70,13 @@ impl String {
         let ptr = unsafe { sys::wxString_CreateLen(buffer_c.as_ptr(), len as c_int) };
         assert!(!ptr.is_null(), "wxString_CreateLen returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxString_Delete(self.as_ptr()) }
     }
 
     pub fn get_string(&self, buffer: *mut c_char) -> i32 {

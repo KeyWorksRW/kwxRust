@@ -16,6 +16,13 @@ impl RibbonGallery {
         Self(RibbonControl::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,6 +46,7 @@ impl WxRibbonControl for RibbonGallery {}
 impl WxControl for RibbonGallery {}
 impl WxWindow for RibbonGallery {}
 impl WxEvtHandler for RibbonGallery {}
+impl WxRibbonGallery for RibbonGallery {}
 
 use crate::ribbon_art_provider::RibbonArtProvider;
 use crate::ribbon_gallery_item::RibbonGalleryItem;
@@ -110,7 +118,7 @@ impl RibbonGallery {
         }
     }
 
-    pub fn set_selection(&self, item: &impl WxObject) {
+    pub fn set_selection(&self, item: &impl WxRibbonGalleryItem) {
         unsafe { sys::wxRibbonGallery_SetSelection(self.as_ptr(), item.as_ptr()) }
     }
 
@@ -141,11 +149,11 @@ impl RibbonGallery {
         }
     }
 
-    pub fn set_item_client_data(&self, item: &impl WxObject, data: *mut c_void) {
+    pub fn set_item_client_data(&self, item: &impl WxRibbonGalleryItem, data: *mut c_void) {
         unsafe { sys::wxRibbonGallery_SetItemClientData(self.as_ptr(), item.as_ptr(), data) }
     }
 
-    pub fn get_item_client_data(&self, item: &impl WxObject) -> *mut c_void {
+    pub fn get_item_client_data(&self, item: &impl WxRibbonGalleryItem) -> *mut c_void {
         unsafe { sys::wxRibbonGallery_GetItemClientData(self.as_ptr(), item.as_ptr()) }
     }
 
@@ -157,7 +165,7 @@ impl RibbonGallery {
         unsafe { sys::wxRibbonGallery_ScrollPixels(self.as_ptr(), pixels as c_int) != 0 }
     }
 
-    pub fn ensure_visible(&self, item: &impl WxObject) {
+    pub fn ensure_visible(&self, item: &impl WxRibbonGalleryItem) {
         unsafe { sys::wxRibbonGallery_EnsureVisible(self.as_ptr(), item.as_ptr()) }
     }
 
@@ -181,7 +189,7 @@ impl RibbonGallery {
         unsafe { sys::wxRibbonGallery_IsSizingContinuous(self.as_ptr()) != 0 }
     }
 
-    pub fn set_art_provider(&self, art: &impl WxObject) {
+    pub fn set_art_provider(&self, art: &impl WxRibbonArtProvider) {
         unsafe { sys::wxRibbonGallery_SetArtProvider(self.as_ptr(), art.as_ptr()) }
     }
 

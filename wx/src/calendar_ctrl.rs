@@ -16,6 +16,13 @@ impl CalendarCtrl {
         Self(CalendarCtrlBase::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,18 +46,19 @@ impl WxCalendarCtrlBase for CalendarCtrl {}
 impl WxControl for CalendarCtrl {}
 impl WxWindow for CalendarCtrl {}
 impl WxEvtHandler for CalendarCtrl {}
+impl WxCalendarCtrl for CalendarCtrl {}
 
 use crate::support::Point;
 use crate::support::Rect;
 
 impl CalendarCtrl {
-    pub fn new(parent: &impl WxWindow, date: &impl WxObject) -> Self {
+    pub fn new(parent: &impl WxWindow, date: &impl WxDateTime) -> Self {
         let ptr = unsafe { sys::wxCalendarCtrl_Create(parent.as_ptr(), -1, date.as_ptr(), Rect::default().x as c_int, Rect::default().y as c_int, Rect::default().width as c_int, Rect::default().height as c_int, 0) };
         assert!(!ptr.is_null(), "wxCalendarCtrl_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(parent: &impl WxWindow, id: i32, date: &impl WxObject, rect: Rect, style: i32) -> Self {
+    pub fn new_full(parent: &impl WxWindow, id: i32, date: &impl WxDateTime, rect: Rect, style: i32) -> Self {
         let ptr = unsafe { sys::wxCalendarCtrl_Create(parent.as_ptr(), id as c_int, date.as_ptr(), rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int, style as c_int) };
         assert!(!ptr.is_null(), "wxCalendarCtrl_Create returned null");
         Self::from_raw(ptr)
@@ -76,31 +84,31 @@ impl CalendarCtrl {
         unsafe { sys::wxCalendarCtrl_GetDateRange(self.as_ptr(), lowerdate, upperdate) != 0 }
     }
 
-    pub fn get_header_colour_bg(&self, ref_: &impl WxObject) {
+    pub fn get_header_colour_bg(&self, ref_: &impl WxColour) {
         unsafe { sys::wxCalendarCtrl_GetHeaderColourBg(self.as_ptr(), ref_.as_ptr()) }
     }
 
-    pub fn get_header_colour_fg(&self, ref_: &impl WxObject) {
+    pub fn get_header_colour_fg(&self, ref_: &impl WxColour) {
         unsafe { sys::wxCalendarCtrl_GetHeaderColourFg(self.as_ptr(), ref_.as_ptr()) }
     }
 
-    pub fn get_highlight_colour_bg(&self, ref_: &impl WxObject) {
+    pub fn get_highlight_colour_bg(&self, ref_: &impl WxColour) {
         unsafe { sys::wxCalendarCtrl_GetHighlightColourBg(self.as_ptr(), ref_.as_ptr()) }
     }
 
-    pub fn get_highlight_colour_fg(&self, ref_: &impl WxObject) {
+    pub fn get_highlight_colour_fg(&self, ref_: &impl WxColour) {
         unsafe { sys::wxCalendarCtrl_GetHighlightColourFg(self.as_ptr(), ref_.as_ptr()) }
     }
 
-    pub fn get_holiday_colour_bg(&self, ref_: &impl WxObject) {
+    pub fn get_holiday_colour_bg(&self, ref_: &impl WxColour) {
         unsafe { sys::wxCalendarCtrl_GetHolidayColourBg(self.as_ptr(), ref_.as_ptr()) }
     }
 
-    pub fn get_holiday_colour_fg(&self, ref_: &impl WxObject) {
+    pub fn get_holiday_colour_fg(&self, ref_: &impl WxColour) {
         unsafe { sys::wxCalendarCtrl_GetHolidayColourFg(self.as_ptr(), ref_.as_ptr()) }
     }
 
-    pub fn hit_test(&self, point: Point, date: &impl WxObject, weekday: *mut i32) -> i32 {
+    pub fn hit_test(&self, point: Point, date: &impl WxDateTime, weekday: *mut i32) -> i32 {
         unsafe { sys::wxCalendarCtrl_HitTest(self.as_ptr(), point.x as c_int, point.y as c_int, date.as_ptr(), weekday as *mut c_int) as i32 }
     }
 

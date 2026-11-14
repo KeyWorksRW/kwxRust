@@ -16,6 +16,13 @@ impl Palette {
         Self(GDIObject::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -36,9 +43,10 @@ impl WxObject for Palette {
 }
 
 impl WxGDIObject for Palette {}
+impl WxPalette for Palette {}
 
 impl Palette {
-    pub fn assign(&self, palette: &impl WxObject) {
+    pub fn assign(&self, palette: &impl WxPalette) {
         unsafe { sys::wxPalette_Assign(self.as_ptr(), palette.as_ptr()) }
     }
 
@@ -54,6 +62,13 @@ impl Palette {
         Self::from_raw(ptr)
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxPalette_Delete(self.as_ptr()) }
+    }
+
     pub fn get_pixel(&self, red: u8, green: u8, blue: u8) -> i32 {
         unsafe { sys::wxPalette_GetPixel(self.as_ptr(), red, green, blue) as i32 }
     }
@@ -62,7 +77,7 @@ impl Palette {
         unsafe { sys::wxPalette_GetRGB(self.as_ptr(), pixel as c_int, red, green, blue) != 0 }
     }
 
-    pub fn is_equal(&self, palette: &impl WxObject) -> bool {
+    pub fn is_equal(&self, palette: &impl WxPalette) -> bool {
         unsafe { sys::wxPalette_IsEqual(self.as_ptr(), palette.as_ptr()) != 0 }
     }
 

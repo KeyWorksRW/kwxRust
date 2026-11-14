@@ -16,6 +16,13 @@ impl RichTextPrinting {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for RichTextPrinting {
     }
 }
 
+impl WxRichTextPrinting for RichTextPrinting {}
 
 use crate::page_setup_dialog_data::PageSetupDialogData;
 use crate::print_data::PrintData;
@@ -59,12 +67,19 @@ impl RichTextPrinting {
         Self::from_raw(ptr)
     }
 
-    pub fn preview_buffer(&self, buffer: &impl WxObject) -> bool {
+    pub fn preview_buffer(&self, buffer: &impl WxRichTextBuffer) -> bool {
         unsafe { sys::wxRichTextPrinting_PreviewBuffer(self.as_ptr(), buffer.as_ptr()) != 0 }
     }
 
-    pub fn print_buffer(&self, buffer: &impl WxObject, show_print_dialog: bool) -> bool {
+    pub fn print_buffer(&self, buffer: &impl WxRichTextBuffer, show_print_dialog: bool) -> bool {
         unsafe { sys::wxRichTextPrinting_PrintBuffer(self.as_ptr(), buffer.as_ptr(), show_print_dialog as c_int) != 0 }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxRichTextPrinting_Delete(self.as_ptr()) }
     }
 
     pub fn preview_file(&self, rich_text_file: impl AsRef<str>) -> bool {
@@ -81,11 +96,11 @@ impl RichTextPrinting {
         unsafe { sys::wxRichTextPrinting_PageSetup(self.as_ptr()) }
     }
 
-    pub fn set_header_footer_data(&self, data: &impl WxObject) {
+    pub fn set_header_footer_data(&self, data: &impl WxRichTextHeaderFooterData) {
         unsafe { sys::wxRichTextPrinting_SetHeaderFooterData(self.as_ptr(), data.as_ptr()) }
     }
 
-    pub fn get_header_footer_data(&self, data: &impl WxObject) {
+    pub fn get_header_footer_data(&self, data: &impl WxRichTextHeaderFooterData) {
         unsafe { sys::wxRichTextPrinting_GetHeaderFooterData(self.as_ptr(), data.as_ptr()) }
     }
 
@@ -111,11 +126,11 @@ impl RichTextPrinting {
         unsafe { sys::wxRichTextPrinting_SetShowOnFirstPage(self.as_ptr(), show as c_int) }
     }
 
-    pub fn set_header_footer_font(&self, font: &impl WxObject) {
+    pub fn set_header_footer_font(&self, font: &impl WxFont) {
         unsafe { sys::wxRichTextPrinting_SetHeaderFooterFont(self.as_ptr(), font.as_ptr()) }
     }
 
-    pub fn set_header_footer_text_colour(&self, colour: &impl WxObject) {
+    pub fn set_header_footer_text_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxRichTextPrinting_SetHeaderFooterTextColour(self.as_ptr(), colour.as_ptr()) }
     }
 
@@ -137,15 +152,15 @@ impl RichTextPrinting {
         }
     }
 
-    pub fn set_print_data(&self, print_data: &impl WxObject) {
+    pub fn set_print_data(&self, print_data: &impl WxPrintData) {
         unsafe { sys::wxRichTextPrinting_SetPrintData(self.as_ptr(), print_data.as_ptr()) }
     }
 
-    pub fn set_page_setup_data(&self, page_setup_data: &impl WxObject) {
+    pub fn set_page_setup_data(&self, page_setup_data: &impl WxPageSetupDialogData) {
         unsafe { sys::wxRichTextPrinting_SetPageSetupData(self.as_ptr(), page_setup_data.as_ptr()) }
     }
 
-    pub fn set_rich_text_buffer_preview(&self, buffer: &impl WxObject) {
+    pub fn set_rich_text_buffer_preview(&self, buffer: &impl WxRichTextBuffer) {
         unsafe { sys::wxRichTextPrinting_SetRichTextBufferPreview(self.as_ptr(), buffer.as_ptr()) }
     }
 
@@ -158,7 +173,7 @@ impl RichTextPrinting {
         }
     }
 
-    pub fn set_rich_text_buffer_printing(&self, buffer: &impl WxObject) {
+    pub fn set_rich_text_buffer_printing(&self, buffer: &impl WxRichTextBuffer) {
         unsafe { sys::wxRichTextPrinting_SetRichTextBufferPrinting(self.as_ptr(), buffer.as_ptr()) }
     }
 

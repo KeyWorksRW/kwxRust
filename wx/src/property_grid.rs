@@ -16,6 +16,13 @@ impl PropertyGrid {
         Self(Control::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,6 +45,7 @@ impl WxObject for PropertyGrid {
 impl WxControl for PropertyGrid {}
 impl WxWindow for PropertyGrid {}
 impl WxEvtHandler for PropertyGrid {}
+impl WxPropertyGrid for PropertyGrid {}
 
 use crate::array_int::ArrayInt;
 use crate::array_string::ArrayString;
@@ -64,7 +72,7 @@ impl PropertyGrid {
         unsafe { sys::wxPropertyGrid_GetColumnCount(self.as_ptr()) as i32 }
     }
 
-    pub fn get_good_editor_dialog_position(&self, p: *mut c_void, sz: &impl WxObject) -> Option<crate::point::Point> {
+    pub fn get_good_editor_dialog_position(&self, p: *mut c_void, sz: &impl WxSize) -> Option<crate::point::Point> {
         let ptr = unsafe { sys::wxPropertyGrid_GetGoodEditorDialogPosition(self.as_ptr(), p, sz.as_ptr()) };
         if ptr.is_null() {
             None
@@ -73,7 +81,7 @@ impl PropertyGrid {
         }
     }
 
-    pub fn register_editor_class(&self, editor: *mut c_void, no_def_check: bool) -> *mut c_void {
+    pub fn register_editor_class(editor: *mut c_void, no_def_check: bool) -> *mut c_void {
         unsafe { sys::wxPropertyGrid_RegisterEditorClass(editor, no_def_check as c_int) }
     }
 
@@ -331,43 +339,43 @@ impl PropertyGrid {
         }
     }
 
-    pub fn set_caption_background_colour(&self, colour: &impl WxObject) {
+    pub fn set_caption_background_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxPropertyGrid_SetCaptionBackgroundColour(self.as_ptr(), colour.as_ptr()) }
     }
 
-    pub fn set_caption_text_colour(&self, colour: &impl WxObject) {
+    pub fn set_caption_text_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxPropertyGrid_SetCaptionTextColour(self.as_ptr(), colour.as_ptr()) }
     }
 
-    pub fn set_cell_background_colour(&self, colour: &impl WxObject) {
+    pub fn set_cell_background_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxPropertyGrid_SetCellBackgroundColour(self.as_ptr(), colour.as_ptr()) }
     }
 
-    pub fn set_cell_disabled_text_colour(&self, colour: &impl WxObject) {
+    pub fn set_cell_disabled_text_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxPropertyGrid_SetCellDisabledTextColour(self.as_ptr(), colour.as_ptr()) }
     }
 
-    pub fn set_cell_text_colour(&self, colour: &impl WxObject) {
+    pub fn set_cell_text_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxPropertyGrid_SetCellTextColour(self.as_ptr(), colour.as_ptr()) }
     }
 
-    pub fn set_empty_space_colour(&self, colour: &impl WxObject) {
+    pub fn set_empty_space_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxPropertyGrid_SetEmptySpaceColour(self.as_ptr(), colour.as_ptr()) }
     }
 
-    pub fn set_line_colour(&self, colour: &impl WxObject) {
+    pub fn set_line_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxPropertyGrid_SetLineColour(self.as_ptr(), colour.as_ptr()) }
     }
 
-    pub fn set_margin_colour(&self, colour: &impl WxObject) {
+    pub fn set_margin_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxPropertyGrid_SetMarginColour(self.as_ptr(), colour.as_ptr()) }
     }
 
-    pub fn set_selection_background_colour(&self, colour: &impl WxObject) {
+    pub fn set_selection_background_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxPropertyGrid_SetSelectionBackgroundColour(self.as_ptr(), colour.as_ptr()) }
     }
 
-    pub fn set_selection_text_colour(&self, colour: &impl WxObject) {
+    pub fn set_selection_text_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxPropertyGrid_SetSelectionTextColour(self.as_ptr(), colour.as_ptr()) }
     }
 
@@ -398,7 +406,7 @@ impl PropertyGrid {
         }
     }
 
-    pub fn set_unspecified_value_appearance(&self, cell: &impl WxObject) {
+    pub fn set_unspecified_value_appearance(&self, cell: &impl WxPGCell) {
         unsafe { sys::wxPropertyGrid_SetUnspecifiedValueAppearance(self.as_ptr(), cell.as_ptr()) }
     }
 
@@ -526,7 +534,7 @@ impl PropertyGrid {
         unsafe { sys::wxPropertyGrid_ClearActionTriggers(self.as_ptr(), action as c_int) }
     }
 
-    pub fn set_font(&self, font: &impl WxObject) -> bool {
+    pub fn set_font(&self, font: &impl WxFont) -> bool {
         unsafe { sys::wxPropertyGrid_SetFont(self.as_ptr(), font.as_ptr()) != 0 }
     }
 
@@ -539,7 +547,7 @@ impl PropertyGrid {
         }
     }
 
-    pub fn set_property_value(&self, id: &impl WxPGProperty, value: &impl WxObject) {
+    pub fn set_property_value(&self, id: &impl WxPGProperty, value: &impl WxVariant) {
         unsafe { sys::wxPropertyGrid_SetPropertyValue(self.as_ptr(), id.as_ptr(), value.as_ptr()) }
     }
 
@@ -610,11 +618,11 @@ impl PropertyGrid {
         unsafe { sys::wxPropertyGridInterface_GetProperty(self.as_ptr(), name_wx.as_ptr()) }
     }
 
-    pub fn register_additional_editors(&self) {
+    pub fn register_additional_editors() {
         unsafe { sys::wxPropertyGridInterface_RegisterAdditionalEditors() }
     }
 
-    pub fn set_property_attribute_all(&self, attr_name: impl AsRef<str>, value: &impl WxObject) {
+    pub fn set_property_attribute_all(&self, attr_name: impl AsRef<str>, value: &impl WxVariant) {
         let attr_name_wx = WxStr::new(attr_name.as_ref());
         unsafe { sys::wxPropertyGridInterface_SetPropertyAttributeAll(self.as_ptr(), attr_name_wx.as_ptr(), value.as_ptr()) }
     }
@@ -804,7 +812,7 @@ impl PropertyGrid {
         unsafe { sys::wxPropertyGridInterface_LimitPropertyEditing(self.as_ptr(), id.as_ptr(), limit as c_int) }
     }
 
-    pub fn refresh_grid(&self, state: &impl WxObject) {
+    pub fn refresh_grid(&self, state: &impl WxPropertyGridPageState) {
         unsafe { sys::wxPropertyGridInterface_RefreshGrid(self.as_ptr(), state.as_ptr()) }
     }
 
@@ -872,11 +880,11 @@ impl PropertyGrid {
         unsafe { sys::wxPropertyGridInterface_SetPropertyEditorByName(self.as_ptr(), id.as_ptr(), name_wx.as_ptr()) }
     }
 
-    pub fn set_property_image(&self, id: &impl WxPGProperty, bitmap: &impl WxObject) {
+    pub fn set_property_image(&self, id: &impl WxPGProperty, bitmap: &impl WxBitmapBundle) {
         unsafe { sys::wxPropertyGridInterface_SetPropertyImage(self.as_ptr(), id.as_ptr(), bitmap.as_ptr()) }
     }
 
-    pub fn set_property_cell(&self, id: &impl WxPGProperty, column: i32, text: impl AsRef<str>, bitmap: &impl WxObject, fg_col: &impl WxObject, bg_col: &impl WxObject) {
+    pub fn set_property_cell(&self, id: &impl WxPGProperty, column: i32, text: impl AsRef<str>, bitmap: &impl WxBitmapBundle, fg_col: &impl WxColour, bg_col: &impl WxColour) {
         let text_wx = WxStr::new(text.as_ref());
         unsafe { sys::wxPropertyGridInterface_SetPropertyCell(self.as_ptr(), id.as_ptr(), column as c_int, text_wx.as_ptr(), bitmap.as_ptr(), fg_col.as_ptr(), bg_col.as_ptr()) }
     }
@@ -938,7 +946,7 @@ impl PropertyGrid {
         unsafe { sys::wxPropertyGridInterface_EndAddChildren(self.as_ptr(), id.as_ptr()) }
     }
 
-    pub fn change_property_value(&self, id: &impl WxPGProperty, value: &impl WxObject) -> bool {
+    pub fn change_property_value(&self, id: &impl WxPGProperty, value: &impl WxVariant) -> bool {
         unsafe { sys::wxPropertyGridInterface_ChangePropertyValue(self.as_ptr(), id.as_ptr(), value.as_ptr()) != 0 }
     }
 
@@ -952,7 +960,7 @@ impl PropertyGrid {
         }
     }
 
-    pub fn set_property_attribute(&self, id: &impl WxPGProperty, attr_name: impl AsRef<str>, value: &impl WxObject, flags: i32) {
+    pub fn set_property_attribute(&self, id: &impl WxPGProperty, attr_name: impl AsRef<str>, value: &impl WxVariant, flags: i32) {
         let attr_name_wx = WxStr::new(attr_name.as_ref());
         unsafe { sys::wxPropertyGridInterface_SetPropertyAttribute(self.as_ptr(), id.as_ptr(), attr_name_wx.as_ptr(), value.as_ptr(), flags as c_int) }
     }
@@ -988,15 +996,15 @@ impl PropertyGrid {
         }
     }
 
-    pub fn set_property_values(&self, list: &impl WxObject, baseparent: &impl WxPGProperty) {
+    pub fn set_property_values(&self, list: &impl WxVariant, baseparent: &impl WxPGProperty) {
         unsafe { sys::wxPropertyGridInterface_SetPropertyValues(self.as_ptr(), list.as_ptr(), baseparent.as_ptr()) }
     }
 
-    pub fn set_property_background_colour(&self, id: &impl WxPGProperty, colour: &impl WxObject, flags: i32) {
+    pub fn set_property_background_colour(&self, id: &impl WxPGProperty, colour: &impl WxColour, flags: i32) {
         unsafe { sys::wxPropertyGridInterface_SetPropertyBackgroundColour(self.as_ptr(), id.as_ptr(), colour.as_ptr(), flags as c_int) }
     }
 
-    pub fn set_property_text_colour(&self, id: &impl WxPGProperty, colour: &impl WxObject, flags: i32) {
+    pub fn set_property_text_colour(&self, id: &impl WxPGProperty, colour: &impl WxColour, flags: i32) {
         unsafe { sys::wxPropertyGridInterface_SetPropertyTextColour(self.as_ptr(), id.as_ptr(), colour.as_ptr(), flags as c_int) }
     }
 
@@ -1065,7 +1073,7 @@ impl PropertyGrid {
         }
     }
 
-    pub fn get_editor_by_name(&self, name: impl AsRef<str>) -> Option<PGEditor> {
+    pub fn get_editor_by_name(name: impl AsRef<str>) -> Option<PGEditor> {
         let name_wx = WxStr::new(name.as_ref());
         let ptr = unsafe { sys::wxPropertyGridInterface_GetEditorByName(name_wx.as_ptr()) };
         if ptr.is_null() {
@@ -1075,11 +1083,11 @@ impl PropertyGrid {
         }
     }
 
-    pub fn init_all_type_handlers(&self) {
+    pub fn init_all_type_handlers() {
         unsafe { sys::wxPropertyGridInterface_InitAllTypeHandlers() }
     }
 
-    pub fn set_bool_choices(&self, true_choice: impl AsRef<str>, false_choice: impl AsRef<str>) {
+    pub fn set_bool_choices(true_choice: impl AsRef<str>, false_choice: impl AsRef<str>) {
         let true_choice_wx = WxStr::new(true_choice.as_ref());
         let false_choice_wx = WxStr::new(false_choice.as_ref());
         unsafe { sys::wxPropertyGridInterface_SetBoolChoices(true_choice_wx.as_ptr(), false_choice_wx.as_ptr()) }

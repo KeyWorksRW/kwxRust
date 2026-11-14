@@ -16,6 +16,13 @@ impl RibbonControl {
         Self(Control::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -54,7 +61,7 @@ impl RibbonControl {
         }
     }
 
-    pub fn set_art_provider(&self, art: &impl WxObject) {
+    pub fn set_art_provider(&self, art: &impl WxRibbonArtProvider) {
         unsafe { sys::wxRibbonControl_SetArtProvider(self.as_ptr(), art.as_ptr()) }
     }
 

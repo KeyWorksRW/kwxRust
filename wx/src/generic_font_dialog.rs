@@ -16,6 +16,13 @@ impl GenericFontDialog {
         Self(Dialog::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,22 +46,30 @@ impl WxDialog for GenericFontDialog {}
 impl WxTopLevelWindow for GenericFontDialog {}
 impl WxWindow for GenericFontDialog {}
 impl WxEvtHandler for GenericFontDialog {}
+impl WxGenericFontDialog for GenericFontDialog {}
 
 impl GenericFontDialog {
-    pub fn new(parent: &impl WxWindow, data: &impl WxObject) -> Self {
+    pub fn new(parent: &impl WxWindow, data: &impl WxFontData) -> Self {
         let ptr = unsafe { sys::wxGenericFontDialog_Create(parent.as_ptr(), data.as_ptr()) };
         assert!(!ptr.is_null(), "wxGenericFontDialog_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(parent: &impl WxWindow, data: &impl WxObject) -> Self {
+    pub fn new_full(parent: &impl WxWindow, data: &impl WxFontData) -> Self {
         let ptr = unsafe { sys::wxGenericFontDialog_Create(parent.as_ptr(), data.as_ptr()) };
         assert!(!ptr.is_null(), "wxGenericFontDialog_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn get_font_data(&self, ref_: &impl WxObject) {
+    pub fn get_font_data(&self, ref_: &impl WxFontData) {
         unsafe { sys::wxGenericFontDialog_GetFontData(self.as_ptr(), ref_.as_ptr()) }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxGenericFontDialog_Delete(self.as_ptr()) }
     }
 
 }

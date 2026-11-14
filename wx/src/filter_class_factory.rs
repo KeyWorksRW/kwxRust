@@ -16,6 +16,13 @@ impl FilterClassFactory {
         Self(FilterClassFactoryBase::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -36,6 +43,7 @@ impl WxObject for FilterClassFactory {
 }
 
 impl WxFilterClassFactoryBase for FilterClassFactory {}
+impl WxFilterClassFactory for FilterClassFactory {}
 
 use crate::filter_input_stream::FilterInputStream;
 use crate::filter_output_stream::FilterOutputStream;
@@ -60,7 +68,7 @@ impl FilterClassFactory {
         }
     }
 
-    pub fn find(&self, protocol: impl AsRef<str>, type_: i32) -> Option<FilterClassFactory> {
+    pub fn find(protocol: impl AsRef<str>, type_: i32) -> Option<FilterClassFactory> {
         let protocol_wx = WxStr::new(protocol.as_ref());
         let ptr = unsafe { sys::wxFilterClassFactory_Find(protocol_wx.as_ptr(), type_ as c_int) };
         if ptr.is_null() {
@@ -70,7 +78,7 @@ impl FilterClassFactory {
         }
     }
 
-    pub fn get_first(&self) -> Option<FilterClassFactory> {
+    pub fn get_first() -> Option<FilterClassFactory> {
         let ptr = unsafe { sys::wxFilterClassFactory_GetFirst() };
         if ptr.is_null() {
             None

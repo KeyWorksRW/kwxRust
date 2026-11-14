@@ -16,6 +16,13 @@ impl RichTextStyleSheet {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,4 +42,265 @@ impl WxObject for RichTextStyleSheet {
     }
 }
 
+impl WxRichTextStyleSheet for RichTextStyleSheet {}
+
+use crate::rich_text_box_style_definition::RichTextBoxStyleDefinition;
+use crate::rich_text_character_style_definition::RichTextCharacterStyleDefinition;
+use crate::rich_text_list_style_definition::RichTextListStyleDefinition;
+use crate::rich_text_paragraph_style_definition::RichTextParagraphStyleDefinition;
+use crate::rich_text_properties::RichTextProperties;
+use crate::rich_text_style_definition::RichTextStyleDefinition;
+use crate::support::WxStr;
+use crate::support::take_string;
+
+impl RichTextStyleSheet {
+    pub fn new() -> Self {
+        let ptr = unsafe { sys::wxRichTextStyleSheet_Create() };
+        assert!(!ptr.is_null(), "wxRichTextStyleSheet_Create returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn new_full() -> Self {
+        let ptr = unsafe { sys::wxRichTextStyleSheet_Create() };
+        assert!(!ptr.is_null(), "wxRichTextStyleSheet_Create returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn create_copy(sheet: &impl WxRichTextStyleSheet) -> Self {
+        let ptr = unsafe { sys::wxRichTextStyleSheet_CreateCopy(sheet.as_ptr()) };
+        assert!(!ptr.is_null(), "wxRichTextStyleSheet_CreateCopy returned null");
+        Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxRichTextStyleSheet_Delete(self.as_ptr()) }
+    }
+
+    pub fn init(&self) {
+        unsafe { sys::wxRichTextStyleSheet_Init(self.as_ptr()) }
+    }
+
+    pub fn copy(&self, sheet: &impl WxRichTextStyleSheet) {
+        unsafe { sys::wxRichTextStyleSheet_Copy(self.as_ptr(), sheet.as_ptr()) }
+    }
+
+    pub fn add_character_style(&self, def: &impl WxRichTextCharacterStyleDefinition) -> bool {
+        unsafe { sys::wxRichTextStyleSheet_AddCharacterStyle(self.as_ptr(), def.as_ptr()) != 0 }
+    }
+
+    pub fn add_paragraph_style(&self, def: &impl WxRichTextParagraphStyleDefinition) -> bool {
+        unsafe { sys::wxRichTextStyleSheet_AddParagraphStyle(self.as_ptr(), def.as_ptr()) != 0 }
+    }
+
+    pub fn add_list_style(&self, def: &impl WxRichTextListStyleDefinition) -> bool {
+        unsafe { sys::wxRichTextStyleSheet_AddListStyle(self.as_ptr(), def.as_ptr()) != 0 }
+    }
+
+    pub fn add_box_style(&self, def: &impl WxRichTextBoxStyleDefinition) -> bool {
+        unsafe { sys::wxRichTextStyleSheet_AddBoxStyle(self.as_ptr(), def.as_ptr()) != 0 }
+    }
+
+    pub fn add_style(&self, def: &impl WxRichTextStyleDefinition) -> bool {
+        unsafe { sys::wxRichTextStyleSheet_AddStyle(self.as_ptr(), def.as_ptr()) != 0 }
+    }
+
+    pub fn remove_character_style(&self, def: &impl WxRichTextStyleDefinition, delete_style: bool) -> bool {
+        unsafe { sys::wxRichTextStyleSheet_RemoveCharacterStyle(self.as_ptr(), def.as_ptr(), delete_style as c_int) != 0 }
+    }
+
+    pub fn remove_paragraph_style(&self, def: &impl WxRichTextStyleDefinition, delete_style: bool) -> bool {
+        unsafe { sys::wxRichTextStyleSheet_RemoveParagraphStyle(self.as_ptr(), def.as_ptr(), delete_style as c_int) != 0 }
+    }
+
+    pub fn remove_list_style(&self, def: &impl WxRichTextStyleDefinition, delete_style: bool) -> bool {
+        unsafe { sys::wxRichTextStyleSheet_RemoveListStyle(self.as_ptr(), def.as_ptr(), delete_style as c_int) != 0 }
+    }
+
+    pub fn remove_box_style(&self, def: &impl WxRichTextStyleDefinition, delete_style: bool) -> bool {
+        unsafe { sys::wxRichTextStyleSheet_RemoveBoxStyle(self.as_ptr(), def.as_ptr(), delete_style as c_int) != 0 }
+    }
+
+    pub fn remove_style(&self, def: &impl WxRichTextStyleDefinition, delete_style: bool) -> bool {
+        unsafe { sys::wxRichTextStyleSheet_RemoveStyle(self.as_ptr(), def.as_ptr(), delete_style as c_int) != 0 }
+    }
+
+    pub fn find_character_style(&self, name: impl AsRef<str>, recurse: bool) -> Option<RichTextCharacterStyleDefinition> {
+        let name_wx = WxStr::new(name.as_ref());
+        let ptr = unsafe { sys::wxRichTextStyleSheet_FindCharacterStyle(self.as_ptr(), name_wx.as_ptr(), recurse as c_int) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(RichTextCharacterStyleDefinition::from_raw(ptr))
+        }
+    }
+
+    pub fn find_paragraph_style(&self, name: impl AsRef<str>, recurse: bool) -> Option<RichTextParagraphStyleDefinition> {
+        let name_wx = WxStr::new(name.as_ref());
+        let ptr = unsafe { sys::wxRichTextStyleSheet_FindParagraphStyle(self.as_ptr(), name_wx.as_ptr(), recurse as c_int) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(RichTextParagraphStyleDefinition::from_raw(ptr))
+        }
+    }
+
+    pub fn find_list_style(&self, name: impl AsRef<str>, recurse: bool) -> Option<RichTextListStyleDefinition> {
+        let name_wx = WxStr::new(name.as_ref());
+        let ptr = unsafe { sys::wxRichTextStyleSheet_FindListStyle(self.as_ptr(), name_wx.as_ptr(), recurse as c_int) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(RichTextListStyleDefinition::from_raw(ptr))
+        }
+    }
+
+    pub fn find_box_style(&self, name: impl AsRef<str>, recurse: bool) -> Option<RichTextBoxStyleDefinition> {
+        let name_wx = WxStr::new(name.as_ref());
+        let ptr = unsafe { sys::wxRichTextStyleSheet_FindBoxStyle(self.as_ptr(), name_wx.as_ptr(), recurse as c_int) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(RichTextBoxStyleDefinition::from_raw(ptr))
+        }
+    }
+
+    pub fn find_style(&self, name: impl AsRef<str>, recurse: bool) -> Option<RichTextStyleDefinition> {
+        let name_wx = WxStr::new(name.as_ref());
+        let ptr = unsafe { sys::wxRichTextStyleSheet_FindStyle(self.as_ptr(), name_wx.as_ptr(), recurse as c_int) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(RichTextStyleDefinition::from_raw(ptr))
+        }
+    }
+
+    pub fn get_character_style_count(&self) -> usize {
+        unsafe { sys::wxRichTextStyleSheet_GetCharacterStyleCount(self.as_ptr()) as usize }
+    }
+
+    pub fn get_paragraph_style_count(&self) -> usize {
+        unsafe { sys::wxRichTextStyleSheet_GetParagraphStyleCount(self.as_ptr()) as usize }
+    }
+
+    pub fn get_list_style_count(&self) -> usize {
+        unsafe { sys::wxRichTextStyleSheet_GetListStyleCount(self.as_ptr()) as usize }
+    }
+
+    pub fn get_box_style_count(&self) -> usize {
+        unsafe { sys::wxRichTextStyleSheet_GetBoxStyleCount(self.as_ptr()) as usize }
+    }
+
+    pub fn get_character_style(&self, index: usize) -> Option<RichTextCharacterStyleDefinition> {
+        let ptr = unsafe { sys::wxRichTextStyleSheet_GetCharacterStyle(self.as_ptr(), index) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(RichTextCharacterStyleDefinition::from_raw(ptr))
+        }
+    }
+
+    pub fn get_paragraph_style(&self, index: usize) -> Option<RichTextParagraphStyleDefinition> {
+        let ptr = unsafe { sys::wxRichTextStyleSheet_GetParagraphStyle(self.as_ptr(), index) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(RichTextParagraphStyleDefinition::from_raw(ptr))
+        }
+    }
+
+    pub fn get_list_style(&self, index: usize) -> Option<RichTextListStyleDefinition> {
+        let ptr = unsafe { sys::wxRichTextStyleSheet_GetListStyle(self.as_ptr(), index) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(RichTextListStyleDefinition::from_raw(ptr))
+        }
+    }
+
+    pub fn get_box_style(&self, index: usize) -> Option<RichTextBoxStyleDefinition> {
+        let ptr = unsafe { sys::wxRichTextStyleSheet_GetBoxStyle(self.as_ptr(), index) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(RichTextBoxStyleDefinition::from_raw(ptr))
+        }
+    }
+
+    pub fn delete_styles(&self) {
+        unsafe { sys::wxRichTextStyleSheet_DeleteStyles(self.as_ptr()) }
+    }
+
+    pub fn insert_sheet(&self, before: &impl WxRichTextStyleSheet) -> bool {
+        unsafe { sys::wxRichTextStyleSheet_InsertSheet(self.as_ptr(), before.as_ptr()) != 0 }
+    }
+
+    pub fn append_sheet(&self, after: &impl WxRichTextStyleSheet) -> bool {
+        unsafe { sys::wxRichTextStyleSheet_AppendSheet(self.as_ptr(), after.as_ptr()) != 0 }
+    }
+
+    pub fn unlink(&self) {
+        unsafe { sys::wxRichTextStyleSheet_Unlink(self.as_ptr()) }
+    }
+
+    pub fn get_next_sheet(&self) -> Option<RichTextStyleSheet> {
+        let ptr = unsafe { sys::wxRichTextStyleSheet_GetNextSheet(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(RichTextStyleSheet::from_raw(ptr))
+        }
+    }
+
+    pub fn set_next_sheet(&self, sheet: &impl WxRichTextStyleSheet) {
+        unsafe { sys::wxRichTextStyleSheet_SetNextSheet(self.as_ptr(), sheet.as_ptr()) }
+    }
+
+    pub fn get_previous_sheet(&self) -> Option<RichTextStyleSheet> {
+        let ptr = unsafe { sys::wxRichTextStyleSheet_GetPreviousSheet(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(RichTextStyleSheet::from_raw(ptr))
+        }
+    }
+
+    pub fn set_previous_sheet(&self, sheet: &impl WxRichTextStyleSheet) {
+        unsafe { sys::wxRichTextStyleSheet_SetPreviousSheet(self.as_ptr(), sheet.as_ptr()) }
+    }
+
+    pub fn set_name(&self, name: impl AsRef<str>) {
+        let name_wx = WxStr::new(name.as_ref());
+        unsafe { sys::wxRichTextStyleSheet_SetName(self.as_ptr(), name_wx.as_ptr()) }
+    }
+
+    pub fn get_name(&self) -> String {
+        take_string(unsafe { sys::wxRichTextStyleSheet_GetName(self.as_ptr()) })
+    }
+
+    pub fn set_description(&self, descr: impl AsRef<str>) {
+        let descr_wx = WxStr::new(descr.as_ref());
+        unsafe { sys::wxRichTextStyleSheet_SetDescription(self.as_ptr(), descr_wx.as_ptr()) }
+    }
+
+    pub fn get_description(&self) -> String {
+        take_string(unsafe { sys::wxRichTextStyleSheet_GetDescription(self.as_ptr()) })
+    }
+
+    pub fn get_properties(&self) -> Option<RichTextProperties> {
+        let ptr = unsafe { sys::wxRichTextStyleSheet_GetProperties(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(RichTextProperties::from_raw(ptr))
+        }
+    }
+
+    pub fn set_properties(&self, props: &impl WxRichTextProperties) {
+        unsafe { sys::wxRichTextStyleSheet_SetProperties(self.as_ptr(), props.as_ptr()) }
+    }
+
+}
 

@@ -16,6 +16,13 @@ impl ColourDialogEvent {
         Self(CommandEvent::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -37,18 +44,19 @@ impl WxObject for ColourDialogEvent {
 
 impl WxCommandEvent for ColourDialogEvent {}
 impl WxEvent for ColourDialogEvent {}
+impl WxColourDialogEvent for ColourDialogEvent {}
 
 use crate::colour::Colour;
 use crate::colour_dialog::ColourDialog;
 
 impl ColourDialogEvent {
-    pub fn new(dialog: &impl WxObject, colour: &impl WxObject) -> Self {
+    pub fn new(dialog: &impl WxColourDialog, colour: &impl WxColour) -> Self {
         let ptr = unsafe { sys::wxColourDialogEvent_Create(-1, dialog.as_ptr(), colour.as_ptr()) };
         assert!(!ptr.is_null(), "wxColourDialogEvent_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(id: i32, dialog: &impl WxObject, colour: &impl WxObject) -> Self {
+    pub fn new_full(id: i32, dialog: &impl WxColourDialog, colour: &impl WxColour) -> Self {
         let ptr = unsafe { sys::wxColourDialogEvent_Create(id as c_int, dialog.as_ptr(), colour.as_ptr()) };
         assert!(!ptr.is_null(), "wxColourDialogEvent_Create returned null");
         Self::from_raw(ptr)
@@ -70,6 +78,13 @@ impl ColourDialogEvent {
         } else {
             Some(ColourDialog::from_raw(ptr))
         }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxColourDialogEvent_Delete(self.as_ptr()) }
     }
 
 }

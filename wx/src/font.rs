@@ -16,6 +16,13 @@ impl Font {
         Self(GDIObject::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -36,6 +43,7 @@ impl WxObject for Font {
 }
 
 impl WxGDIObject for Font {}
+impl WxFont for Font {}
 
 use crate::support::Size;
 use crate::support::WxStr;
@@ -113,15 +121,15 @@ impl Font {
         unsafe { sys::wxFont_SetSymbolicSizeRelativeTo(self.as_ptr(), size as c_int, base as c_int) }
     }
 
-    pub fn adjust_to_symbolic_size(&self, size: i32, base: i32) -> i32 {
+    pub fn adjust_to_symbolic_size(size: i32, base: i32) -> i32 {
         unsafe { sys::wxFont_AdjustToSymbolicSize(size as c_int, base as c_int) as i32 }
     }
 
-    pub fn convert_from_legacy_weight_if_necessary(&self, weight: i32) -> i32 {
+    pub fn convert_from_legacy_weight_if_necessary(weight: i32) -> i32 {
         unsafe { sys::wxFont_ConvertFromLegacyWeightIfNecessary(weight as c_int) as i32 }
     }
 
-    pub fn get_numeric_weight_of(&self, weight: i32) -> i32 {
+    pub fn get_numeric_weight_of(weight: i32) -> i32 {
         unsafe { sys::wxFont_GetNumericWeightOf(weight as c_int) as i32 }
     }
 
@@ -225,12 +233,12 @@ impl Font {
         }
     }
 
-    pub fn add_private_font(&self, filename: impl AsRef<str>) -> bool {
+    pub fn add_private_font(filename: impl AsRef<str>) -> bool {
         let filename_wx = WxStr::new(filename.as_ref());
         unsafe { sys::wxFont_AddPrivateFont(filename_wx.as_ptr()) != 0 }
     }
 
-    pub fn is_equal(&self, font: &impl WxObject) -> bool {
+    pub fn is_equal(&self, font: &impl WxFont) -> bool {
         unsafe { sys::wxFont_IsEqual(self.as_ptr(), font.as_ptr()) != 0 }
     }
 
@@ -260,20 +268,27 @@ impl Font {
         Self::from_raw(ptr)
     }
 
-    pub fn create_from_info(info: &impl WxObject) -> Self {
+    pub fn create_from_info(info: &impl WxFontInfo) -> Self {
         let ptr = unsafe { sys::wxFont_CreateFromInfo(info.as_ptr()) };
         assert!(!ptr.is_null(), "wxFont_CreateFromInfo returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn create_from_font(other: &impl WxObject) -> Self {
+    pub fn create_from_font(other: &impl WxFont) -> Self {
         let ptr = unsafe { sys::wxFont_CreateFromFont(other.as_ptr()) };
         assert!(!ptr.is_null(), "wxFont_CreateFromFont returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn assign(&self, other: &impl WxObject) {
+    pub fn assign(&self, other: &impl WxFont) {
         unsafe { sys::wxFont_Assign(self.as_ptr(), other.as_ptr()) }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxFont_Delete(self.as_ptr()) }
     }
 
     pub fn get_default_encoding(&self) -> i32 {

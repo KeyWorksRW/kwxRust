@@ -16,6 +16,13 @@ impl Grid {
         Self(ScrolledWindow::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,6 +46,7 @@ impl WxScrolledWindow for Grid {}
 impl WxPanel for Grid {}
 impl WxWindow for Grid {}
 impl WxEvtHandler for Grid {}
+impl WxGrid for Grid {}
 
 use crate::grid_cell_editor::GridCellEditor;
 use crate::grid_cell_renderer::GridCellRenderer;
@@ -173,7 +181,7 @@ impl Grid {
         unsafe { sys::wxGrid_DisableDragRowSize(self.as_ptr()) }
     }
 
-    pub fn draw_all_grid_lines(&self, dc: &impl WxDC, reg: &impl WxObject) {
+    pub fn draw_all_grid_lines(&self, dc: &impl WxDC, reg: &impl WxRegion) {
         unsafe { sys::wxGrid_DrawAllGridLines(self.as_ptr(), dc.as_ptr(), reg.as_ptr()) }
     }
 
@@ -185,7 +193,7 @@ impl Grid {
         unsafe { sys::wxGrid_DrawCellBorder(self.as_ptr(), dc.as_ptr(), row as c_int, col as c_int) }
     }
 
-    pub fn draw_cell_highlight(&self, dc: &impl WxDC, attr: &impl WxObject) {
+    pub fn draw_cell_highlight(&self, dc: &impl WxDC, attr: &impl WxGridCellAttr) {
         unsafe { sys::wxGrid_DrawCellHighlight(self.as_ptr(), dc.as_ptr(), attr.as_ptr()) }
     }
 
@@ -250,7 +258,7 @@ impl Grid {
         unsafe { sys::wxGrid_GetCellAlignment(self.as_ptr(), row as c_int, col as c_int, horiz as *mut c_int, vert as *mut c_int) }
     }
 
-    pub fn get_cell_background_colour(&self, row: i32, col: i32, colour: &impl WxObject) {
+    pub fn get_cell_background_colour(&self, row: i32, col: i32, colour: &impl WxColour) {
         unsafe { sys::wxGrid_GetCellBackgroundColour(self.as_ptr(), row as c_int, col as c_int, colour.as_ptr()) }
     }
 
@@ -263,11 +271,11 @@ impl Grid {
         }
     }
 
-    pub fn get_cell_font(&self, row: i32, col: i32, font: &impl WxObject) {
+    pub fn get_cell_font(&self, row: i32, col: i32, font: &impl WxFont) {
         unsafe { sys::wxGrid_GetCellFont(self.as_ptr(), row as c_int, col as c_int, font.as_ptr()) }
     }
 
-    pub fn get_cell_highlight_colour(&self, ref_: &impl WxObject) {
+    pub fn get_cell_highlight_colour(&self, ref_: &impl WxColour) {
         unsafe { sys::wxGrid_GetCellHighlightColour(self.as_ptr(), ref_.as_ptr()) }
     }
 
@@ -280,7 +288,7 @@ impl Grid {
         }
     }
 
-    pub fn get_cell_text_colour(&self, row: i32, col: i32, colour: &impl WxObject) {
+    pub fn get_cell_text_colour(&self, row: i32, col: i32, colour: &impl WxColour) {
         unsafe { sys::wxGrid_GetCellTextColour(self.as_ptr(), row as c_int, col as c_int, colour.as_ptr()) }
     }
 
@@ -308,15 +316,15 @@ impl Grid {
         unsafe { sys::wxGrid_GetDefaultCellAlignment(self.as_ptr(), horiz as *mut c_int, vert as *mut c_int) }
     }
 
-    pub fn get_default_cell_background_colour(&self, ref_: &impl WxObject) {
+    pub fn get_default_cell_background_colour(&self, ref_: &impl WxColour) {
         unsafe { sys::wxGrid_GetDefaultCellBackgroundColour(self.as_ptr(), ref_.as_ptr()) }
     }
 
-    pub fn get_default_cell_font(&self, ref_: &impl WxObject) {
+    pub fn get_default_cell_font(&self, ref_: &impl WxFont) {
         unsafe { sys::wxGrid_GetDefaultCellFont(self.as_ptr(), ref_.as_ptr()) }
     }
 
-    pub fn get_default_cell_text_colour(&self, ref_: &impl WxObject) {
+    pub fn get_default_cell_text_colour(&self, ref_: &impl WxColour) {
         unsafe { sys::wxGrid_GetDefaultCellTextColour(self.as_ptr(), ref_.as_ptr()) }
     }
 
@@ -400,19 +408,19 @@ impl Grid {
         unsafe { sys::wxGrid_GetGridCursorRow(self.as_ptr()) as i32 }
     }
 
-    pub fn get_grid_line_colour(&self, ref_: &impl WxObject) {
+    pub fn get_grid_line_colour(&self, ref_: &impl WxColour) {
         unsafe { sys::wxGrid_GetGridLineColour(self.as_ptr(), ref_.as_ptr()) }
     }
 
-    pub fn get_label_background_colour(&self, ref_: &impl WxObject) {
+    pub fn get_label_background_colour(&self, ref_: &impl WxColour) {
         unsafe { sys::wxGrid_GetLabelBackgroundColour(self.as_ptr(), ref_.as_ptr()) }
     }
 
-    pub fn get_label_font(&self, ref_: &impl WxObject) {
+    pub fn get_label_font(&self, ref_: &impl WxFont) {
         unsafe { sys::wxGrid_GetLabelFont(self.as_ptr(), ref_.as_ptr()) }
     }
 
-    pub fn get_label_text_colour(&self, ref_: &impl WxObject) {
+    pub fn get_label_text_colour(&self, ref_: &impl WxColour) {
         unsafe { sys::wxGrid_GetLabelTextColour(self.as_ptr(), ref_.as_ptr()) }
     }
 
@@ -440,11 +448,11 @@ impl Grid {
         unsafe { sys::wxGrid_GetRowSize(self.as_ptr(), row as c_int) as i32 }
     }
 
-    pub fn get_selection_background(&self, ref_: &impl WxObject) {
+    pub fn get_selection_background(&self, ref_: &impl WxColour) {
         unsafe { sys::wxGrid_GetSelectionBackground(self.as_ptr(), ref_.as_ptr()) }
     }
 
-    pub fn get_selection_foreground(&self, ref_: &impl WxObject) {
+    pub fn get_selection_foreground(&self, ref_: &impl WxColour) {
         unsafe { sys::wxGrid_GetSelectionForeground(self.as_ptr(), ref_.as_ptr()) }
     }
 
@@ -586,7 +594,7 @@ impl Grid {
         unsafe { sys::wxGrid_SetCellAlignment(self.as_ptr(), row as c_int, col as c_int, horiz as c_int, vert as c_int) }
     }
 
-    pub fn set_cell_background_colour(&self, row: i32, col: i32, colour: &impl WxObject) {
+    pub fn set_cell_background_colour(&self, row: i32, col: i32, colour: &impl WxColour) {
         unsafe { sys::wxGrid_SetCellBackgroundColour(self.as_ptr(), row as c_int, col as c_int, colour.as_ptr()) }
     }
 
@@ -594,11 +602,11 @@ impl Grid {
         unsafe { sys::wxGrid_SetCellEditor(self.as_ptr(), row as c_int, col as c_int, editor.as_ptr()) }
     }
 
-    pub fn set_cell_font(&self, row: i32, col: i32, font: &impl WxObject) {
+    pub fn set_cell_font(&self, row: i32, col: i32, font: &impl WxFont) {
         unsafe { sys::wxGrid_SetCellFont(self.as_ptr(), row as c_int, col as c_int, font.as_ptr()) }
     }
 
-    pub fn set_cell_highlight_colour(&self, col: &impl WxObject) {
+    pub fn set_cell_highlight_colour(&self, col: &impl WxColour) {
         unsafe { sys::wxGrid_SetCellHighlightColour(self.as_ptr(), col.as_ptr()) }
     }
 
@@ -606,7 +614,7 @@ impl Grid {
         unsafe { sys::wxGrid_SetCellRenderer(self.as_ptr(), row as c_int, col as c_int, renderer.as_ptr()) }
     }
 
-    pub fn set_cell_text_colour(&self, row: i32, col: i32, colour: &impl WxObject) {
+    pub fn set_cell_text_colour(&self, row: i32, col: i32, colour: &impl WxColour) {
         unsafe { sys::wxGrid_SetCellTextColour(self.as_ptr(), row as c_int, col as c_int, colour.as_ptr()) }
     }
 
@@ -615,7 +623,7 @@ impl Grid {
         unsafe { sys::wxGrid_SetCellValue(self.as_ptr(), row as c_int, col as c_int, str_wx.as_ptr()) }
     }
 
-    pub fn set_col_attr(&self, col: i32, attr: &impl WxObject) {
+    pub fn set_col_attr(&self, col: i32, attr: &impl WxGridCellAttr) {
         unsafe { sys::wxGrid_SetColAttr(self.as_ptr(), col as c_int, attr.as_ptr()) }
     }
 
@@ -661,15 +669,15 @@ impl Grid {
         unsafe { sys::wxGrid_SetDefaultCellAlignment(self.as_ptr(), horiz as c_int, vert as c_int) }
     }
 
-    pub fn set_default_cell_background_colour(&self, colour: &impl WxObject) {
+    pub fn set_default_cell_background_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxGrid_SetDefaultCellBackgroundColour(self.as_ptr(), colour.as_ptr()) }
     }
 
-    pub fn set_default_cell_font(&self, font: &impl WxObject) {
+    pub fn set_default_cell_font(&self, font: &impl WxFont) {
         unsafe { sys::wxGrid_SetDefaultCellFont(self.as_ptr(), font.as_ptr()) }
     }
 
-    pub fn set_default_cell_text_colour(&self, colour: &impl WxObject) {
+    pub fn set_default_cell_text_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxGrid_SetDefaultCellTextColour(self.as_ptr(), colour.as_ptr()) }
     }
 
@@ -693,19 +701,19 @@ impl Grid {
         unsafe { sys::wxGrid_SetGridCursor(self.as_ptr(), row as c_int, col as c_int) }
     }
 
-    pub fn set_grid_line_colour(&self, col: &impl WxObject) {
+    pub fn set_grid_line_colour(&self, col: &impl WxColour) {
         unsafe { sys::wxGrid_SetGridLineColour(self.as_ptr(), col.as_ptr()) }
     }
 
-    pub fn set_label_background_colour(&self, colour: &impl WxObject) {
+    pub fn set_label_background_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxGrid_SetLabelBackgroundColour(self.as_ptr(), colour.as_ptr()) }
     }
 
-    pub fn set_label_font(&self, font: &impl WxObject) {
+    pub fn set_label_font(&self, font: &impl WxFont) {
         unsafe { sys::wxGrid_SetLabelFont(self.as_ptr(), font.as_ptr()) }
     }
 
-    pub fn set_label_text_colour(&self, colour: &impl WxObject) {
+    pub fn set_label_text_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxGrid_SetLabelTextColour(self.as_ptr(), colour.as_ptr()) }
     }
 
@@ -717,7 +725,7 @@ impl Grid {
         unsafe { sys::wxGrid_SetReadOnly(self.as_ptr(), row as c_int, col as c_int, is_read_only as c_int) }
     }
 
-    pub fn set_row_attr(&self, row: i32, attr: &impl WxObject) {
+    pub fn set_row_attr(&self, row: i32, attr: &impl WxGridCellAttr) {
         unsafe { sys::wxGrid_SetRowAttr(self.as_ptr(), row as c_int, attr.as_ptr()) }
     }
 
@@ -742,11 +750,11 @@ impl Grid {
         unsafe { sys::wxGrid_SetRowSize(self.as_ptr(), row as c_int, height as c_int) }
     }
 
-    pub fn set_selection_background(&self, colour: &impl WxObject) {
+    pub fn set_selection_background(&self, colour: &impl WxColour) {
         unsafe { sys::wxGrid_SetSelectionBackground(self.as_ptr(), colour.as_ptr()) }
     }
 
-    pub fn set_selection_foreground(&self, colour: &impl WxObject) {
+    pub fn set_selection_foreground(&self, colour: &impl WxColour) {
         unsafe { sys::wxGrid_SetSelectionForeground(self.as_ptr(), colour.as_ptr()) }
     }
 
@@ -787,16 +795,20 @@ impl Grid {
         unsafe { sys::wxGrid_YToRow(self.as_ptr(), y as c_int, clip_to_min_max as c_int) as i32 }
     }
 
-    pub fn get_selected_cells(&self, array: &impl WxObject) {
+    pub fn get_selected_cells(&self, array: &impl WxGridCellCoordsArray) {
         unsafe { sys::wxGrid_GetSelectedCells(self.as_ptr(), array.as_ptr()) }
     }
 
-    pub fn get_selection_block_top_left(&self, array: &impl WxObject) {
+    pub fn get_selection_block_top_left(&self, array: &impl WxGridCellCoordsArray) {
         unsafe { sys::wxGrid_GetSelectionBlockTopLeft(self.as_ptr(), array.as_ptr()) }
     }
 
-    pub fn get_selection_block_bottom_right(&self, array: &impl WxObject) {
+    pub fn get_selection_block_bottom_right(&self, array: &impl WxGridCellCoordsArray) {
         unsafe { sys::wxGrid_GetSelectionBlockBottomRight(self.as_ptr(), array.as_ptr()) }
+    }
+
+    pub fn get_selected_blocks(&self, array: &impl WxGridBlockCoordsArray) {
+        unsafe { sys::wxGrid_GetSelectedBlocks(self.as_ptr(), array.as_ptr()) }
     }
 
     pub fn get_selected_rows(&self, array: *mut c_void) -> i32 {
@@ -813,6 +825,210 @@ impl Grid {
 
     pub fn set_cell_size(&self, row: i32, col: i32, size: Size) {
         unsafe { sys::wxGrid_SetCellSize(self.as_ptr(), row as c_int, col as c_int, size.width as c_int, size.height as c_int) }
+    }
+
+    pub fn freeze_to(&self, row: i32, col: i32) -> bool {
+        unsafe { sys::wxGrid_FreezeTo(self.as_ptr(), row as c_int, col as c_int) != 0 }
+    }
+
+    pub fn is_frozen(&self) -> bool {
+        unsafe { sys::wxGrid_IsFrozen(self.as_ptr()) != 0 }
+    }
+
+    pub fn set_grid_frozen_border_colour(&self, col: &impl WxColour) {
+        unsafe { sys::wxGrid_SetGridFrozenBorderColour(self.as_ptr(), col.as_ptr()) }
+    }
+
+    pub fn use_native_col_header(&self, native: bool) -> bool {
+        unsafe { sys::wxGrid_UseNativeColHeader(self.as_ptr(), native as c_int) != 0 }
+    }
+
+    pub fn set_use_native_col_labels(&self, native: bool) {
+        unsafe { sys::wxGrid_SetUseNativeColLabels(self.as_ptr(), native as c_int) }
+    }
+
+    pub fn enable_hiding_columns(&self, enable: bool) -> bool {
+        unsafe { sys::wxGrid_EnableHidingColumns(self.as_ptr(), enable as c_int) != 0 }
+    }
+
+    pub fn can_hide_columns(&self) -> bool {
+        unsafe { sys::wxGrid_CanHideColumns(self.as_ptr()) != 0 }
+    }
+
+    pub fn enable_drag_row_move(&self, enable: bool) -> bool {
+        unsafe { sys::wxGrid_EnableDragRowMove(self.as_ptr(), enable as c_int) != 0 }
+    }
+
+    pub fn enable_drag_col_move(&self, enable: bool) -> bool {
+        unsafe { sys::wxGrid_EnableDragColMove(self.as_ptr(), enable as c_int) != 0 }
+    }
+
+    pub fn enable_drag_cell(&self, enable: bool) {
+        unsafe { sys::wxGrid_EnableDragCell(self.as_ptr(), enable as c_int) }
+    }
+
+    pub fn enable_drag_row_label_size(&self, enable: bool) {
+        unsafe { sys::wxGrid_EnableDragRowLabelSize(self.as_ptr(), enable as c_int) }
+    }
+
+    pub fn enable_drag_col_label_size(&self, enable: bool) {
+        unsafe { sys::wxGrid_EnableDragColLabelSize(self.as_ptr(), enable as c_int) }
+    }
+
+    pub fn set_tab_behaviour(&self, behaviour: i32) {
+        unsafe { sys::wxGrid_SetTabBehaviour(self.as_ptr(), behaviour as c_int) }
+    }
+
+    pub fn set_cell_overflow(&self, row: i32, col: i32, allow: bool) {
+        unsafe { sys::wxGrid_SetCellOverflow(self.as_ptr(), row as c_int, col as c_int, allow as c_int) }
+    }
+
+    pub fn set_default_cell_overflow(&self, allow: bool) {
+        unsafe { sys::wxGrid_SetDefaultCellOverflow(self.as_ptr(), allow as c_int) }
+    }
+
+    pub fn set_cell_fit_mode(&self, row: i32, col: i32, fit_mode: &impl WxGridFitMode) {
+        unsafe { sys::wxGrid_SetCellFitMode(self.as_ptr(), row as c_int, col as c_int, fit_mode.as_ptr()) }
+    }
+
+    pub fn set_default_cell_fit_mode(&self, fit_mode: &impl WxGridFitMode) {
+        unsafe { sys::wxGrid_SetDefaultCellFitMode(self.as_ptr(), fit_mode.as_ptr()) }
+    }
+
+    pub fn get_corner_label_alignment(&self, horiz: *mut i32, vert: *mut i32) {
+        unsafe { sys::wxGrid_GetCornerLabelAlignment(self.as_ptr(), horiz as *mut c_int, vert as *mut c_int) }
+    }
+
+    pub fn set_corner_label_alignment(&self, horiz: i32, vert: i32) {
+        unsafe { sys::wxGrid_SetCornerLabelAlignment(self.as_ptr(), horiz as c_int, vert as c_int) }
+    }
+
+    pub fn get_corner_label_text_orientation(&self) -> i32 {
+        unsafe { sys::wxGrid_GetCornerLabelTextOrientation(self.as_ptr()) as i32 }
+    }
+
+    pub fn set_corner_label_text_orientation(&self, text_orientation: i32) {
+        unsafe { sys::wxGrid_SetCornerLabelTextOrientation(self.as_ptr(), text_orientation as c_int) }
+    }
+
+    pub fn get_cell_highlight_pen_width(&self) -> i32 {
+        unsafe { sys::wxGrid_GetCellHighlightPenWidth(self.as_ptr()) as i32 }
+    }
+
+    pub fn set_cell_highlight_pen_width(&self, width: i32) {
+        unsafe { sys::wxGrid_SetCellHighlightPenWidth(self.as_ptr(), width as c_int) }
+    }
+
+    pub fn get_cell_highlight_ro_pen_width(&self) -> i32 {
+        unsafe { sys::wxGrid_GetCellHighlightROPenWidth(self.as_ptr()) as i32 }
+    }
+
+    pub fn set_cell_highlight_ro_pen_width(&self, width: i32) {
+        unsafe { sys::wxGrid_SetCellHighlightROPenWidth(self.as_ptr(), width as c_int) }
+    }
+
+    pub fn deselect_cell(&self, row: i32, col: i32) {
+        unsafe { sys::wxGrid_DeselectCell(self.as_ptr(), row as c_int, col as c_int) }
+    }
+
+    pub fn deselect_col(&self, col: i32) {
+        unsafe { sys::wxGrid_DeselectCol(self.as_ptr(), col as c_int) }
+    }
+
+    pub fn deselect_row(&self, row: i32) {
+        unsafe { sys::wxGrid_DeselectRow(self.as_ptr(), row as c_int) }
+    }
+
+    pub fn disable_overlay_selection(&self) {
+        unsafe { sys::wxGrid_DisableOverlaySelection(self.as_ptr()) }
+    }
+
+    pub fn force_refresh(&self) {
+        unsafe { sys::wxGrid_ForceRefresh(self.as_ptr()) }
+    }
+
+    pub fn auto_size_row_label_size(&self, row: i32) {
+        unsafe { sys::wxGrid_AutoSizeRowLabelSize(self.as_ptr(), row as c_int) }
+    }
+
+    pub fn auto_size_col_label_size(&self, col: i32) {
+        unsafe { sys::wxGrid_AutoSizeColLabelSize(self.as_ptr(), col as c_int) }
+    }
+
+    pub fn disable_row_resize(&self, row: i32) {
+        unsafe { sys::wxGrid_DisableRowResize(self.as_ptr(), row as c_int) }
+    }
+
+    pub fn hide_col(&self, col: i32) {
+        unsafe { sys::wxGrid_HideCol(self.as_ptr(), col as c_int) }
+    }
+
+    pub fn show_col(&self, col: i32) {
+        unsafe { sys::wxGrid_ShowCol(self.as_ptr(), col as c_int) }
+    }
+
+    pub fn hide_row(&self, row: i32) {
+        unsafe { sys::wxGrid_HideRow(self.as_ptr(), row as c_int) }
+    }
+
+    pub fn show_row(&self, row: i32) {
+        unsafe { sys::wxGrid_ShowRow(self.as_ptr(), row as c_int) }
+    }
+
+    pub fn set_attr(&self, row: i32, col: i32, attr: &impl WxGridCellAttr) {
+        unsafe { sys::wxGrid_SetAttr(self.as_ptr(), row as c_int, col as c_int, attr.as_ptr()) }
+    }
+
+    pub fn assign_table(&self, table: &impl WxGridTableBase, selmode: i32) {
+        unsafe { sys::wxGrid_AssignTable(self.as_ptr(), table.as_ptr(), selmode as c_int) }
+    }
+
+    pub fn get_row_pos(&self, idx: i32) -> i32 {
+        unsafe { sys::wxGrid_GetRowPos(self.as_ptr(), idx as c_int) as i32 }
+    }
+
+    pub fn get_col_pos(&self, idx: i32) -> i32 {
+        unsafe { sys::wxGrid_GetColPos(self.as_ptr(), idx as c_int) as i32 }
+    }
+
+    pub fn get_row_at(&self, pos: i32) -> i32 {
+        unsafe { sys::wxGrid_GetRowAt(self.as_ptr(), pos as c_int) as i32 }
+    }
+
+    pub fn get_col_at(&self, pos: i32) -> i32 {
+        unsafe { sys::wxGrid_GetColAt(self.as_ptr(), pos as c_int) as i32 }
+    }
+
+    pub fn set_col_pos(&self, idx: i32, pos: i32) {
+        unsafe { sys::wxGrid_SetColPos(self.as_ptr(), idx as c_int, pos as c_int) }
+    }
+
+    pub fn reset_col_pos(&self) {
+        unsafe { sys::wxGrid_ResetColPos(self.as_ptr()) }
+    }
+
+    pub fn get_selection_mode(&self) -> i32 {
+        unsafe { sys::wxGrid_GetSelectionMode(self.as_ptr()) as i32 }
+    }
+
+    pub fn get_sorting_column(&self) -> i32 {
+        unsafe { sys::wxGrid_GetSortingColumn(self.as_ptr()) as i32 }
+    }
+
+    pub fn is_sorting_by(&self, col: i32) -> bool {
+        unsafe { sys::wxGrid_IsSortingBy(self.as_ptr(), col as c_int) != 0 }
+    }
+
+    pub fn is_sort_order_ascending(&self) -> bool {
+        unsafe { sys::wxGrid_IsSortOrderAscending(self.as_ptr()) != 0 }
+    }
+
+    pub fn set_sorting_column(&self, col: i32, ascending: bool) {
+        unsafe { sys::wxGrid_SetSortingColumn(self.as_ptr(), col as c_int, ascending as c_int) }
+    }
+
+    pub fn render(&self, dc: &impl WxDC, point: Point, size: Size, point_2: Point, point_3: Point, style: i32) {
+        unsafe { sys::wxGrid_Render(self.as_ptr(), dc.as_ptr(), point.x as c_int, point.y as c_int, size.width as c_int, size.height as c_int, point_2.x as c_int, point_2.y as c_int, point_3.x as c_int, point_3.y as c_int, style as c_int) }
     }
 
 }

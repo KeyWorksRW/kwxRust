@@ -16,6 +16,13 @@ impl PreviewControlBar {
         Self(Panel::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -55,6 +62,13 @@ impl PreviewControlBar {
         Self::from_raw(ptr)
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxPreviewControlBar_Delete(self.as_ptr()) }
+    }
+
     pub fn create_buttons(&self) {
         unsafe { sys::wxPreviewControlBar_CreateButtons(self.as_ptr()) }
     }
@@ -73,6 +87,14 @@ impl PreviewControlBar {
 
     pub fn get_print_preview(&self) -> *mut c_void {
         unsafe { sys::wxPreviewControlBar_GetPrintPreview(self.as_ptr()) }
+    }
+
+    /// Alternative constructor wrapping `kwxPreviewControlBar_Create`; takes every
+    /// declared parameter.  `new`/`new_full` wrap the wxWidgets-own constructor.
+    pub fn new_with_state(preview: *mut c_void, buttons: i32, parent: &impl WxWindow, title: *mut c_void, rect: Rect, style: i32) -> Self {
+        let ptr = unsafe { sys::kwxPreviewControlBar_Create(preview, buttons as c_int, parent.as_ptr(), title, rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int, style as c_int) };
+        assert!(!ptr.is_null(), "kwxPreviewControlBar_Create returned null");
+        Self::from_raw(ptr)
     }
 
 }

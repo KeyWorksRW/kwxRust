@@ -16,6 +16,13 @@ impl AuiToolBarItem {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for AuiToolBarItem {
     }
 }
 
+impl WxAuiToolBarItem for AuiToolBarItem {}
 use crate::sizer_item::SizerItem;
 use crate::support::Size;
 use crate::support::WxStr;
@@ -48,19 +56,19 @@ impl AuiToolBarItem {
         Self::from_raw(ptr)
     }
 
-    pub fn new(source: &impl WxObject) -> Self {
+    pub fn new(source: &impl WxAuiToolBarItem) -> Self {
         let ptr = unsafe { sys::wxAuiToolBarItem_Create(source.as_ptr()) };
         assert!(!ptr.is_null(), "wxAuiToolBarItem_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(source: &impl WxObject) -> Self {
+    pub fn new_full(source: &impl WxAuiToolBarItem) -> Self {
         let ptr = unsafe { sys::wxAuiToolBarItem_Create(source.as_ptr()) };
         assert!(!ptr.is_null(), "wxAuiToolBarItem_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn copy(&self, source: &impl WxObject) -> Option<AuiToolBarItem> {
+    pub fn copy(&self, source: &impl WxAuiToolBarItem) -> Option<AuiToolBarItem> {
         let ptr = unsafe { sys::wxAuiToolBarItem_Copy(self.as_ptr(), source.as_ptr()) };
         if ptr.is_null() {
             None
@@ -69,7 +77,7 @@ impl AuiToolBarItem {
         }
     }
 
-    pub fn assign(&self, source: &impl WxObject) {
+    pub fn assign(&self, source: &impl WxAuiToolBarItem) {
         unsafe { sys::wxAuiToolBarItem_Assign(self.as_ptr(), source.as_ptr()) }
     }
 

@@ -16,6 +16,13 @@ impl ArtProvider {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -45,7 +52,7 @@ use crate::support::Size;
 use crate::support::WxStr;
 
 impl ArtProvider {
-    pub fn get_bitmap(&self, id: impl AsRef<str>, client: impl AsRef<str>, size: Size) -> Option<Bitmap> {
+    pub fn get_bitmap(id: impl AsRef<str>, client: impl AsRef<str>, size: Size) -> Option<Bitmap> {
         let id_wx = WxStr::new(id.as_ref());
         let client_wx = WxStr::new(client.as_ref());
         let ptr = unsafe { sys::wxArtProvider_GetBitmap(id_wx.as_ptr(), client_wx.as_ptr(), size.width as c_int, size.height as c_int) };
@@ -56,15 +63,15 @@ impl ArtProvider {
         }
     }
 
-    pub fn pop(&self) -> bool {
+    pub fn pop() -> bool {
         unsafe { sys::wxArtProvider_Pop() != 0 }
     }
 
-    pub fn push(&self, provider: *mut c_void) {
+    pub fn push(provider: *mut c_void) {
         unsafe { sys::wxArtProvider_Push(provider) }
     }
 
-    pub fn get_bitmap_bundle(&self, id: impl AsRef<str>, client: impl AsRef<str>, size: Size) -> Option<BitmapBundle> {
+    pub fn get_bitmap_bundle(id: impl AsRef<str>, client: impl AsRef<str>, size: Size) -> Option<BitmapBundle> {
         let id_wx = WxStr::new(id.as_ref());
         let client_wx = WxStr::new(client.as_ref());
         let ptr = unsafe { sys::wxArtProvider_GetBitmapBundle(id_wx.as_ptr(), client_wx.as_ptr(), size.width as c_int, size.height as c_int) };
@@ -75,7 +82,7 @@ impl ArtProvider {
         }
     }
 
-    pub fn get_icon(&self, id: impl AsRef<str>, client: impl AsRef<str>, size: Size) -> Option<Icon> {
+    pub fn get_icon(id: impl AsRef<str>, client: impl AsRef<str>, size: Size) -> Option<Icon> {
         let id_wx = WxStr::new(id.as_ref());
         let client_wx = WxStr::new(client.as_ref());
         let ptr = unsafe { sys::wxArtProvider_GetIcon(id_wx.as_ptr(), client_wx.as_ptr(), size.width as c_int, size.height as c_int) };
@@ -86,7 +93,7 @@ impl ArtProvider {
         }
     }
 
-    pub fn get_icon_bundle(&self, id: impl AsRef<str>, client: impl AsRef<str>) -> Option<IconBundle> {
+    pub fn get_icon_bundle(id: impl AsRef<str>, client: impl AsRef<str>) -> Option<IconBundle> {
         let id_wx = WxStr::new(id.as_ref());
         let client_wx = WxStr::new(client.as_ref());
         let ptr = unsafe { sys::wxArtProvider_GetIconBundle(id_wx.as_ptr(), client_wx.as_ptr()) };
@@ -97,7 +104,7 @@ impl ArtProvider {
         }
     }
 
-    pub fn get_native_size_hint(&self, client: impl AsRef<str>, window: &impl WxWindow) -> Option<crate::size::Size> {
+    pub fn get_native_size_hint(client: impl AsRef<str>, window: &impl WxWindow) -> Option<crate::size::Size> {
         let client_wx = WxStr::new(client.as_ref());
         let ptr = unsafe { sys::wxArtProvider_GetNativeSizeHint(client_wx.as_ptr(), window.as_ptr()) };
         if ptr.is_null() {
@@ -107,7 +114,7 @@ impl ArtProvider {
         }
     }
 
-    pub fn get_size_hint(&self, client: impl AsRef<str>, window: &impl WxWindow) -> Option<crate::size::Size> {
+    pub fn get_size_hint(client: impl AsRef<str>, window: &impl WxWindow) -> Option<crate::size::Size> {
         let client_wx = WxStr::new(client.as_ref());
         let ptr = unsafe { sys::wxArtProvider_GetSizeHint(client_wx.as_ptr(), window.as_ptr()) };
         if ptr.is_null() {
@@ -117,19 +124,19 @@ impl ArtProvider {
         }
     }
 
-    pub fn has_native_provider(&self) -> bool {
+    pub fn has_native_provider() -> bool {
         unsafe { sys::wxArtProvider_HasNativeProvider() != 0 }
     }
 
-    pub fn push_back(&self, provider: &impl WxArtProvider) {
+    pub fn push_back(provider: &impl WxArtProvider) {
         unsafe { sys::wxArtProvider_PushBack(provider.as_ptr()) }
     }
 
-    pub fn delete_provider(&self, provider: &impl WxArtProvider) -> bool {
+    pub fn delete_provider(provider: &impl WxArtProvider) -> bool {
         unsafe { sys::wxArtProvider_DeleteProvider(provider.as_ptr()) != 0 }
     }
 
-    pub fn pop_provider(&self) -> bool {
+    pub fn pop_provider() -> bool {
         unsafe { sys::PopProvider() != 0 }
     }
 

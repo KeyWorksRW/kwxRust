@@ -16,6 +16,13 @@ impl ZipInputStream {
         Self(ArchiveInputStream::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,6 +46,7 @@ impl WxArchiveInputStream for ZipInputStream {}
 impl WxFilterInputStream for ZipInputStream {}
 impl WxInputStream for ZipInputStream {}
 impl WxStreamBase for ZipInputStream {}
+impl WxZipInputStream for ZipInputStream {}
 
 use crate::support::take_string;
 use crate::zip_entry::ZipEntry;
@@ -56,6 +64,13 @@ impl ZipInputStream {
         Self::from_raw(ptr)
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxZipInputStream_Delete(self.as_ptr()) }
+    }
+
     pub fn get_next_entry(&self) -> Option<ZipEntry> {
         let ptr = unsafe { sys::wxZipInputStream_GetNextEntry(self.as_ptr()) };
         if ptr.is_null() {
@@ -65,7 +80,7 @@ impl ZipInputStream {
         }
     }
 
-    pub fn open_entry(&self, entry: &impl WxObject) -> bool {
+    pub fn open_entry(&self, entry: &impl WxZipEntry) -> bool {
         unsafe { sys::wxZipInputStream_OpenEntry(self.as_ptr(), entry.as_ptr()) != 0 }
     }
 

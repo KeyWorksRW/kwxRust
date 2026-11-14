@@ -16,6 +16,13 @@ impl Dialog {
         Self(TopLevelWindow::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -91,11 +98,11 @@ impl Dialog {
         unsafe { sys::wxDialog_GetLayoutAdaptationDone(self.as_ptr()) != 0 }
     }
 
-    pub fn is_layout_adaptation_enabled(&self) -> bool {
+    pub fn is_layout_adaptation_enabled() -> bool {
         unsafe { sys::wxDialog_IsLayoutAdaptationEnabled() != 0 }
     }
 
-    pub fn enable_layout_adaptation(&self, enable: bool) {
+    pub fn enable_layout_adaptation(enable: bool) {
         unsafe { sys::wxDialog_EnableLayoutAdaptation(enable as c_int) }
     }
 

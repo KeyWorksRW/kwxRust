@@ -16,6 +16,13 @@ impl WebView {
         Self(Control::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,6 +45,7 @@ impl WxObject for WebView {
 impl WxControl for WebView {}
 impl WxWindow for WebView {}
 impl WxEvtHandler for WebView {}
+impl WxWebView for WebView {}
 
 use crate::support::Rect;
 use crate::support::WxStr;
@@ -45,11 +53,11 @@ use crate::support::take_string;
 use crate::web_view_configuration::WebViewConfiguration;
 
 impl WebView {
-    pub fn register_handler(&self, handler: &impl WxObject) {
+    pub fn register_handler(&self, handler: &impl WxWebViewHandler) {
         unsafe { sys::wxWebView_RegisterHandler(self.as_ptr(), handler.as_ptr()) }
     }
 
-    pub fn new(&self, parent: &impl WxWindow, id: i32, url: impl AsRef<str>, rect: Rect, backend: impl AsRef<str>, style: i32) -> Option<WebView> {
+    pub fn new(parent: &impl WxWindow, id: i32, url: impl AsRef<str>, rect: Rect, backend: impl AsRef<str>, style: i32) -> Option<WebView> {
         let url_wx = WxStr::new(url.as_ref());
         let backend_wx = WxStr::new(backend.as_ref());
         let ptr = unsafe { sys::wxWebView_New(parent.as_ptr(), id as c_int, url_wx.as_ptr(), rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int, backend_wx.as_ptr(), style as c_int) };
@@ -106,7 +114,7 @@ impl WebView {
         take_string(unsafe { sys::wxWebView_GetUserAgent(self.as_ptr()) })
     }
 
-    pub fn new_configuration(&self, backend: impl AsRef<str>) -> Option<WebViewConfiguration> {
+    pub fn new_configuration(backend: impl AsRef<str>) -> Option<WebViewConfiguration> {
         let backend_wx = WxStr::new(backend.as_ref());
         let ptr = unsafe { sys::wxWebView_NewConfiguration(backend_wx.as_ptr()) };
         if ptr.is_null() {
@@ -292,7 +300,7 @@ impl WebView {
         unsafe { sys::wxWebView_EnableAccessToDevTools(self.as_ptr(), enable as c_int) }
     }
 
-    pub fn is_backend_available(&self, backend: impl AsRef<str>) -> bool {
+    pub fn is_backend_available(backend: impl AsRef<str>) -> bool {
         let backend_wx = WxStr::new(backend.as_ref());
         unsafe { sys::wxWebView_IsBackendAvailable(backend_wx.as_ptr()) != 0 }
     }

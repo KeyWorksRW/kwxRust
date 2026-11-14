@@ -16,6 +16,13 @@ impl Window {
         Self(EvtHandler::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -55,7 +62,7 @@ use crate::support::take_string;
 use crate::validator::Validator;
 
 impl Window {
-    pub fn set_accessible(&self, accessible: &impl WxObject) {
+    pub fn set_accessible(&self, accessible: &impl WxAccessible) {
         unsafe { sys::wxWindow_SetAccessible(self.as_ptr(), accessible.as_ptr()) }
     }
 
@@ -118,7 +125,7 @@ impl Window {
         }
     }
 
-    pub fn new_control_id(&self, count: i32) -> i32 {
+    pub fn new_control_id(count: i32) -> i32 {
         unsafe { sys::wxWindow_NewControlId(count as c_int) as i32 }
     }
 
@@ -126,7 +133,7 @@ impl Window {
         unsafe { sys::wxWindow_CentreOnParent(self.as_ptr(), dir as c_int) }
     }
 
-    pub fn find_window_by_id(&self, winid: i32, parent: *mut c_void) -> Option<Window> {
+    pub fn find_window_by_id(winid: i32, parent: *mut c_void) -> Option<Window> {
         let ptr = unsafe { sys::wxWindow_FindWindowById(winid as c_long, parent) };
         if ptr.is_null() {
             None
@@ -135,7 +142,7 @@ impl Window {
         }
     }
 
-    pub fn find_window_by_name(&self, name: impl AsRef<str>, parent: *mut c_void) -> Option<Window> {
+    pub fn find_window_by_name(name: impl AsRef<str>, parent: *mut c_void) -> Option<Window> {
         let name_wx = WxStr::new(name.as_ref());
         let ptr = unsafe { sys::wxWindow_FindWindowByName(name_wx.as_ptr(), parent) };
         if ptr.is_null() {
@@ -171,7 +178,7 @@ impl Window {
         unsafe { sys::wxWindow_PostSizeEvent(self.as_ptr()) }
     }
 
-    pub fn unreserve_control_id(&self, id: i32, count: i32) {
+    pub fn unreserve_control_id(id: i32, count: i32) {
         unsafe { sys::wxWindow_UnreserveControlId(id as c_int, count as c_int) }
     }
 
@@ -534,7 +541,7 @@ impl Window {
         }
     }
 
-    pub fn set_own_background_colour(&self, colour: &impl WxObject) {
+    pub fn set_own_background_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxWindow_SetOwnBackgroundColour(self.as_ptr(), colour.as_ptr()) }
     }
 
@@ -550,7 +557,7 @@ impl Window {
         unsafe { sys::wxWindow_InheritsBackgroundColour(self.as_ptr()) != 0 }
     }
 
-    pub fn set_own_foreground_colour(&self, colour: &impl WxObject) {
+    pub fn set_own_foreground_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxWindow_SetOwnForegroundColour(self.as_ptr(), colour.as_ptr()) }
     }
 
@@ -574,7 +581,7 @@ impl Window {
         unsafe { sys::wxWindow_HasTransparentBackground(self.as_ptr()) != 0 }
     }
 
-    pub fn set_own_font(&self, font: &impl WxObject) {
+    pub fn set_own_font(&self, font: &impl WxFont) {
         unsafe { sys::wxWindow_SetOwnFont(self.as_ptr(), font.as_ptr()) }
     }
 
@@ -697,7 +704,7 @@ impl Window {
         }
     }
 
-    pub fn set_palette(&self, palette: &impl WxObject) {
+    pub fn set_palette(&self, palette: &impl WxPalette) {
         unsafe { sys::wxWindow_SetPalette(self.as_ptr(), palette.as_ptr()) }
     }
 
@@ -713,7 +720,7 @@ impl Window {
         unsafe { sys::wxWindow_ShouldInheritColours(self.as_ptr()) != 0 }
     }
 
-    pub fn get_popup_menu_selection_from_user(&self, menu: &impl WxObject, point: Point) -> i32 {
+    pub fn get_popup_menu_selection_from_user(&self, menu: &impl WxMenu, point: Point) -> i32 {
         unsafe { sys::wxWindow_GetPopupMenuSelectionFromUser(self.as_ptr(), menu.as_ptr(), point.x as c_int, point.y as c_int) as i32 }
     }
 
@@ -749,7 +756,7 @@ impl Window {
         unsafe { sys::wxWindow_GetHelpIdAtPoint(self.as_ptr(), point.x as c_int, point.y as c_int) as i32 }
     }
 
-    pub fn copy_tool_tip(&self, tip: &impl WxObject) -> bool {
+    pub fn copy_tool_tip(&self, tip: &impl WxToolTip) -> bool {
         unsafe { sys::wxWindow_CopyToolTip(self.as_ptr(), tip.as_ptr()) != 0 }
     }
 
@@ -897,7 +904,7 @@ impl Window {
         unsafe { sys::wxWindow_GetAutoLayout(self.as_ptr()) as i32 }
     }
 
-    pub fn get_background_colour(&self, ref_: &impl WxObject) {
+    pub fn get_background_colour(&self, ref_: &impl WxColour) {
         unsafe { sys::wxWindow_GetBackgroundColour(self.as_ptr(), ref_.as_ptr()) }
     }
 
@@ -976,11 +983,11 @@ impl Window {
         }
     }
 
-    pub fn get_font(&self, ref_: &impl WxObject) {
+    pub fn get_font(&self, ref_: &impl WxFont) {
         unsafe { sys::wxWindow_GetFont(self.as_ptr(), ref_.as_ptr()) }
     }
 
-    pub fn get_foreground_colour(&self, ref_: &impl WxObject) {
+    pub fn get_foreground_colour(&self, ref_: &impl WxColour) {
         unsafe { sys::wxWindow_GetForegroundColour(self.as_ptr(), ref_.as_ptr()) }
     }
 
@@ -1077,7 +1084,7 @@ impl Window {
         }
     }
 
-    pub fn get_text_extent(&self, string: impl AsRef<str>, x: *mut i32, y: *mut i32, descent: *mut i32, external_leading: *mut i32, the_font: &impl WxObject) {
+    pub fn get_text_extent(&self, string: impl AsRef<str>, x: *mut i32, y: *mut i32, descent: *mut i32, external_leading: *mut i32, the_font: &impl WxFont) {
         let string_wx = WxStr::new(string.as_ref());
         unsafe { sys::wxWindow_GetTextExtent(self.as_ptr(), string_wx.as_ptr(), x as *mut c_int, y as *mut c_int, descent as *mut c_int, external_leading as *mut c_int, the_font.as_ptr()) }
     }
@@ -1169,7 +1176,7 @@ impl Window {
         unsafe { sys::wxWindow_PopEventHandler(self.as_ptr(), delete_handler as c_int) }
     }
 
-    pub fn popup_menu(&self, menu: &impl WxObject, point: Point) -> i32 {
+    pub fn popup_menu(&self, menu: &impl WxMenu, point: Point) -> i32 {
         unsafe { sys::wxWindow_PopupMenu(self.as_ptr(), menu.as_ptr(), point.x as c_int, point.y as c_int) as i32 }
     }
 
@@ -1222,7 +1229,7 @@ impl Window {
         unsafe { sys::wxWindow_ScrollWindowRect(self.as_ptr(), dx as c_int, dy as c_int, rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int) }
     }
 
-    pub fn set_accelerator_table(&self, accel: &impl WxObject) {
+    pub fn set_accelerator_table(&self, accel: &impl WxAcceleratorTable) {
         unsafe { sys::wxWindow_SetAcceleratorTable(self.as_ptr(), accel.as_ptr()) }
     }
 
@@ -1230,11 +1237,11 @@ impl Window {
         unsafe { sys::wxWindow_SetAutoLayout(self.as_ptr(), auto_layout as c_int) }
     }
 
-    pub fn set_background_colour(&self, colour: &impl WxObject) -> bool {
+    pub fn set_background_colour(&self, colour: &impl WxColour) -> bool {
         unsafe { sys::wxWindow_SetBackgroundColour(self.as_ptr(), colour.as_ptr()) != 0 }
     }
 
-    pub fn set_caret(&self, caret: &impl WxObject) {
+    pub fn set_caret(&self, caret: &impl WxCaret) {
         unsafe { sys::wxWindow_SetCaret(self.as_ptr(), caret.as_ptr()) }
     }
 
@@ -1250,7 +1257,7 @@ impl Window {
         unsafe { sys::wxWindow_SetClientSize(self.as_ptr(), size.width as c_int, size.height as c_int) }
     }
 
-    pub fn set_cursor(&self, cursor: &impl WxObject) -> i32 {
+    pub fn set_cursor(&self, cursor: &impl WxCursor) -> i32 {
         unsafe { sys::wxWindow_SetCursor(self.as_ptr(), cursor.as_ptr()) as i32 }
     }
 
@@ -1266,11 +1273,11 @@ impl Window {
         unsafe { sys::wxWindow_SetFocus(self.as_ptr()) }
     }
 
-    pub fn set_font(&self, font: &impl WxObject) -> bool {
+    pub fn set_font(&self, font: &impl WxFont) -> bool {
         unsafe { sys::wxWindow_SetFont(self.as_ptr(), font.as_ptr()) != 0 }
     }
 
-    pub fn set_foreground_colour(&self, colour: &impl WxObject) -> i32 {
+    pub fn set_foreground_colour(&self, colour: &impl WxColour) -> i32 {
         unsafe { sys::wxWindow_SetForegroundColour(self.as_ptr(), colour.as_ptr()) as i32 }
     }
 

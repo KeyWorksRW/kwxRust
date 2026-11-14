@@ -16,6 +16,13 @@ impl DocMDIParentFrame {
         Self(MDIParentFrame::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -40,20 +47,21 @@ impl WxFrame for DocMDIParentFrame {}
 impl WxTopLevelWindow for DocMDIParentFrame {}
 impl WxWindow for DocMDIParentFrame {}
 impl WxEvtHandler for DocMDIParentFrame {}
+impl WxDocMDIParentFrame for DocMDIParentFrame {}
 
 use crate::doc_manager::DocManager;
 use crate::support::Rect;
 use crate::support::WxStr;
 
 impl DocMDIParentFrame {
-    pub fn new(manager: &impl WxObject, parent: &impl WxFrame, title: impl AsRef<str>) -> Self {
+    pub fn new(manager: &impl WxDocManager, parent: &impl WxFrame, title: impl AsRef<str>) -> Self {
         let title_wx = WxStr::new(title.as_ref());
         let ptr = unsafe { sys::wxDocMDIParentFrame_Create(manager.as_ptr(), parent.as_ptr(), -1, title_wx.as_ptr(), Rect::default().x as c_int, Rect::default().y as c_int, Rect::default().width as c_int, Rect::default().height as c_int, 0) };
         assert!(!ptr.is_null(), "wxDocMDIParentFrame_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(manager: &impl WxObject, parent: &impl WxFrame, id: i32, title: impl AsRef<str>, rect: Rect, style: i32) -> Self {
+    pub fn new_full(manager: &impl WxDocManager, parent: &impl WxFrame, id: i32, title: impl AsRef<str>, rect: Rect, style: i32) -> Self {
         let title_wx = WxStr::new(title.as_ref());
         let ptr = unsafe { sys::wxDocMDIParentFrame_Create(manager.as_ptr(), parent.as_ptr(), id as c_int, title_wx.as_ptr(), rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int, style as c_int) };
         assert!(!ptr.is_null(), "wxDocMDIParentFrame_Create returned null");

@@ -16,6 +16,13 @@ impl NonOwnedWindow {
         Self(Window::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -37,13 +44,14 @@ impl WxObject for NonOwnedWindow {
 
 impl WxWindow for NonOwnedWindow {}
 impl WxEvtHandler for NonOwnedWindow {}
+impl WxNonOwnedWindow for NonOwnedWindow {}
 
 impl NonOwnedWindow {
-    pub fn set_shape(&self, region: &impl WxObject) -> bool {
+    pub fn set_shape(&self, region: &impl WxRegion) -> bool {
         unsafe { sys::wxNonOwnedWindow_SetShape(self.as_ptr(), region.as_ptr()) != 0 }
     }
 
-    pub fn set_path_shape(&self, path: &impl WxObject) -> bool {
+    pub fn set_path_shape(&self, path: &impl WxGraphicsPath) -> bool {
         unsafe { sys::wxNonOwnedWindow_SetPathShape(self.as_ptr(), path.as_ptr()) != 0 }
     }
 

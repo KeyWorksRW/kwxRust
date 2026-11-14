@@ -16,6 +16,13 @@ impl AuiManager {
         Self(EvtHandler::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -36,6 +43,7 @@ impl WxObject for AuiManager {
 }
 
 impl WxEvtHandler for AuiManager {}
+impl WxAuiManager for AuiManager {}
 
 use crate::aui_dock_art::AuiDockArt;
 use crate::aui_pane_info::AuiPaneInfo;
@@ -62,7 +70,7 @@ impl AuiManager {
         unsafe { sys::wxAuiManager_AllowDocksForMinPanes(self.as_ptr(), directions as c_int) }
     }
 
-    pub fn always_uses_live_resize(&self, window: *mut c_void) -> bool {
+    pub fn always_uses_live_resize(window: *mut c_void) -> bool {
         unsafe { sys::wxAuiManager_AlwaysUsesLiveResize(window) != 0 }
     }
 
@@ -77,6 +85,13 @@ impl AuiManager {
 
     pub fn set_docks_for_min_panes_style(&self, style: u32) {
         unsafe { sys::wxAuiManager_SetDocksForMinPanesStyle(self.as_ptr(), style as c_uint) }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxAuiManager_Delete(self.as_ptr()) }
     }
 
     pub fn detach_pane(&self, window: &impl WxWindow) -> bool {
@@ -122,11 +137,11 @@ impl AuiManager {
         unsafe { sys::wxAuiManager_HideHint(self.as_ptr()) }
     }
 
-    pub fn insert_pane(&self, window: &impl WxWindow, insert_location: &impl WxObject, insert_level: i32) -> bool {
+    pub fn insert_pane(&self, window: &impl WxWindow, insert_location: &impl WxAuiPaneInfo, insert_level: i32) -> bool {
         unsafe { sys::wxAuiManager_InsertPane(self.as_ptr(), window.as_ptr(), insert_location.as_ptr(), insert_level as c_int) != 0 }
     }
 
-    pub fn load_pane_info(&self, pane_part: impl AsRef<str>, pane: &impl WxObject) {
+    pub fn load_pane_info(&self, pane_part: impl AsRef<str>, pane: &impl WxAuiPaneInfo) {
         let pane_part_wx = WxStr::new(pane_part.as_ref());
         unsafe { sys::wxAuiManager_LoadPaneInfo(self.as_ptr(), pane_part_wx.as_ptr(), pane.as_ptr()) }
     }
@@ -136,7 +151,7 @@ impl AuiManager {
         unsafe { sys::wxAuiManager_LoadPerspective(self.as_ptr(), perspective_wx.as_ptr(), update as c_int) != 0 }
     }
 
-    pub fn save_pane_info(&self, pane: &impl WxObject) -> String {
+    pub fn save_pane_info(&self, pane: &impl WxAuiPaneInfo) -> String {
         take_string(unsafe { sys::wxAuiManager_SavePaneInfo(self.as_ptr(), pane.as_ptr()) })
     }
 
@@ -144,15 +159,15 @@ impl AuiManager {
         take_string(unsafe { sys::wxAuiManager_SavePerspective(self.as_ptr()) })
     }
 
-    pub fn save_layout(&self, serializer: &impl WxObject) {
+    pub fn save_layout(&self, serializer: &impl WxAuiSerializer) {
         unsafe { sys::wxAuiManager_SaveLayout(self.as_ptr(), serializer.as_ptr()) }
     }
 
-    pub fn load_layout(&self, deserializer: &impl WxObject) {
+    pub fn load_layout(&self, deserializer: &impl WxAuiDeserializer) {
         unsafe { sys::wxAuiManager_LoadLayout(self.as_ptr(), deserializer.as_ptr()) }
     }
 
-    pub fn set_art_provider(&self, art_provider: &impl WxObject) {
+    pub fn set_art_provider(&self, art_provider: &impl WxAuiDockArt) {
         unsafe { sys::wxAuiManager_SetArtProvider(self.as_ptr(), art_provider.as_ptr()) }
     }
 
@@ -168,7 +183,7 @@ impl AuiManager {
         unsafe { sys::wxAuiManager_SetManagedWindow(self.as_ptr(), managed_wnd.as_ptr()) }
     }
 
-    pub fn show_hint(&self, rect: &impl WxObject) {
+    pub fn show_hint(&self, rect: &impl WxRect) {
         unsafe { sys::wxAuiManager_ShowHint(self.as_ptr(), rect.as_ptr()) }
     }
 
@@ -185,11 +200,11 @@ impl AuiManager {
         unsafe { sys::wxAuiManager_AddPane(self.as_ptr(), window.as_ptr(), direction as c_int, caption_wx.as_ptr()) != 0 }
     }
 
-    pub fn add_pane_by_pane_info(&self, window: &impl WxWindow, pane_info: &impl WxObject) -> bool {
+    pub fn add_pane_by_pane_info(&self, window: &impl WxWindow, pane_info: &impl WxAuiPaneInfo) -> bool {
         unsafe { sys::wxAuiManager_AddPaneByPaneInfo(self.as_ptr(), window.as_ptr(), pane_info.as_ptr()) != 0 }
     }
 
-    pub fn add_pane_by_pane_info_and_drop_position(&self, window: &impl WxWindow, pane_info: &impl WxObject, point: Point) -> bool {
+    pub fn add_pane_by_pane_info_and_drop_position(&self, window: &impl WxWindow, pane_info: &impl WxAuiPaneInfo, point: Point) -> bool {
         unsafe { sys::wxAuiManager_AddPaneByPaneInfoAndDropPosition(self.as_ptr(), window.as_ptr(), pane_info.as_ptr(), point.x as c_int, point.y as c_int) != 0 }
     }
 
@@ -212,7 +227,7 @@ impl AuiManager {
         }
     }
 
-    pub fn get_manager(&self, window: &impl WxWindow) -> Option<AuiManager> {
+    pub fn get_manager(window: &impl WxWindow) -> Option<AuiManager> {
         let ptr = unsafe { sys::wxAuiManager_GetManager(window.as_ptr()) };
         if ptr.is_null() {
             None

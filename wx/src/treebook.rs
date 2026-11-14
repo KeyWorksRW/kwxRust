@@ -16,6 +16,13 @@ impl Treebook {
         Self(BookCtrlBase::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,6 +46,7 @@ impl WxBookCtrlBase for Treebook {}
 impl WxControl for Treebook {}
 impl WxWindow for Treebook {}
 impl WxEvtHandler for Treebook {}
+impl WxTreebook for Treebook {}
 
 use crate::image_list::ImageList;
 use crate::support::Point;
@@ -160,7 +168,7 @@ impl Treebook {
         unsafe { sys::wxTreebook_RemovePage(self.as_ptr(), n_page as c_int) != 0 }
     }
 
-    pub fn set_image_list(&self, image_list: &impl WxObject) {
+    pub fn set_image_list(&self, image_list: &impl WxImageList) {
         unsafe { sys::wxTreebook_SetImageList(self.as_ptr(), image_list.as_ptr()) }
     }
 

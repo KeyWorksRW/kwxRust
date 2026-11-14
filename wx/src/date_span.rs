@@ -16,6 +16,13 @@ impl DateSpan {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for DateSpan {
     }
 }
 
+impl WxDateSpan for DateSpan {}
 impl DateSpan {
     pub fn new(years: i32, months: i32) -> Self {
         let ptr = unsafe { sys::wxDateSpan_Create(years as c_int, months as c_int) };
@@ -70,6 +78,13 @@ impl DateSpan {
         let ptr = unsafe { sys::wxDateSpan_CreateFromDays(days as c_int) };
         assert!(!ptr.is_null(), "wxDateSpan_CreateFromDays returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxDateSpan_Delete(self.as_ptr()) }
     }
 
     pub fn set_years(&self, years: i32) {
@@ -112,23 +127,23 @@ impl DateSpan {
         unsafe { sys::wxDateSpan_GetTotalDays(self.as_ptr()) as i32 }
     }
 
-    pub fn add(&self, other: &impl WxObject, ref_: &impl WxObject) {
+    pub fn add(&self, other: &impl WxDateSpan, ref_: &impl WxDateSpan) {
         unsafe { sys::wxDateSpan_Add(self.as_ptr(), other.as_ptr(), ref_.as_ptr()) }
     }
 
-    pub fn add_in_place(&self, other: &impl WxObject) {
+    pub fn add_in_place(&self, other: &impl WxDateSpan) {
         unsafe { sys::wxDateSpan_AddInPlace(self.as_ptr(), other.as_ptr()) }
     }
 
-    pub fn subtract(&self, other: &impl WxObject, ref_: &impl WxObject) {
+    pub fn subtract(&self, other: &impl WxDateSpan, ref_: &impl WxDateSpan) {
         unsafe { sys::wxDateSpan_Subtract(self.as_ptr(), other.as_ptr(), ref_.as_ptr()) }
     }
 
-    pub fn subtract_in_place(&self, other: &impl WxObject) {
+    pub fn subtract_in_place(&self, other: &impl WxDateSpan) {
         unsafe { sys::wxDateSpan_SubtractInPlace(self.as_ptr(), other.as_ptr()) }
     }
 
-    pub fn negate(&self, ref_: &impl WxObject) {
+    pub fn negate(&self, ref_: &impl WxDateSpan) {
         unsafe { sys::wxDateSpan_Negate(self.as_ptr(), ref_.as_ptr()) }
     }
 
@@ -136,7 +151,7 @@ impl DateSpan {
         unsafe { sys::wxDateSpan_NegateInPlace(self.as_ptr()) }
     }
 
-    pub fn multiply(&self, factor: i32, ref_: &impl WxObject) {
+    pub fn multiply(&self, factor: i32, ref_: &impl WxDateSpan) {
         unsafe { sys::wxDateSpan_Multiply(self.as_ptr(), factor as c_int, ref_.as_ptr()) }
     }
 
@@ -144,7 +159,7 @@ impl DateSpan {
         unsafe { sys::wxDateSpan_MultiplyInPlace(self.as_ptr(), factor as c_int) }
     }
 
-    pub fn is_equal_to(&self, other: &impl WxObject) -> bool {
+    pub fn is_equal_to(&self, other: &impl WxDateSpan) -> bool {
         unsafe { sys::wxDateSpan_IsEqualTo(self.as_ptr(), other.as_ptr()) != 0 }
     }
 

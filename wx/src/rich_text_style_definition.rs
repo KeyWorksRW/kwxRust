@@ -16,6 +16,13 @@ impl RichTextStyleDefinition {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,4 +42,74 @@ impl WxObject for RichTextStyleDefinition {
     }
 }
 
+impl WxRichTextStyleDefinition for RichTextStyleDefinition {}
+
+use crate::rich_text_attr::RichTextAttr;
+use crate::rich_text_properties::RichTextProperties;
+use crate::support::WxStr;
+use crate::support::take_string;
+
+impl RichTextStyleDefinition {
+    pub fn copy(&self, def: &impl WxRichTextStyleDefinition) {
+        unsafe { sys::wxRichTextStyleDefinition_Copy(self.as_ptr(), def.as_ptr()) }
+    }
+
+    pub fn eq(&self, def: &impl WxRichTextStyleDefinition) -> bool {
+        unsafe { sys::wxRichTextStyleDefinition_Eq(self.as_ptr(), def.as_ptr()) != 0 }
+    }
+
+    pub fn set_name(&self, name: impl AsRef<str>) {
+        let name_wx = WxStr::new(name.as_ref());
+        unsafe { sys::wxRichTextStyleDefinition_SetName(self.as_ptr(), name_wx.as_ptr()) }
+    }
+
+    pub fn get_name(&self) -> String {
+        take_string(unsafe { sys::wxRichTextStyleDefinition_GetName(self.as_ptr()) })
+    }
+
+    pub fn set_description(&self, descr: impl AsRef<str>) {
+        let descr_wx = WxStr::new(descr.as_ref());
+        unsafe { sys::wxRichTextStyleDefinition_SetDescription(self.as_ptr(), descr_wx.as_ptr()) }
+    }
+
+    pub fn get_description(&self) -> String {
+        take_string(unsafe { sys::wxRichTextStyleDefinition_GetDescription(self.as_ptr()) })
+    }
+
+    pub fn set_base_style(&self, name: impl AsRef<str>) {
+        let name_wx = WxStr::new(name.as_ref());
+        unsafe { sys::wxRichTextStyleDefinition_SetBaseStyle(self.as_ptr(), name_wx.as_ptr()) }
+    }
+
+    pub fn get_base_style(&self) -> String {
+        take_string(unsafe { sys::wxRichTextStyleDefinition_GetBaseStyle(self.as_ptr()) })
+    }
+
+    pub fn set_style(&self, style: &impl WxRichTextAttr) {
+        unsafe { sys::wxRichTextStyleDefinition_SetStyle(self.as_ptr(), style.as_ptr()) }
+    }
+
+    pub fn get_style(&self) -> Option<RichTextAttr> {
+        let ptr = unsafe { sys::wxRichTextStyleDefinition_GetStyle(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(RichTextAttr::from_raw(ptr))
+        }
+    }
+
+    pub fn get_properties(&self) -> Option<RichTextProperties> {
+        let ptr = unsafe { sys::wxRichTextStyleDefinition_GetProperties(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(RichTextProperties::from_raw(ptr))
+        }
+    }
+
+    pub fn set_properties(&self, props: &impl WxRichTextProperties) {
+        unsafe { sys::wxRichTextStyleDefinition_SetProperties(self.as_ptr(), props.as_ptr()) }
+    }
+
+}
 

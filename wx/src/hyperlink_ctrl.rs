@@ -4,16 +4,23 @@
 
 use std::os::raw::*;
 
-use crate::object::Object;
+use crate::control::Control;
 use crate::sys;
 use crate::traits::*;
 
 #[derive(Copy, Clone)]
-pub struct HyperlinkCtrl(pub(crate) Object);
+pub struct HyperlinkCtrl(pub(crate) Control);
 
 impl HyperlinkCtrl {
     pub(crate) const fn from_raw(ptr: *mut c_void) -> Self {
-        Self(Object::from_raw(ptr))
+        Self(Control::from_raw(ptr))
+    }
+
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
     }
 
     pub fn as_ptr(&self) -> *mut c_void {
@@ -22,9 +29,9 @@ impl HyperlinkCtrl {
 }
 
 impl std::ops::Deref for HyperlinkCtrl {
-    type Target = Object;
+    type Target = Control;
 
-    fn deref(&self) -> &Object {
+    fn deref(&self) -> &Control {
         &self.0
     }
 }
@@ -34,6 +41,11 @@ impl WxObject for HyperlinkCtrl {
         self.0.as_ptr()
     }
 }
+
+impl WxControl for HyperlinkCtrl {}
+impl WxWindow for HyperlinkCtrl {}
+impl WxEvtHandler for HyperlinkCtrl {}
+impl WxHyperlinkCtrl for HyperlinkCtrl {}
 
 use crate::colour::Colour;
 use crate::support::WxStr;
@@ -91,11 +103,11 @@ impl HyperlinkCtrl {
         }
     }
 
-    pub fn set_hover_colour(&self, colour: &impl WxObject) {
+    pub fn set_hover_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxHyperlinkCtrl_SetHoverColour(self.as_ptr(), colour.as_ptr()) }
     }
 
-    pub fn set_normal_colour(&self, colour: &impl WxObject) {
+    pub fn set_normal_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxHyperlinkCtrl_SetNormalColour(self.as_ptr(), colour.as_ptr()) }
     }
 
@@ -108,7 +120,7 @@ impl HyperlinkCtrl {
         unsafe { sys::wxHyperlinkCtrl_SetVisited(self.as_ptr(), visited as c_int) }
     }
 
-    pub fn set_visited_colour(&self, colour: &impl WxObject) {
+    pub fn set_visited_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxHyperlinkCtrl_SetVisitedColour(self.as_ptr(), colour.as_ptr()) }
     }
 

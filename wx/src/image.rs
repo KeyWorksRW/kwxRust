@@ -16,6 +16,13 @@ impl Image {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for Image {
     }
 }
 
+impl WxImage for Image {}
 
 use crate::image_handler::ImageHandler;
 use crate::palette::Palette;
@@ -49,6 +57,13 @@ impl Image {
         let ptr = unsafe { sys::wxImage_CreateFromDataEx(width as c_int, height as c_int, data, is_static_data as c_int) };
         assert!(!ptr.is_null(), "wxImage_CreateFromDataEx returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxImage_Delete(self.as_ptr()) }
     }
 
     pub fn create_from_xpm_data(&self, data: *mut c_void) -> bool {
@@ -218,7 +233,7 @@ impl Image {
         unsafe { sys::wxImage_FindFirstUnusedColour(self.as_ptr(), r, g, b, start_r as c_char, start_g as c_char, start_b as c_char) != 0 }
     }
 
-    pub fn set_mask_from_image(&self, mask: &impl WxObject, mr: u8, mg: u8, mb: u8) -> bool {
+    pub fn set_mask_from_image(&self, mask: &impl WxImage, mr: u8, mg: u8, mb: u8) -> bool {
         unsafe { sys::wxImage_SetMaskFromImage(self.as_ptr(), mask.as_ptr(), mr, mg, mb) != 0 }
     }
 
@@ -234,11 +249,11 @@ impl Image {
         unsafe { sys::wxImage_ConvertColourToAlpha(self.as_ptr(), r, g, b) != 0 }
     }
 
-    pub fn set_default_load_flags(&self, flags: i32) {
+    pub fn set_default_load_flags(flags: i32) {
         unsafe { sys::wxImage_SetDefaultLoadFlags(flags as c_int) }
     }
 
-    pub fn get_default_load_flags(&self) -> i32 {
+    pub fn get_default_load_flags() -> i32 {
         unsafe { sys::wxImage_GetDefaultLoadFlags() as i32 }
     }
 
@@ -250,7 +265,7 @@ impl Image {
         unsafe { sys::wxImage_GetLoadFlags(self.as_ptr()) as i32 }
     }
 
-    pub fn get_image_count(&self, name: impl AsRef<str>, type_: i32) -> i32 {
+    pub fn get_image_count(name: impl AsRef<str>, type_: i32) -> i32 {
         let name_wx = WxStr::new(name.as_ref());
         unsafe { sys::wxImage_GetImageCount(name_wx.as_ptr(), type_ as c_int) as i32 }
     }
@@ -331,7 +346,7 @@ impl Image {
         }
     }
 
-    pub fn set_palette(&self, palette: &impl WxObject) {
+    pub fn set_palette(&self, palette: &impl WxPalette) {
         unsafe { sys::wxImage_SetPalette(self.as_ptr(), palette.as_ptr()) }
     }
 
@@ -351,20 +366,20 @@ impl Image {
         unsafe { sys::wxImage_ChangeHSV(self.as_ptr(), angle_h as c_double, factor_s as c_double, factor_v as c_double) }
     }
 
-    pub fn add_handler(&self, handler: &impl WxImageHandler) {
+    pub fn add_handler(handler: &impl WxImageHandler) {
         unsafe { sys::wxImage_AddHandler(handler.as_ptr()) }
     }
 
-    pub fn insert_handler(&self, handler: &impl WxImageHandler) {
+    pub fn insert_handler(handler: &impl WxImageHandler) {
         unsafe { sys::wxImage_InsertHandler(handler.as_ptr()) }
     }
 
-    pub fn remove_handler(&self, name: impl AsRef<str>) -> bool {
+    pub fn remove_handler(name: impl AsRef<str>) -> bool {
         let name_wx = WxStr::new(name.as_ref());
         unsafe { sys::wxImage_RemoveHandler(name_wx.as_ptr()) != 0 }
     }
 
-    pub fn find_handler_by_name(&self, name: impl AsRef<str>) -> Option<ImageHandler> {
+    pub fn find_handler_by_name(name: impl AsRef<str>) -> Option<ImageHandler> {
         let name_wx = WxStr::new(name.as_ref());
         let ptr = unsafe { sys::wxImage_FindHandlerByName(name_wx.as_ptr()) };
         if ptr.is_null() {
@@ -374,7 +389,7 @@ impl Image {
         }
     }
 
-    pub fn find_handler_by_extension(&self, extension: impl AsRef<str>, image_type: i32) -> Option<ImageHandler> {
+    pub fn find_handler_by_extension(extension: impl AsRef<str>, image_type: i32) -> Option<ImageHandler> {
         let extension_wx = WxStr::new(extension.as_ref());
         let ptr = unsafe { sys::wxImage_FindHandlerByExtension(extension_wx.as_ptr(), image_type as c_int) };
         if ptr.is_null() {
@@ -384,7 +399,7 @@ impl Image {
         }
     }
 
-    pub fn find_handler_by_type(&self, image_type: i32) -> Option<ImageHandler> {
+    pub fn find_handler_by_type(image_type: i32) -> Option<ImageHandler> {
         let ptr = unsafe { sys::wxImage_FindHandlerByType(image_type as c_int) };
         if ptr.is_null() {
             None
@@ -393,7 +408,7 @@ impl Image {
         }
     }
 
-    pub fn find_handler_mime(&self, mimetype: impl AsRef<str>) -> Option<ImageHandler> {
+    pub fn find_handler_mime(mimetype: impl AsRef<str>) -> Option<ImageHandler> {
         let mimetype_wx = WxStr::new(mimetype.as_ref());
         let ptr = unsafe { sys::wxImage_FindHandlerMime(mimetype_wx.as_ptr()) };
         if ptr.is_null() {
@@ -403,19 +418,19 @@ impl Image {
         }
     }
 
-    pub fn get_image_ext_wildcard(&self) -> String {
+    pub fn get_image_ext_wildcard() -> String {
         take_string(unsafe { sys::wxImage_GetImageExtWildcard() })
     }
 
-    pub fn clean_up_handlers(&self) {
+    pub fn clean_up_handlers() {
         unsafe { sys::wxImage_CleanUpHandlers() }
     }
 
-    pub fn init_standard_handlers(&self) {
+    pub fn init_standard_handlers() {
         unsafe { sys::wxImage_InitStandardHandlers() }
     }
 
-    pub fn can_read(&self, name: impl AsRef<str>) -> bool {
+    pub fn can_read(name: impl AsRef<str>) -> bool {
         let name_wx = WxStr::new(name.as_ref());
         unsafe { sys::wxImage_CanRead(name_wx.as_ptr()) != 0 }
     }
@@ -436,7 +451,7 @@ impl Image {
         unsafe { sys::wxImage_CountColours(self.as_ptr(), stopafter as c_int) as i32 }
     }
 
-    pub fn copy(&self, image: &impl WxObject) {
+    pub fn copy(&self, image: &impl WxImage) {
         unsafe { sys::wxImage_Copy(self.as_ptr(), image.as_ptr()) }
     }
 
@@ -531,7 +546,7 @@ impl Image {
         unsafe { sys::wxImage_GetRed(self.as_ptr(), point.x as c_int, point.y as c_int) as u8 }
     }
 
-    pub fn get_sub_image(&self, rect: Rect, image: &impl WxObject) {
+    pub fn get_sub_image(&self, rect: Rect, image: &impl WxImage) {
         unsafe { sys::wxImage_GetSubImage(self.as_ptr(), rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int, image.as_ptr()) }
     }
 
@@ -583,7 +598,7 @@ impl Image {
         unsafe { sys::wxImage_LoadStream(self.as_ptr(), name.as_ptr(), type_ as c_int, index as c_int) != 0 }
     }
 
-    pub fn mirror(&self, horizontally: bool, image: &impl WxObject) {
+    pub fn mirror(&self, horizontally: bool, image: &impl WxImage) {
         unsafe { sys::wxImage_Mirror(self.as_ptr(), horizontally as c_int, image.as_ptr()) }
     }
 
@@ -591,7 +606,7 @@ impl Image {
         unsafe { sys::wxImage_IsOk(self.as_ptr()) != 0 }
     }
 
-    pub fn paste(&self, image: &impl WxObject, point: Point, alpha_blend: i32) {
+    pub fn paste(&self, image: &impl WxImage, point: Point, alpha_blend: i32) {
         unsafe { sys::wxImage_Paste(self.as_ptr(), image.as_ptr(), point.x as c_int, point.y as c_int, alpha_blend as c_int) }
     }
 
@@ -607,11 +622,11 @@ impl Image {
         unsafe { sys::wxImage_RescaleEx(self.as_ptr(), size.width as c_int, size.height as c_int, quality as c_int) }
     }
 
-    pub fn rotate(&self, angle: f64, point: Point, interpolating: bool, offset_after_rotation: *mut c_void, image: &impl WxObject) {
+    pub fn rotate(&self, angle: f64, point: Point, interpolating: bool, offset_after_rotation: *mut c_void, image: &impl WxImage) {
         unsafe { sys::wxImage_Rotate(self.as_ptr(), angle as c_double, point.x as c_int, point.y as c_int, interpolating as c_int, offset_after_rotation, image.as_ptr()) }
     }
 
-    pub fn rotate90(&self, clockwise: bool, image: &impl WxObject) {
+    pub fn rotate90(&self, clockwise: bool, image: &impl WxImage) {
         unsafe { sys::wxImage_Rotate90(self.as_ptr(), clockwise as c_int, image.as_ptr()) }
     }
 
@@ -624,11 +639,11 @@ impl Image {
         unsafe { sys::wxImage_SaveStream(self.as_ptr(), stream.as_ptr(), type_ as c_int) != 0 }
     }
 
-    pub fn scale_ex(&self, size: Size, quality: i32, image: &impl WxObject) {
+    pub fn scale_ex(&self, size: Size, quality: i32, image: &impl WxImage) {
         unsafe { sys::wxImage_ScaleEx(self.as_ptr(), size.width as c_int, size.height as c_int, quality as c_int, image.as_ptr()) }
     }
 
-    pub fn scale(&self, size: Size, image: &impl WxObject) {
+    pub fn scale(&self, size: Size, image: &impl WxImage) {
         unsafe { sys::wxImage_Scale(self.as_ptr(), size.width as c_int, size.height as c_int, image.as_ptr()) }
     }
 

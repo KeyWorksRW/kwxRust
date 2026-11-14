@@ -16,6 +16,13 @@ impl NumericPropertyValidator {
         Self(TextValidator::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,6 +45,7 @@ impl WxObject for NumericPropertyValidator {
 impl WxTextValidator for NumericPropertyValidator {}
 impl WxValidator for NumericPropertyValidator {}
 impl WxEvtHandler for NumericPropertyValidator {}
+impl WxNumericPropertyValidator for NumericPropertyValidator {}
 
 impl NumericPropertyValidator {
     pub fn new(numeric_type: i32, base: i32) -> Self {
@@ -50,6 +58,13 @@ impl NumericPropertyValidator {
         let ptr = unsafe { sys::wxNumericPropertyValidator_Create(numeric_type as c_int, base as c_int) };
         assert!(!ptr.is_null(), "wxNumericPropertyValidator_Create returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxNumericPropertyValidator_Delete(self.as_ptr()) }
     }
 
     pub fn validate(&self, parent: &impl WxWindow) -> bool {

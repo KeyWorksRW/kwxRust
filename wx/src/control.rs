@@ -16,6 +16,13 @@ impl Control {
         Self(Window::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -44,7 +51,7 @@ use crate::support::WxStr;
 use crate::support::take_string;
 
 impl Control {
-    pub fn find_accel_index(&self, label: impl AsRef<str>) -> i32 {
+    pub fn find_accel_index(label: impl AsRef<str>) -> i32 {
         let label_wx = WxStr::new(label.as_ref());
         unsafe { sys::wxControl_FindAccelIndex(label_wx.as_ptr()) as i32 }
     }
@@ -105,12 +112,17 @@ impl Control {
         unsafe { sys::wxControl_GetSizeFromTextSize(self.as_ptr(), xlen as c_int, ylen as c_int, width as *mut c_int, height as *mut c_int) }
     }
 
-    pub fn remove_mnemonics(&self, str: impl AsRef<str>) -> String {
+    pub fn remove_mnemonics(str: impl AsRef<str>) -> String {
         let str_wx = WxStr::new(str.as_ref());
         take_string(unsafe { sys::wxControl_RemoveMnemonics(str_wx.as_ptr()) })
     }
 
-    pub fn escape_mnemonics(&self, str: impl AsRef<str>) -> String {
+    pub fn ellipsize(label: impl AsRef<str>, dc: &impl WxDC, mode: i32, max_width: i32, flags: i32) -> String {
+        let label_wx = WxStr::new(label.as_ref());
+        take_string(unsafe { sys::wxControl_Ellipsize(label_wx.as_ptr(), dc.as_ptr(), mode as c_int, max_width as c_int, flags as c_int) })
+    }
+
+    pub fn escape_mnemonics(str: impl AsRef<str>) -> String {
         let str_wx = WxStr::new(str.as_ref());
         take_string(unsafe { sys::wxControl_EscapeMnemonics(str_wx.as_ptr()) })
     }

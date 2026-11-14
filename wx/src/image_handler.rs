@@ -16,6 +16,13 @@ impl ImageHandler {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -89,11 +96,11 @@ impl ImageHandler {
         unsafe { sys::wxImageHandler_CanReadFile(self.as_ptr(), name_wx.as_ptr()) != 0 }
     }
 
-    pub fn load_file(&self, image: &impl WxObject, stream: &impl WxInputStream, verbose: bool, index: i32) -> bool {
+    pub fn load_file(&self, image: &impl WxImage, stream: &impl WxInputStream, verbose: bool, index: i32) -> bool {
         unsafe { sys::wxImageHandler_LoadFile(self.as_ptr(), image.as_ptr(), stream.as_ptr(), verbose as c_int, index as c_int) != 0 }
     }
 
-    pub fn save_file(&self, image: &impl WxObject, stream: &impl WxOutputStream, verbose: bool) -> bool {
+    pub fn save_file(&self, image: &impl WxImage, stream: &impl WxOutputStream, verbose: bool) -> bool {
         unsafe { sys::wxImageHandler_SaveFile(self.as_ptr(), image.as_ptr(), stream.as_ptr(), verbose as c_int) != 0 }
     }
 

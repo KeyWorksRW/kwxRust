@@ -16,6 +16,13 @@ impl CalendarDateAttr {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for CalendarDateAttr {
     }
 }
 
+impl WxCalendarDateAttr for CalendarDateAttr {}
 impl CalendarDateAttr {
     pub fn new(text_colour: *mut c_void, back_colour: *mut c_void, border_colour: *mut c_void, font: *mut c_void, border: i32) -> Self {
         let ptr = unsafe { sys::wxCalendarDateAttr_Create(text_colour, back_colour, border_colour, font, border as c_int) };
@@ -54,13 +62,20 @@ impl CalendarDateAttr {
         Self::from_raw(ptr)
     }
 
-    pub fn create_border(border: i32, col_border: &impl WxObject) -> Self {
+    pub fn create_border(border: i32, col_border: &impl WxColour) -> Self {
         let ptr = unsafe { sys::wxCalendarDateAttr_CreateBorder(border as c_int, col_border.as_ptr()) };
         assert!(!ptr.is_null(), "wxCalendarDateAttr_CreateBorder returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn get_background_colour(&self, ref_: &impl WxObject) {
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxCalendarDateAttr_Delete(self.as_ptr()) }
+    }
+
+    pub fn get_background_colour(&self, ref_: &impl WxColour) {
         unsafe { sys::wxCalendarDateAttr_GetBackgroundColour(self.as_ptr(), ref_.as_ptr()) }
     }
 
@@ -68,15 +83,15 @@ impl CalendarDateAttr {
         unsafe { sys::wxCalendarDateAttr_GetBorder(self.as_ptr()) as i32 }
     }
 
-    pub fn get_border_colour(&self, ref_: &impl WxObject) {
+    pub fn get_border_colour(&self, ref_: &impl WxColour) {
         unsafe { sys::wxCalendarDateAttr_GetBorderColour(self.as_ptr(), ref_.as_ptr()) }
     }
 
-    pub fn get_font(&self, ref_: &impl WxObject) {
+    pub fn get_font(&self, ref_: &impl WxFont) {
         unsafe { sys::wxCalendarDateAttr_GetFont(self.as_ptr(), ref_.as_ptr()) }
     }
 
-    pub fn get_text_colour(&self, ref_: &impl WxObject) {
+    pub fn get_text_colour(&self, ref_: &impl WxColour) {
         unsafe { sys::wxCalendarDateAttr_GetTextColour(self.as_ptr(), ref_.as_ptr()) }
     }
 
@@ -104,7 +119,7 @@ impl CalendarDateAttr {
         unsafe { sys::wxCalendarDateAttr_IsHoliday(self.as_ptr()) != 0 }
     }
 
-    pub fn set_background_colour(&self, col: &impl WxObject) {
+    pub fn set_background_colour(&self, col: &impl WxColour) {
         unsafe { sys::wxCalendarDateAttr_SetBackgroundColour(self.as_ptr(), col.as_ptr()) }
     }
 
@@ -112,11 +127,11 @@ impl CalendarDateAttr {
         unsafe { sys::wxCalendarDateAttr_SetBorder(self.as_ptr(), border as c_int) }
     }
 
-    pub fn set_border_colour(&self, col: &impl WxObject) {
+    pub fn set_border_colour(&self, col: &impl WxColour) {
         unsafe { sys::wxCalendarDateAttr_SetBorderColour(self.as_ptr(), col.as_ptr()) }
     }
 
-    pub fn set_font(&self, font: &impl WxObject) {
+    pub fn set_font(&self, font: &impl WxFont) {
         unsafe { sys::wxCalendarDateAttr_SetFont(self.as_ptr(), font.as_ptr()) }
     }
 
@@ -124,7 +139,7 @@ impl CalendarDateAttr {
         unsafe { sys::wxCalendarDateAttr_SetHoliday(self.as_ptr(), holiday as c_int) }
     }
 
-    pub fn set_text_colour(&self, col: &impl WxObject) {
+    pub fn set_text_colour(&self, col: &impl WxColour) {
         unsafe { sys::wxCalendarDateAttr_SetTextColour(self.as_ptr(), col.as_ptr()) }
     }
 

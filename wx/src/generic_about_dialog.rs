@@ -16,6 +16,13 @@ impl GenericAboutDialog {
         Self(Dialog::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,18 +46,19 @@ impl WxDialog for GenericAboutDialog {}
 impl WxTopLevelWindow for GenericAboutDialog {}
 impl WxWindow for GenericAboutDialog {}
 impl WxEvtHandler for GenericAboutDialog {}
+impl WxGenericAboutDialog for GenericAboutDialog {}
 
 use crate::support::WxStr;
 use crate::window::Window;
 
 impl GenericAboutDialog {
-    pub fn new(info: &impl WxObject, parent: &impl WxWindow) -> Self {
+    pub fn new(info: &impl WxAboutDialogInfo, parent: &impl WxWindow) -> Self {
         let ptr = unsafe { sys::wxGenericAboutDialog_Create(info.as_ptr(), parent.as_ptr()) };
         assert!(!ptr.is_null(), "wxGenericAboutDialog_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(info: &impl WxObject, parent: &impl WxWindow) -> Self {
+    pub fn new_full(info: &impl WxAboutDialogInfo, parent: &impl WxWindow) -> Self {
         let ptr = unsafe { sys::wxGenericAboutDialog_Create(info.as_ptr(), parent.as_ptr()) };
         assert!(!ptr.is_null(), "wxGenericAboutDialog_Create returned null");
         Self::from_raw(ptr)
@@ -76,6 +84,13 @@ impl GenericAboutDialog {
 
     pub fn show_modal(&self) -> i32 {
         unsafe { sys::wxGenericAboutDialog_ShowModal(self.as_ptr()) as i32 }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxGenericAboutDialog_Delete(self.as_ptr()) }
     }
 
 }

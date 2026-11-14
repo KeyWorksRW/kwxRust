@@ -16,6 +16,13 @@ impl Dir {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for Dir {
     }
 }
 
+impl WxDir for Dir {}
 use crate::support::WxStr;
 use crate::support::take_string;
 
@@ -56,6 +64,13 @@ impl Dir {
         let ptr = unsafe { sys::wxDir_CreateFromPath(directory_wx.as_ptr()) };
         assert!(!ptr.is_null(), "wxDir_CreateFromPath returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxDir_Delete(self.as_ptr()) }
     }
 
     pub fn open(&self, directory: impl AsRef<str>) -> bool {
@@ -100,39 +115,39 @@ impl Dir {
         unsafe { sys::wxDir_HasSubDirs(self.as_ptr(), spec_wx.as_ptr()) != 0 }
     }
 
-    pub fn traverse(&self, sink: &impl WxObject, spec: impl AsRef<str>, flags: i32) -> usize {
+    pub fn traverse(&self, sink: &impl WxDirTraverser, spec: impl AsRef<str>, flags: i32) -> usize {
         let spec_wx = WxStr::new(spec.as_ref());
         unsafe { sys::wxDir_Traverse(self.as_ptr(), sink.as_ptr(), spec_wx.as_ptr(), flags as c_int) as usize }
     }
 
-    pub fn get_all_files(&self, dir_name: impl AsRef<str>, files: *mut c_void, spec: impl AsRef<str>, flags: i32, capacity: i32) -> usize {
+    pub fn get_all_files(dir_name: impl AsRef<str>, files: *mut c_void, spec: impl AsRef<str>, flags: i32, capacity: i32) -> usize {
         let dir_name_wx = WxStr::new(dir_name.as_ref());
         let spec_wx = WxStr::new(spec.as_ref());
         unsafe { sys::wxDir_GetAllFiles(dir_name_wx.as_ptr(), files, spec_wx.as_ptr(), flags as c_int, capacity as c_int) as usize }
     }
 
-    pub fn find_first(&self, dir_name: impl AsRef<str>, spec: impl AsRef<str>, flags: i32) -> String {
+    pub fn find_first(dir_name: impl AsRef<str>, spec: impl AsRef<str>, flags: i32) -> String {
         let dir_name_wx = WxStr::new(dir_name.as_ref());
         let spec_wx = WxStr::new(spec.as_ref());
         take_string(unsafe { sys::wxDir_FindFirst(dir_name_wx.as_ptr(), spec_wx.as_ptr(), flags as c_int) })
     }
 
-    pub fn get_total_size(&self, dir_name: impl AsRef<str>) -> f64 {
+    pub fn get_total_size(dir_name: impl AsRef<str>) -> f64 {
         let dir_name_wx = WxStr::new(dir_name.as_ref());
         unsafe { sys::wxDir_GetTotalSize(dir_name_wx.as_ptr()) as f64 }
     }
 
-    pub fn exists(&self, dir: impl AsRef<str>) -> bool {
+    pub fn exists(dir: impl AsRef<str>) -> bool {
         let dir_wx = WxStr::new(dir.as_ref());
         unsafe { sys::wxDir_Exists(dir_wx.as_ptr()) != 0 }
     }
 
-    pub fn make(&self, dir: impl AsRef<str>, perm: i32, flags: i32) -> bool {
+    pub fn make(dir: impl AsRef<str>, perm: i32, flags: i32) -> bool {
         let dir_wx = WxStr::new(dir.as_ref());
         unsafe { sys::wxDir_Make(dir_wx.as_ptr(), perm as c_int, flags as c_int) != 0 }
     }
 
-    pub fn remove(&self, dir: impl AsRef<str>, flags: i32) -> bool {
+    pub fn remove(dir: impl AsRef<str>, flags: i32) -> bool {
         let dir_wx = WxStr::new(dir.as_ref());
         unsafe { sys::wxDir_Remove(dir_wx.as_ptr(), flags as c_int) != 0 }
     }

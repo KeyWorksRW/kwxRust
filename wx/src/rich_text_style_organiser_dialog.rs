@@ -16,6 +16,13 @@ impl RichTextStyleOrganiserDialog {
         Self(Dialog::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,6 +46,7 @@ impl WxDialog for RichTextStyleOrganiserDialog {}
 impl WxTopLevelWindow for RichTextStyleOrganiserDialog {}
 impl WxWindow for RichTextStyleOrganiserDialog {}
 impl WxEvtHandler for RichTextStyleOrganiserDialog {}
+impl WxRichTextStyleOrganiserDialog for RichTextStyleOrganiserDialog {}
 
 use crate::rich_text_ctrl::RichTextCtrl;
 use crate::rich_text_style_definition::RichTextStyleDefinition;
@@ -48,21 +56,28 @@ use crate::support::WxStr;
 use crate::support::take_string;
 
 impl RichTextStyleOrganiserDialog {
-    pub fn new(flags: i32, sheet: &impl WxObject, ctrl: &impl WxObject, parent: &impl WxWindow, caption: impl AsRef<str>) -> Self {
+    pub fn new(flags: i32, sheet: &impl WxRichTextStyleSheet, ctrl: &impl WxRichTextCtrl, parent: &impl WxWindow, caption: impl AsRef<str>) -> Self {
         let caption_wx = WxStr::new(caption.as_ref());
         let ptr = unsafe { sys::wxRichTextStyleOrganiserDialog_Create(flags as c_int, sheet.as_ptr(), ctrl.as_ptr(), parent.as_ptr(), -1, caption_wx.as_ptr(), Rect::default().x as c_int, Rect::default().y as c_int, Rect::default().width as c_int, Rect::default().height as c_int, 0) };
         assert!(!ptr.is_null(), "wxRichTextStyleOrganiserDialog_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(flags: i32, sheet: &impl WxObject, ctrl: &impl WxObject, parent: &impl WxWindow, id: i32, caption: impl AsRef<str>, rect: Rect, style: i32) -> Self {
+    pub fn new_full(flags: i32, sheet: &impl WxRichTextStyleSheet, ctrl: &impl WxRichTextCtrl, parent: &impl WxWindow, id: i32, caption: impl AsRef<str>, rect: Rect, style: i32) -> Self {
         let caption_wx = WxStr::new(caption.as_ref());
         let ptr = unsafe { sys::wxRichTextStyleOrganiserDialog_Create(flags as c_int, sheet.as_ptr(), ctrl.as_ptr(), parent.as_ptr(), id as c_int, caption_wx.as_ptr(), rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int, style as c_long) };
         assert!(!ptr.is_null(), "wxRichTextStyleOrganiserDialog_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn set_style_sheet(&self, sheet: &impl WxObject) {
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxRichTextStyleOrganiserDialog_Delete(self.as_ptr()) }
+    }
+
+    pub fn set_style_sheet(&self, sheet: &impl WxRichTextStyleSheet) {
         unsafe { sys::wxRichTextStyleOrganiserDialog_SetStyleSheet(self.as_ptr(), sheet.as_ptr()) }
     }
 
@@ -75,7 +90,7 @@ impl RichTextStyleOrganiserDialog {
         }
     }
 
-    pub fn set_rich_text_ctrl(&self, ctrl: &impl WxObject) {
+    pub fn set_rich_text_ctrl(&self, ctrl: &impl WxRichTextCtrl) {
         unsafe { sys::wxRichTextStyleOrganiserDialog_SetRichTextCtrl(self.as_ptr(), ctrl.as_ptr()) }
     }
 
@@ -125,7 +140,7 @@ impl RichTextStyleOrganiserDialog {
         }
     }
 
-    pub fn apply_style(&self, ctrl: &impl WxObject) -> bool {
+    pub fn apply_style(&self, ctrl: &impl WxRichTextCtrl) -> bool {
         unsafe { sys::wxRichTextStyleOrganiserDialog_ApplyStyle(self.as_ptr(), ctrl.as_ptr()) != 0 }
     }
 

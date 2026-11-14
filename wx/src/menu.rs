@@ -16,6 +16,13 @@ impl Menu {
         Self(EvtHandler::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -36,6 +43,7 @@ impl WxObject for Menu {
 }
 
 impl WxEvtHandler for Menu {}
+impl WxMenu for Menu {}
 
 use crate::client_data::ClientData;
 use crate::menu_bar::MenuBar;
@@ -54,7 +62,7 @@ impl Menu {
         }
     }
 
-    pub fn append_sub_menu(&self, submenu: &impl WxObject, text: impl AsRef<str>, help: impl AsRef<str>) -> Option<MenuItem> {
+    pub fn append_sub_menu(&self, submenu: &impl WxMenu, text: impl AsRef<str>, help: impl AsRef<str>) -> Option<MenuItem> {
         let text_wx = WxStr::new(text.as_ref());
         let help_wx = WxStr::new(help.as_ref());
         let ptr = unsafe { sys::wxMenu_AppendSubMenu(self.as_ptr(), submenu.as_ptr(), text_wx.as_ptr(), help_wx.as_ptr()) };
@@ -91,7 +99,7 @@ impl Menu {
         unsafe { sys::wxMenu_Detach(self.as_ptr()) }
     }
 
-    pub fn lock_accels(&self, locked: bool) {
+    pub fn lock_accels(locked: bool) {
         unsafe { sys::wxMenu_LockAccels(locked as c_int) }
     }
 
@@ -101,11 +109,15 @@ impl Menu {
         unsafe { sys::wxMenu_Append(self.as_ptr(), id as c_int, text_wx.as_ptr(), help_wx.as_ptr(), is_checkable as c_int) }
     }
 
+    pub fn append_by_id(&self, id: i32) {
+        unsafe { sys::wxMenu_AppendById(self.as_ptr(), id as c_int) }
+    }
+
     pub fn destroy(&self, itemid: i32) -> bool {
         unsafe { sys::wxMenu_Destroy(self.as_ptr(), itemid as c_int) != 0 }
     }
 
-    pub fn append_item(&self, item: &impl WxObject) {
+    pub fn append_item(&self, item: &impl WxMenuItem) {
         unsafe { sys::wxMenu_AppendItem(self.as_ptr(), item.as_ptr()) }
     }
 
@@ -113,7 +125,7 @@ impl Menu {
         unsafe { sys::wxMenu_AppendSeparator(self.as_ptr()) }
     }
 
-    pub fn append_sub(&self, id: i32, text: impl AsRef<str>, submenu: &impl WxObject, help: impl AsRef<str>) {
+    pub fn append_sub(&self, id: i32, text: impl AsRef<str>, submenu: &impl WxMenu, help: impl AsRef<str>) {
         let text_wx = WxStr::new(text.as_ref());
         let help_wx = WxStr::new(help.as_ref());
         unsafe { sys::wxMenu_AppendSub(self.as_ptr(), id as c_int, text_wx.as_ptr(), submenu.as_ptr(), help_wx.as_ptr()) }
@@ -145,7 +157,7 @@ impl Menu {
         unsafe { sys::wxMenu_DeleteById(self.as_ptr(), id as c_int) }
     }
 
-    pub fn delete_by_item(&self, item: &impl WxObject) {
+    pub fn delete_by_item(&self, item: &impl WxMenuItem) {
         unsafe { sys::wxMenu_DeleteByItem(self.as_ptr(), item.as_ptr()) }
     }
 
@@ -157,7 +169,7 @@ impl Menu {
         unsafe { sys::wxMenu_DestroyById(self.as_ptr(), id as c_int) }
     }
 
-    pub fn destroy_by_item(&self, item: &impl WxObject) {
+    pub fn destroy_by_item(&self, item: &impl WxMenuItem) {
         unsafe { sys::wxMenu_DestroyByItem(self.as_ptr(), item.as_ptr()) }
     }
 
@@ -236,11 +248,11 @@ impl Menu {
         unsafe { sys::wxMenu_Insert(self.as_ptr(), pos, id as c_int, text_wx.as_ptr(), help_wx.as_ptr(), is_checkable as c_int) }
     }
 
-    pub fn insert_item(&self, pos: usize, item: &impl WxObject) {
+    pub fn insert_item(&self, pos: usize, item: &impl WxMenuItem) {
         unsafe { sys::wxMenu_InsertItem(self.as_ptr(), pos, item.as_ptr()) }
     }
 
-    pub fn insert_sub(&self, pos: usize, id: i32, text: impl AsRef<str>, submenu: &impl WxObject, help: impl AsRef<str>) {
+    pub fn insert_sub(&self, pos: usize, id: i32, text: impl AsRef<str>, submenu: &impl WxMenu, help: impl AsRef<str>) {
         let text_wx = WxStr::new(text.as_ref());
         let help_wx = WxStr::new(help.as_ref());
         unsafe { sys::wxMenu_InsertSub(self.as_ptr(), pos, id as c_int, text_wx.as_ptr(), submenu.as_ptr(), help_wx.as_ptr()) }
@@ -264,17 +276,17 @@ impl Menu {
         unsafe { sys::wxMenu_Prepend(self.as_ptr(), id as c_int, text_wx.as_ptr(), help_wx.as_ptr(), is_checkable as c_int) }
     }
 
-    pub fn prepend_item(&self, item: &impl WxObject) {
+    pub fn prepend_item(&self, item: &impl WxMenuItem) {
         unsafe { sys::wxMenu_PrependItem(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn prepend_sub(&self, id: i32, text: impl AsRef<str>, submenu: &impl WxObject, help: impl AsRef<str>) {
+    pub fn prepend_sub(&self, id: i32, text: impl AsRef<str>, submenu: &impl WxMenu, help: impl AsRef<str>) {
         let text_wx = WxStr::new(text.as_ref());
         let help_wx = WxStr::new(help.as_ref());
         unsafe { sys::wxMenu_PrependSub(self.as_ptr(), id as c_int, text_wx.as_ptr(), submenu.as_ptr(), help_wx.as_ptr()) }
     }
 
-    pub fn remove_by_id(&self, id: i32, item: &impl WxObject) {
+    pub fn remove_by_id(&self, id: i32, item: &impl WxMenuItem) {
         unsafe { sys::wxMenu_RemoveById(self.as_ptr(), id as c_int, item.as_ptr()) }
     }
 

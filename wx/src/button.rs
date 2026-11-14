@@ -16,6 +16,13 @@ impl Button {
         Self(Control::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -58,12 +65,20 @@ impl Button {
         Self::from_raw(ptr)
     }
 
-    pub fn set_background_colour(&self, colour: &impl WxObject) -> bool {
+    pub fn set_background_colour(&self, colour: &impl WxColour) -> bool {
         unsafe { sys::wxButton_SetBackgroundColour(self.as_ptr(), colour.as_ptr()) != 0 }
     }
 
     pub fn set_default(&self) {
         unsafe { sys::wxButton_SetDefault(self.as_ptr()) }
+    }
+
+    pub fn set_auth_needed(&self, show: bool) {
+        unsafe { sys::wxButton_SetAuthNeeded(self.as_ptr(), show as c_int) }
+    }
+
+    pub fn get_auth_needed(&self) -> bool {
+        unsafe { sys::wxButton_GetAuthNeeded(self.as_ptr()) != 0 }
     }
 
 }

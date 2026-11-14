@@ -16,6 +16,13 @@ impl FontPickerEvent {
         Self(CommandEvent::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -37,20 +44,28 @@ impl WxObject for FontPickerEvent {
 
 impl WxCommandEvent for FontPickerEvent {}
 impl WxEvent for FontPickerEvent {}
+impl WxFontPickerEvent for FontPickerEvent {}
 
 use crate::font::Font;
 
 impl FontPickerEvent {
-    pub fn new(generator: &impl WxObject, font: &impl WxObject) -> Self {
+    pub fn new(generator: &impl WxObject, font: &impl WxFont) -> Self {
         let ptr = unsafe { sys::wxFontPickerEvent_Create(generator.as_ptr(), -1, font.as_ptr()) };
         assert!(!ptr.is_null(), "wxFontPickerEvent_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(generator: &impl WxObject, id: i32, font: &impl WxObject) -> Self {
+    pub fn new_full(generator: &impl WxObject, id: i32, font: &impl WxFont) -> Self {
         let ptr = unsafe { sys::wxFontPickerEvent_Create(generator.as_ptr(), id as c_int, font.as_ptr()) };
         assert!(!ptr.is_null(), "wxFontPickerEvent_Create returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxFontPickerEvent_Delete(self.as_ptr()) }
     }
 
     pub fn get_font(&self) -> Option<Font> {
@@ -62,7 +77,7 @@ impl FontPickerEvent {
         }
     }
 
-    pub fn set_font(&self, font: &impl WxObject) {
+    pub fn set_font(&self, font: &impl WxFont) {
         unsafe { sys::wxFontPickerEvent_SetFont(self.as_ptr(), font.as_ptr()) }
     }
 

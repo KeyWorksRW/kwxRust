@@ -16,6 +16,13 @@ impl Rect {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for Rect {
     }
 }
 
+impl WxRect for Rect {}
 impl Rect {
     pub fn new(x: i32, y: i32, width: i32, height: i32) -> Self {
         let ptr = unsafe { sys::wxRect_Create(x as c_int, y as c_int, width as c_int, height as c_int) };
@@ -48,7 +56,7 @@ impl Rect {
         Self::from_raw(ptr)
     }
 
-    pub fn centre_in(&self, r: &impl WxObject, dir: i32) -> Option<Rect> {
+    pub fn centre_in(&self, r: &impl WxRect, dir: i32) -> Option<Rect> {
         let ptr = unsafe { sys::wxRect_CentreIn(self.as_ptr(), r.as_ptr(), dir as c_int) };
         if ptr.is_null() {
             None
@@ -157,8 +165,15 @@ impl Rect {
         unsafe { sys::wxRect_SetLeft(self.as_ptr(), left as c_int) }
     }
 
-    pub fn set_position(&self, p: &impl WxObject) {
+    pub fn set_position(&self, p: &impl WxPoint) {
         unsafe { sys::wxRect_SetPosition(self.as_ptr(), p.as_ptr()) }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxRect_Delete(self.as_ptr()) }
     }
 
     pub fn get_height(&self) -> i32 {

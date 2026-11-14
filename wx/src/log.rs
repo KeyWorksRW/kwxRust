@@ -16,6 +16,13 @@ impl Log {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -65,13 +72,20 @@ impl Log {
         unsafe { sys::wxLog_LogTextAtLevel(self.as_ptr(), level as c_int, msg_wx.as_ptr()) }
     }
 
-    pub fn set_thread_active_target(&self, logger: *mut c_void) -> Option<Log> {
+    pub fn set_thread_active_target(logger: *mut c_void) -> Option<Log> {
         let ptr = unsafe { sys::wxLog_SetThreadActiveTarget(logger) };
         if ptr.is_null() {
             None
         } else {
             Some(Log::from_raw(ptr))
         }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxLog_Delete(self.as_ptr()) }
     }
 
     pub fn on_log(&self, level: i32, sz_string: *mut c_void, timestamp: i32) {
@@ -90,11 +104,11 @@ impl Log {
         unsafe { sys::wxLog_FlushActive(self.as_ptr()) }
     }
 
-    pub fn get_active_target(&self) -> *mut c_void {
+    pub fn get_active_target() -> *mut c_void {
         unsafe { sys::wxLog_GetActiveTarget() }
     }
 
-    pub fn set_active_target(&self, p_logger: &impl WxLog) -> Option<Log> {
+    pub fn set_active_target(p_logger: &impl WxLog) -> Option<Log> {
         let ptr = unsafe { sys::wxLog_SetActiveTarget(p_logger.as_ptr()) };
         if ptr.is_null() {
             None
@@ -123,55 +137,71 @@ impl Log {
         unsafe { sys::wxLog_DontCreateOnDemand(self.as_ptr()) }
     }
 
-    pub fn add_trace_mask(&self, str: *mut c_void) {
-        unsafe { sys::wxLog_AddTraceMask(self.as_ptr(), str) }
+    pub fn add_trace_mask(&self, str: impl AsRef<str>) {
+        let str_c = std::ffi::CString::new(str.as_ref()).unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
+        unsafe { sys::wxLog_AddTraceMask(self.as_ptr(), str_c.as_ptr()) }
     }
 
-    pub fn remove_trace_mask(&self, str: *mut c_void) {
-        unsafe { sys::wxLog_RemoveTraceMask(self.as_ptr(), str) }
+    pub fn remove_trace_mask(&self, str: impl AsRef<str>) {
+        let str_c = std::ffi::CString::new(str.as_ref()).unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
+        unsafe { sys::wxLog_RemoveTraceMask(self.as_ptr(), str_c.as_ptr()) }
     }
 
-    pub fn set_timestamp(&self, timestamp: *mut c_void) {
-        unsafe { sys::wxLog_SetTimestamp(self.as_ptr(), timestamp) }
+    pub fn set_timestamp(&self, timestamp: impl AsRef<str>) {
+        let timestamp_c = std::ffi::CString::new(timestamp.as_ref()).unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
+        unsafe { sys::wxLog_SetTimestamp(self.as_ptr(), timestamp_c.as_ptr()) }
     }
 
     pub fn get_timestamp(&self) -> *mut c_void {
         unsafe { sys::wxLog_GetTimestamp(self.as_ptr()) }
     }
 
-    pub fn is_allowed_trace_mask(&self, mask: *mut c_void) -> bool {
-        unsafe { sys::wxLog_IsAllowedTraceMask(self.as_ptr(), mask) != 0 }
+    pub fn is_allowed_trace_mask(&self, mask: impl AsRef<str>) -> bool {
+        let mask_c = std::ffi::CString::new(mask.as_ref()).unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
+        unsafe { sys::wxLog_IsAllowedTraceMask(self.as_ptr(), mask_c.as_ptr()) != 0 }
     }
 
-    pub fn enable_logging(&self, enable: bool) -> bool {
+    pub fn enable_logging(enable: bool) -> bool {
         unsafe { sys::wxLog_EnableLogging(enable as c_int) != 0 }
     }
 
-    pub fn is_enabled(&self) -> bool {
+    pub fn is_enabled() -> bool {
         unsafe { sys::wxLog_IsEnabled() != 0 }
     }
 
-    pub fn set_log_level(&self, level: i32) {
+    pub fn set_log_level(level: i32) {
         unsafe { sys::wxLog_SetLogLevel(level as c_int) }
     }
 
-    pub fn get_log_level(&self) -> i32 {
+    pub fn get_log_level() -> i32 {
         unsafe { sys::wxLog_GetLogLevel() as i32 }
     }
 
-    pub fn get_component_level(&self, component: impl AsRef<str>) -> i32 {
+    pub fn disable_timestamp() {
+        unsafe { sys::wxLog_DisableTimestamp() }
+    }
+
+    pub fn get_component_level(component: impl AsRef<str>) -> i32 {
         let component_wx = WxStr::new(component.as_ref());
         unsafe { sys::wxLog_GetComponentLevel(component_wx.as_ptr()) as i32 }
     }
 
-    pub fn set_component_level(&self, component: impl AsRef<str>, level: i32) {
+    pub fn set_component_level(component: impl AsRef<str>, level: i32) {
         let component_wx = WxStr::new(component.as_ref());
         unsafe { sys::wxLog_SetComponentLevel(component_wx.as_ptr(), level as c_int) }
     }
 
-    pub fn is_level_enabled(&self, level: i32, component: impl AsRef<str>) -> bool {
+    pub fn is_level_enabled(level: i32, component: impl AsRef<str>) -> bool {
         let component_wx = WxStr::new(component.as_ref());
         unsafe { sys::wxLog_IsLevelEnabled(level as c_int, component_wx.as_ptr()) != 0 }
+    }
+
+    /// Alternative constructor wrapping `kwxLog_Create`; takes every
+    /// declared parameter.  `new`/`new_full` wrap the wxWidgets-own constructor.
+    pub fn new_with_state(p_object: *mut c_void, p_function: *mut c_void) -> Self {
+        let ptr = unsafe { sys::kwxLog_Create(p_object, p_function) };
+        assert!(!ptr.is_null(), "kwxLog_Create returned null");
+        Self::from_raw(ptr)
     }
 
 }

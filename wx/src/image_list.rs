@@ -16,6 +16,13 @@ impl ImageList {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for ImageList {
     }
 }
 
+impl WxImageList for ImageList {}
 
 use crate::support::Point;
 use crate::support::Size;
@@ -48,11 +56,11 @@ impl ImageList {
         unsafe { sys::wxImageList_Add(self.as_ptr(), bitmap.as_ptr(), mask.as_ptr()) as i32 }
     }
 
-    pub fn add_icon(&self, icon: &impl WxObject) -> i32 {
+    pub fn add_icon(&self, icon: &impl WxIcon) -> i32 {
         unsafe { sys::wxImageList_AddIcon(self.as_ptr(), icon.as_ptr()) as i32 }
     }
 
-    pub fn add_masked(&self, bitmap: &impl WxBitmap, mask_colour: &impl WxObject) -> i32 {
+    pub fn add_masked(&self, bitmap: &impl WxBitmap, mask_colour: &impl WxColour) -> i32 {
         unsafe { sys::wxImageList_AddMasked(self.as_ptr(), bitmap.as_ptr(), mask_colour.as_ptr()) as i32 }
     }
 
@@ -66,6 +74,13 @@ impl ImageList {
         let ptr = unsafe { sys::wxImageList_Create(size.width as c_int, size.height as c_int, mask as c_int, initial_count as c_int) };
         assert!(!ptr.is_null(), "wxImageList_Create returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxImageList_Delete(self.as_ptr()) }
     }
 
     pub fn draw(&self, index: i32, dc: &impl WxDC, point: Point, flags: i32, solid_background: bool) -> bool {
@@ -92,7 +107,7 @@ impl ImageList {
         unsafe { sys::wxImageList_Replace(self.as_ptr(), index as c_int, bitmap.as_ptr(), mask.as_ptr()) != 0 }
     }
 
-    pub fn replace_icon(&self, index: i32, icon: &impl WxObject) -> bool {
+    pub fn replace_icon(&self, index: i32, icon: &impl WxIcon) -> bool {
         unsafe { sys::wxImageList_ReplaceIcon(self.as_ptr(), index as c_int, icon.as_ptr()) != 0 }
     }
 

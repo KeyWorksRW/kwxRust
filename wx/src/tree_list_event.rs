@@ -16,6 +16,13 @@ impl TreeListEvent {
         Self(NotifyEvent::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,9 +45,10 @@ impl WxObject for TreeListEvent {
 impl WxNotifyEvent for TreeListEvent {}
 impl WxCommandEvent for TreeListEvent {}
 impl WxEvent for TreeListEvent {}
+impl WxTreeListEvent for TreeListEvent {}
 
 impl TreeListEvent {
-    pub fn get_item(&self, result: &impl WxObject) {
+    pub fn get_item(&self, result: &impl WxTreeListItem) {
         unsafe { sys::wxTreeListEvent_GetItem(self.as_ptr(), result.as_ptr()) }
     }
 

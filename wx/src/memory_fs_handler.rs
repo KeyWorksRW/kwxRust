@@ -16,6 +16,13 @@ impl MemoryFSHandler {
         Self(FileSystemHandler::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -36,45 +43,58 @@ impl WxObject for MemoryFSHandler {
 }
 
 impl WxFileSystemHandler for MemoryFSHandler {}
+impl WxMemoryFSHandler for MemoryFSHandler {}
 
 use crate::support::WxStr;
 
 impl MemoryFSHandler {
-    pub fn add_file(&self, filename: impl AsRef<str>, textdata: impl AsRef<str>) {
+    pub fn add_file(filename: impl AsRef<str>, textdata: impl AsRef<str>) {
         let filename_wx = WxStr::new(filename.as_ref());
         let textdata_wx = WxStr::new(textdata.as_ref());
         unsafe { sys::wxMemoryFSHandler_AddFile(filename_wx.as_ptr(), textdata_wx.as_ptr()) }
     }
 
-    pub fn add_file_binary(&self, filename: impl AsRef<str>, binarydata: *mut c_void, size: usize) {
+    pub fn new() -> Self {
+        let ptr = unsafe { sys::wxMemoryFSHandler_Create() };
+        assert!(!ptr.is_null(), "wxMemoryFSHandler_Create returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn new_full() -> Self {
+        let ptr = unsafe { sys::wxMemoryFSHandler_Create() };
+        assert!(!ptr.is_null(), "wxMemoryFSHandler_Create returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn add_file_binary(filename: impl AsRef<str>, binarydata: *mut c_void, size: usize) {
         let filename_wx = WxStr::new(filename.as_ref());
         unsafe { sys::wxMemoryFSHandler_AddFileBinary(filename_wx.as_ptr(), binarydata, size) }
     }
 
-    pub fn add_file_with_mime_type(&self, filename: impl AsRef<str>, textdata: impl AsRef<str>, mimetype: impl AsRef<str>) {
+    pub fn add_file_with_mime_type(filename: impl AsRef<str>, textdata: impl AsRef<str>, mimetype: impl AsRef<str>) {
         let filename_wx = WxStr::new(filename.as_ref());
         let textdata_wx = WxStr::new(textdata.as_ref());
         let mimetype_wx = WxStr::new(mimetype.as_ref());
         unsafe { sys::wxMemoryFSHandler_AddFileWithMimeType(filename_wx.as_ptr(), textdata_wx.as_ptr(), mimetype_wx.as_ptr()) }
     }
 
-    pub fn add_file_with_mime_type_binary(&self, filename: impl AsRef<str>, binarydata: *mut c_void, size: usize, mimetype: impl AsRef<str>) {
+    pub fn add_file_with_mime_type_binary(filename: impl AsRef<str>, binarydata: *mut c_void, size: usize, mimetype: impl AsRef<str>) {
         let filename_wx = WxStr::new(filename.as_ref());
         let mimetype_wx = WxStr::new(mimetype.as_ref());
         unsafe { sys::wxMemoryFSHandler_AddFileWithMimeTypeBinary(filename_wx.as_ptr(), binarydata, size, mimetype_wx.as_ptr()) }
     }
 
-    pub fn add_file_image(&self, filename: impl AsRef<str>, image: &impl WxObject, type_: i32) {
+    pub fn add_file_image(filename: impl AsRef<str>, image: &impl WxImage, type_: i32) {
         let filename_wx = WxStr::new(filename.as_ref());
         unsafe { sys::wxMemoryFSHandler_AddFileImage(filename_wx.as_ptr(), image.as_ptr(), type_ as c_int) }
     }
 
-    pub fn add_file_bitmap(&self, filename: impl AsRef<str>, bitmap: &impl WxBitmap, type_: i32) {
+    pub fn add_file_bitmap(filename: impl AsRef<str>, bitmap: &impl WxBitmap, type_: i32) {
         let filename_wx = WxStr::new(filename.as_ref());
         unsafe { sys::wxMemoryFSHandler_AddFileBitmap(filename_wx.as_ptr(), bitmap.as_ptr(), type_ as c_int) }
     }
 
-    pub fn remove_file(&self, filename: impl AsRef<str>) {
+    pub fn remove_file(filename: impl AsRef<str>) {
         let filename_wx = WxStr::new(filename.as_ref());
         unsafe { sys::wxMemoryFSHandler_RemoveFile(filename_wx.as_ptr()) }
     }

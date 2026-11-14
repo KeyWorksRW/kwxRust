@@ -16,6 +16,13 @@ impl HtmlWindow {
         Self(ScrolledWindow::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,7 +46,10 @@ impl WxScrolledWindow for HtmlWindow {}
 impl WxPanel for HtmlWindow {}
 impl WxWindow for HtmlWindow {}
 impl WxEvtHandler for HtmlWindow {}
+impl WxHtmlWindow for HtmlWindow {}
 
+use crate::frame::Frame;
+use crate::html_container_cell::HtmlContainerCell;
 use crate::support::Point;
 use crate::support::WxStr;
 use crate::support::take_string;
@@ -64,8 +74,13 @@ impl HtmlWindow {
         Self::from_raw(ptr)
     }
 
-    pub fn get_internal_representation(&self) -> *mut c_void {
-        unsafe { sys::wxHtmlWindow_GetInternalRepresentation(self.as_ptr()) }
+    pub fn get_internal_representation(&self) -> Option<HtmlContainerCell> {
+        let ptr = unsafe { sys::wxHtmlWindow_GetInternalRepresentation(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(HtmlContainerCell::from_raw(ptr))
+        }
     }
 
     pub fn get_opened_anchor(&self) -> String {
@@ -80,8 +95,13 @@ impl HtmlWindow {
         take_string(unsafe { sys::wxHtmlWindow_GetOpenedPageTitle(self.as_ptr()) })
     }
 
-    pub fn get_related_frame(&self) -> *mut c_void {
-        unsafe { sys::wxHtmlWindow_GetRelatedFrame(self.as_ptr()) }
+    pub fn get_related_frame(&self) -> Option<Frame> {
+        let ptr = unsafe { sys::wxHtmlWindow_GetRelatedFrame(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(Frame::from_raw(ptr))
+        }
     }
 
     pub fn history_back(&self) -> bool {
@@ -147,7 +167,7 @@ impl HtmlWindow {
         unsafe { sys::wxHtmlWindow_GetParser(self.as_ptr()) }
     }
 
-    pub fn load_file(&self, filename: &impl WxObject) -> bool {
+    pub fn load_file(&self, filename: &impl WxFileName) -> bool {
         unsafe { sys::wxHtmlWindow_LoadFile(self.as_ptr(), filename.as_ptr()) != 0 }
     }
 
@@ -167,8 +187,12 @@ impl HtmlWindow {
         take_string(unsafe { sys::wxHtmlWindow_SelectionToText(self.as_ptr()) })
     }
 
-    pub fn set_background_image(&self, bmp_bg: &impl WxObject) {
+    pub fn set_background_image(&self, bmp_bg: &impl WxBitmapBundle) {
         unsafe { sys::wxHtmlWindow_SetBackgroundImage(self.as_ptr(), bmp_bg.as_ptr()) }
+    }
+
+    pub fn set_html_background_image(&self, bmp_bg: &impl WxBitmapBundle) {
+        unsafe { sys::wxHtmlWindow_SetHTMLBackgroundImage(self.as_ptr(), bmp_bg.as_ptr()) }
     }
 
     pub fn set_standard_fonts(&self, size: i32, normal_face: impl AsRef<str>, fixed_face: impl AsRef<str>) {
@@ -179,6 +203,15 @@ impl HtmlWindow {
 
     pub fn to_text(&self) -> String {
         take_string(unsafe { sys::wxHtmlWindow_ToText(self.as_ptr()) })
+    }
+
+    /// Alternative constructor wrapping `kwxHtmlWindow_Create`; takes every
+    /// declared parameter.  `new`/`new_full` wrap the wxWidgets-own constructor.
+    pub fn new_with_state(parent: &impl WxWindow, id: i32, x: i32, y: i32, width: i32, height: i32, style: i32, name: impl AsRef<str>) -> Self {
+        let name_wx = WxStr::new(name.as_ref());
+        let ptr = unsafe { sys::kwxHtmlWindow_Create(parent.as_ptr(), id as c_int, x as c_int, y as c_int, width as c_int, height as c_int, style as c_long, name_wx.as_ptr()) };
+        assert!(!ptr.is_null(), "kwxHtmlWindow_Create returned null");
+        Self::from_raw(ptr)
     }
 
 }

@@ -16,6 +16,13 @@ impl GridCellAttr {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,12 +42,22 @@ impl WxObject for GridCellAttr {
     }
 }
 
+impl WxGridCellAttr for GridCellAttr {}
 use crate::grid_cell_editor::GridCellEditor;
 use crate::grid_cell_renderer::GridCellRenderer;
 
 impl GridCellAttr {
-    pub fn ctor(&self) -> Option<GridCellAttr> {
+    pub fn ctor() -> Option<GridCellAttr> {
         let ptr = unsafe { sys::wxGridCellAttr_Ctor() };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(GridCellAttr::from_raw(ptr))
+        }
+    }
+
+    pub fn clone(&self) -> Option<GridCellAttr> {
+        let ptr = unsafe { sys::wxGridCellAttr_Clone(self.as_ptr()) };
         if ptr.is_null() {
             None
         } else {
@@ -56,11 +73,11 @@ impl GridCellAttr {
         unsafe { sys::wxGridCellAttr_GetAlignment(self.as_ptr(), h_align as *mut c_int, v_align as *mut c_int) }
     }
 
-    pub fn get_background_colour(&self, ref_: &impl WxObject) {
+    pub fn get_background_colour(&self, ref_: &impl WxColour) {
         unsafe { sys::wxGridCellAttr_GetBackgroundColour(self.as_ptr(), ref_.as_ptr()) }
     }
 
-    pub fn get_editor(&self, grid: &impl WxObject, row: i32, col: i32) -> Option<GridCellEditor> {
+    pub fn get_editor(&self, grid: &impl WxGrid, row: i32, col: i32) -> Option<GridCellEditor> {
         let ptr = unsafe { sys::wxGridCellAttr_GetEditor(self.as_ptr(), grid.as_ptr(), row as c_int, col as c_int) };
         if ptr.is_null() {
             None
@@ -69,11 +86,11 @@ impl GridCellAttr {
         }
     }
 
-    pub fn get_font(&self, ref_: &impl WxObject) {
+    pub fn get_font(&self, ref_: &impl WxFont) {
         unsafe { sys::wxGridCellAttr_GetFont(self.as_ptr(), ref_.as_ptr()) }
     }
 
-    pub fn get_renderer(&self, grid: &impl WxObject, row: i32, col: i32) -> Option<GridCellRenderer> {
+    pub fn get_renderer(&self, grid: &impl WxGrid, row: i32, col: i32) -> Option<GridCellRenderer> {
         let ptr = unsafe { sys::wxGridCellAttr_GetRenderer(self.as_ptr(), grid.as_ptr(), row as c_int, col as c_int) };
         if ptr.is_null() {
             None
@@ -82,7 +99,7 @@ impl GridCellAttr {
         }
     }
 
-    pub fn get_text_colour(&self, ref_: &impl WxObject) {
+    pub fn get_text_colour(&self, ref_: &impl WxColour) {
         unsafe { sys::wxGridCellAttr_GetTextColour(self.as_ptr(), ref_.as_ptr()) }
     }
 
@@ -122,11 +139,11 @@ impl GridCellAttr {
         unsafe { sys::wxGridCellAttr_SetAlignment(self.as_ptr(), h_align as c_int, v_align as c_int) }
     }
 
-    pub fn set_background_colour(&self, col_back: &impl WxObject) {
+    pub fn set_background_colour(&self, col_back: &impl WxColour) {
         unsafe { sys::wxGridCellAttr_SetBackgroundColour(self.as_ptr(), col_back.as_ptr()) }
     }
 
-    pub fn set_def_attr(&self, def_attr: &impl WxObject) {
+    pub fn set_def_attr(&self, def_attr: &impl WxGridCellAttr) {
         unsafe { sys::wxGridCellAttr_SetDefAttr(self.as_ptr(), def_attr.as_ptr()) }
     }
 
@@ -134,7 +151,7 @@ impl GridCellAttr {
         unsafe { sys::wxGridCellAttr_SetEditor(self.as_ptr(), editor.as_ptr()) }
     }
 
-    pub fn set_font(&self, font: &impl WxObject) {
+    pub fn set_font(&self, font: &impl WxFont) {
         unsafe { sys::wxGridCellAttr_SetFont(self.as_ptr(), font.as_ptr()) }
     }
 
@@ -146,7 +163,7 @@ impl GridCellAttr {
         unsafe { sys::wxGridCellAttr_SetRenderer(self.as_ptr(), renderer.as_ptr()) }
     }
 
-    pub fn set_text_colour(&self, col_text: &impl WxObject) {
+    pub fn set_text_colour(&self, col_text: &impl WxColour) {
         unsafe { sys::wxGridCellAttr_SetTextColour(self.as_ptr(), col_text.as_ptr()) }
     }
 

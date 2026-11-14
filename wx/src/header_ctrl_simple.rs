@@ -4,16 +4,23 @@
 
 use std::os::raw::*;
 
-use crate::object::Object;
+use crate::header_ctrl::HeaderCtrl;
 use crate::sys;
 use crate::traits::*;
 
 #[derive(Copy, Clone)]
-pub struct HeaderCtrlSimple(pub(crate) Object);
+pub struct HeaderCtrlSimple(pub(crate) HeaderCtrl);
 
 impl HeaderCtrlSimple {
     pub(crate) const fn from_raw(ptr: *mut c_void) -> Self {
-        Self(Object::from_raw(ptr))
+        Self(HeaderCtrl::from_raw(ptr))
+    }
+
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
     }
 
     pub fn as_ptr(&self) -> *mut c_void {
@@ -22,9 +29,9 @@ impl HeaderCtrlSimple {
 }
 
 impl std::ops::Deref for HeaderCtrlSimple {
-    type Target = Object;
+    type Target = HeaderCtrl;
 
-    fn deref(&self) -> &Object {
+    fn deref(&self) -> &HeaderCtrl {
         &self.0
     }
 }
@@ -35,8 +42,14 @@ impl WxObject for HeaderCtrlSimple {
     }
 }
 
+impl WxHeaderCtrl for HeaderCtrlSimple {}
+impl WxControl for HeaderCtrlSimple {}
+impl WxWindow for HeaderCtrlSimple {}
+impl WxEvtHandler for HeaderCtrlSimple {}
+impl WxHeaderCtrlSimple for HeaderCtrlSimple {}
+
 impl HeaderCtrlSimple {
-    pub fn append_column(&self, col: &impl WxObject) {
+    pub fn append_column(&self, col: &impl WxHeaderColumnSimple) {
         unsafe { sys::wxHeaderCtrlSimple_AppendColumn(self.as_ptr(), col.as_ptr()) }
     }
 
@@ -60,7 +73,7 @@ impl HeaderCtrlSimple {
         unsafe { sys::wxHeaderCtrlSimple_HideColumn(self.as_ptr(), idx as c_uint) }
     }
 
-    pub fn insert_column(&self, col: &impl WxObject, idx: u32) {
+    pub fn insert_column(&self, col: &impl WxHeaderColumnSimple, idx: u32) {
         unsafe { sys::wxHeaderCtrlSimple_InsertColumn(self.as_ptr(), col.as_ptr(), idx as c_uint) }
     }
 

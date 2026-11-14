@@ -16,6 +16,13 @@ impl Display {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for Display {
     }
 }
 
+impl WxDisplay for Display {}
 use crate::array_video_modes::ArrayVideoModes;
 use crate::support::take_string;
 use crate::video_mode::VideoMode;
@@ -52,7 +60,7 @@ impl Display {
         Self::from_raw(ptr)
     }
 
-    pub fn change_mode(&self, mode: &impl WxObject) -> bool {
+    pub fn change_mode(&self, mode: &impl WxVideoMode) -> bool {
         unsafe { sys::wxDisplay_ChangeMode(self.as_ptr(), mode.as_ptr()) != 0 }
     }
 
@@ -88,11 +96,18 @@ impl Display {
         Self::from_raw(ptr)
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxDisplay_Delete(self.as_ptr()) }
+    }
+
     pub fn get_client_area(&self, x: *mut i32, y: *mut i32, width: *mut i32, height: *mut i32) {
         unsafe { sys::wxDisplay_GetClientArea(self.as_ptr(), x as *mut c_int, y as *mut c_int, width as *mut c_int, height as *mut c_int) }
     }
 
-    pub fn get_count(&self) -> i32 {
+    pub fn get_count() -> i32 {
         unsafe { sys::wxDisplay_GetCount() as i32 }
     }
 
@@ -105,11 +120,11 @@ impl Display {
         }
     }
 
-    pub fn get_from_point(&self, x: i32, y: i32) -> i32 {
+    pub fn get_from_point(x: i32, y: i32) -> i32 {
         unsafe { sys::wxDisplay_GetFromPoint(x as c_int, y as c_int) as i32 }
     }
 
-    pub fn get_from_window(&self, win: &impl WxWindow) -> i32 {
+    pub fn get_from_window(win: &impl WxWindow) -> i32 {
         unsafe { sys::wxDisplay_GetFromWindow(win.as_ptr()) as i32 }
     }
 

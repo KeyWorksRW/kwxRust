@@ -16,6 +16,13 @@ impl DateTime {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,10 +42,18 @@ impl WxObject for DateTime {
     }
 }
 
+impl WxDateTime for DateTime {}
 use crate::support::WxStr;
 use crate::support::take_string;
 
 impl DateTime {
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxDateTime_Delete(self.as_ptr()) }
+    }
+
     pub fn set_from_time_t(&self, ticks: i32) {
         unsafe { sys::wxDateTime_SetFromTimeT(self.as_ptr(), ticks as c_int) }
     }
@@ -59,19 +74,19 @@ impl DateTime {
         Self::from_raw(ptr)
     }
 
-    pub fn get_first_week_day(&self, first_week_day: *mut i32) -> bool {
+    pub fn get_first_week_day(first_week_day: *mut i32) -> bool {
         unsafe { sys::wxDateTime_GetFirstWeekDay(first_week_day as *mut c_int) != 0 }
     }
 
-    pub fn get_english_month_name(&self, month: i32, flags: i32) -> String {
+    pub fn get_english_month_name(month: i32, flags: i32) -> String {
         take_string(unsafe { sys::wxDateTime_GetEnglishMonthName(month as c_int, flags as c_int) })
     }
 
-    pub fn get_english_week_day_name(&self, weekday: i32, flags: i32) -> String {
+    pub fn get_english_week_day_name(weekday: i32, flags: i32) -> String {
         take_string(unsafe { sys::wxDateTime_GetEnglishWeekDayName(weekday as c_int, flags as c_int) })
     }
 
-    pub fn get_date_only(&self, ref_: &impl WxObject) {
+    pub fn get_date_only(&self, ref_: &impl WxDateTime) {
         unsafe { sys::wxDateTime_GetDateOnly(self.as_ptr(), ref_.as_ptr()) }
     }
 
@@ -79,7 +94,7 @@ impl DateTime {
         unsafe { sys::wxDateTime_SetToYearDay(self.as_ptr(), year_day as c_int) }
     }
 
-    pub fn get_year_day(&self, year_day: i32, ref_: &impl WxObject) {
+    pub fn get_year_day(&self, year_day: i32, ref_: &impl WxDateTime) {
         unsafe { sys::wxDateTime_GetYearDay(self.as_ptr(), year_day as c_int, ref_.as_ptr()) }
     }
 
@@ -95,7 +110,7 @@ impl DateTime {
         unsafe { sys::wxDateTime_GetRataDie(self.as_ptr()) as f64 }
     }
 
-    pub fn from_timezone(&self, time_zone: i32, no_dst: i32, ref_: &impl WxObject) {
+    pub fn from_timezone(&self, time_zone: i32, no_dst: i32, ref_: &impl WxDateTime) {
         unsafe { sys::wxDateTime_FromTimezone(self.as_ptr(), time_zone as c_int, no_dst as c_int, ref_.as_ptr()) }
     }
 
@@ -103,7 +118,7 @@ impl DateTime {
         unsafe { sys::wxDateTime_MakeFromTimezone(self.as_ptr(), time_zone as c_int, no_dst as c_int) }
     }
 
-    pub fn to_utc(&self, no_dst: i32, ref_: &impl WxObject) {
+    pub fn to_utc(&self, no_dst: i32, ref_: &impl WxDateTime) {
         unsafe { sys::wxDateTime_ToUTC(self.as_ptr(), no_dst as c_int, ref_.as_ptr()) }
     }
 
@@ -111,7 +126,7 @@ impl DateTime {
         unsafe { sys::wxDateTime_MakeUTC(self.as_ptr(), no_dst as c_int) }
     }
 
-    pub fn from_utc(&self, no_dst: i32, ref_: &impl WxObject) {
+    pub fn from_utc(&self, no_dst: i32, ref_: &impl WxDateTime) {
         unsafe { sys::wxDateTime_FromUTC(self.as_ptr(), no_dst as c_int, ref_.as_ptr()) }
     }
 
@@ -146,7 +161,7 @@ impl DateTime {
         unsafe { sys::wxDateTime_ParseISOCombined(self.as_ptr(), text_wx.as_ptr(), separator as c_char) != 0 }
     }
 
-    pub fn diff_as_date_span(&self, datetime: &impl WxObject, ref_: &impl WxObject) {
+    pub fn diff_as_date_span(&self, datetime: &impl WxDateTime, ref_: &impl WxDateSpan) {
         unsafe { sys::wxDateTime_DiffAsDateSpan(self.as_ptr(), datetime.as_ptr(), ref_.as_ptr()) }
     }
 
@@ -158,7 +173,7 @@ impl DateTime {
         unsafe { sys::wxDateTime_GetAsDOS(self.as_ptr()) as i32 }
     }
 
-    pub fn add_date(&self, diff: *mut c_void, ref_: &impl WxObject) {
+    pub fn add_date(&self, diff: *mut c_void, ref_: &impl WxDateTime) {
         unsafe { sys::wxDateTime_AddDate(self.as_ptr(), diff, ref_.as_ptr()) }
     }
 
@@ -166,7 +181,7 @@ impl DateTime {
         unsafe { sys::wxDateTime_AddDateValues(self.as_ptr(), years as c_int, month as c_int, week as c_int, day as c_int) }
     }
 
-    pub fn add_time(&self, diff: *mut c_void, ref_: &impl WxObject) {
+    pub fn add_time(&self, diff: *mut c_void, ref_: &impl WxDateTime) {
         unsafe { sys::wxDateTime_AddTime(self.as_ptr(), diff, ref_.as_ptr()) }
     }
 
@@ -174,7 +189,7 @@ impl DateTime {
         unsafe { sys::wxDateTime_AddTimeValues(self.as_ptr(), hours as c_int, min_val as c_int, seconds as c_int, milliseconds as c_int) }
     }
 
-    pub fn convert_year_to_bc(&self, year: i32) -> i32 {
+    pub fn convert_year_to_bc(year: i32) -> i32 {
         unsafe { sys::wxDateTime_ConvertYearToBC(year as c_int) as i32 }
     }
 
@@ -210,27 +225,27 @@ impl DateTime {
         take_string(unsafe { sys::wxDateTime_FormatTime(self.as_ptr()) })
     }
 
-    pub fn get_am_string(&self) -> String {
+    pub fn get_am_string() -> String {
         take_string(unsafe { sys::wxDateTime_GetAmString() })
     }
 
-    pub fn get_begin_dst(&self, year: i32, country: i32, date_time: &impl WxObject) {
+    pub fn get_begin_dst(year: i32, country: i32, date_time: &impl WxDateTime) {
         unsafe { sys::wxDateTime_GetBeginDST(year as c_int, country as c_int, date_time.as_ptr()) }
     }
 
-    pub fn get_century(&self, year: i32) -> i32 {
+    pub fn get_century(year: i32) -> i32 {
         unsafe { sys::wxDateTime_GetCentury(year as c_int) as i32 }
     }
 
-    pub fn get_country(&self) -> i32 {
+    pub fn get_country() -> i32 {
         unsafe { sys::wxDateTime_GetCountry() as i32 }
     }
 
-    pub fn get_current_month(&self, cal: i32) -> i32 {
+    pub fn get_current_month(cal: i32) -> i32 {
         unsafe { sys::wxDateTime_GetCurrentMonth(cal as c_int) as i32 }
     }
 
-    pub fn get_current_year(&self, cal: i32) -> i32 {
+    pub fn get_current_year(cal: i32) -> i32 {
         unsafe { sys::wxDateTime_GetCurrentYear(cal as c_int) as i32 }
     }
 
@@ -242,7 +257,7 @@ impl DateTime {
         unsafe { sys::wxDateTime_GetDayOfYear(self.as_ptr(), time_zone as c_int) as i32 }
     }
 
-    pub fn get_end_dst(&self, year: i32, country: i32, date_time: &impl WxObject) {
+    pub fn get_end_dst(year: i32, country: i32, date_time: &impl WxDateTime) {
         unsafe { sys::wxDateTime_GetEndDST(year as c_int, country as c_int, date_time.as_ptr()) }
     }
 
@@ -250,11 +265,11 @@ impl DateTime {
         unsafe { sys::wxDateTime_GetHour(self.as_ptr(), time_zone as c_int) as i32 }
     }
 
-    pub fn get_last_month_day(&self, month: i32, year: i32, ref_: &impl WxObject) {
+    pub fn get_last_month_day(&self, month: i32, year: i32, ref_: &impl WxDateTime) {
         unsafe { sys::wxDateTime_GetLastMonthDay(self.as_ptr(), month as c_int, year as c_int, ref_.as_ptr()) }
     }
 
-    pub fn get_last_week_day(&self, weekday: i32, month: i32, year: i32, ref_: &impl WxObject) {
+    pub fn get_last_week_day(&self, weekday: i32, month: i32, year: i32, ref_: &impl WxDateTime) {
         unsafe { sys::wxDateTime_GetLastWeekDay(self.as_ptr(), weekday as c_int, month as c_int, year as c_int, ref_.as_ptr()) }
     }
 
@@ -270,27 +285,27 @@ impl DateTime {
         unsafe { sys::wxDateTime_GetMonth(self.as_ptr(), time_zone as c_int) as i32 }
     }
 
-    pub fn get_month_name(&self, month: i32, flags: i32) -> String {
+    pub fn get_month_name(month: i32, flags: i32) -> String {
         take_string(unsafe { sys::wxDateTime_GetMonthName(month as c_int, flags as c_int) })
     }
 
-    pub fn get_next_week_day(&self, weekday: i32, ref_: &impl WxObject) {
+    pub fn get_next_week_day(&self, weekday: i32, ref_: &impl WxDateTime) {
         unsafe { sys::wxDateTime_GetNextWeekDay(self.as_ptr(), weekday as c_int, ref_.as_ptr()) }
     }
 
-    pub fn get_number_of_days(&self, year: i32, cal: i32) -> i32 {
+    pub fn get_number_of_days(year: i32, cal: i32) -> i32 {
         unsafe { sys::wxDateTime_GetNumberOfDays(year as c_int, cal as c_int) as i32 }
     }
 
-    pub fn get_number_of_days_month(&self, month: i32, year: i32, cal: i32) -> i32 {
+    pub fn get_number_of_days_month(month: i32, year: i32, cal: i32) -> i32 {
         unsafe { sys::wxDateTime_GetNumberOfDaysMonth(month as c_int, year as c_int, cal as c_int) as i32 }
     }
 
-    pub fn get_pm_string(&self) -> String {
+    pub fn get_pm_string() -> String {
         take_string(unsafe { sys::wxDateTime_GetPmString() })
     }
 
-    pub fn get_prev_week_day(&self, weekday: i32, ref_: &impl WxObject) {
+    pub fn get_prev_week_day(&self, weekday: i32, ref_: &impl WxDateTime) {
         unsafe { sys::wxDateTime_GetPrevWeekDay(self.as_ptr(), weekday as c_int, ref_.as_ptr()) }
     }
 
@@ -302,7 +317,7 @@ impl DateTime {
         unsafe { sys::wxDateTime_GetTicks(self.as_ptr()) as i64 }
     }
 
-    pub fn get_time_now(&self) -> i32 {
+    pub fn get_time_now() -> i32 {
         unsafe { sys::wxDateTime_GetTimeNow() as i32 }
     }
 
@@ -310,15 +325,15 @@ impl DateTime {
         unsafe { sys::wxDateTime_GetValue(self.as_ptr(), hi_long, lo_long) }
     }
 
-    pub fn get_week_day(&self, weekday: i32, nth_week: i32, month: i32, year: i32, ref_: &impl WxObject) {
+    pub fn get_week_day(&self, weekday: i32, nth_week: i32, month: i32, year: i32, ref_: &impl WxDateTime) {
         unsafe { sys::wxDateTime_GetWeekDay(self.as_ptr(), weekday as c_int, nth_week as c_int, month as c_int, year as c_int, ref_.as_ptr()) }
     }
 
-    pub fn get_week_day_in_same_week(&self, weekday: i32, flags: i32, ref_: &impl WxObject) {
+    pub fn get_week_day_in_same_week(&self, weekday: i32, flags: i32, ref_: &impl WxDateTime) {
         unsafe { sys::wxDateTime_GetWeekDayInSameWeek(self.as_ptr(), weekday as c_int, flags as c_int, ref_.as_ptr()) }
     }
 
-    pub fn get_week_day_name(&self, weekday: i32, flags: i32) -> String {
+    pub fn get_week_day_name(weekday: i32, flags: i32) -> String {
         take_string(unsafe { sys::wxDateTime_GetWeekDayName(weekday as c_int, flags as c_int) })
     }
 
@@ -338,7 +353,7 @@ impl DateTime {
         unsafe { sys::wxDateTime_GetYear(self.as_ptr(), time_zone as c_int) as i32 }
     }
 
-    pub fn is_between(&self, t1: &impl WxObject, t2: &impl WxObject) -> bool {
+    pub fn is_between(&self, t1: &impl WxDateTime, t2: &impl WxDateTime) -> bool {
         unsafe { sys::wxDateTime_IsBetween(self.as_ptr(), t1.as_ptr(), t2.as_ptr()) != 0 }
     }
 
@@ -346,7 +361,7 @@ impl DateTime {
         unsafe { sys::wxDateTime_IsDST(self.as_ptr(), country as c_int) != 0 }
     }
 
-    pub fn is_dst_applicable(&self, year: i32, country: i32) -> bool {
+    pub fn is_dst_applicable(year: i32, country: i32) -> bool {
         unsafe { sys::wxDateTime_IsDSTApplicable(year as c_int, country as c_int) != 0 }
     }
 
@@ -358,7 +373,7 @@ impl DateTime {
         unsafe { sys::wxDateTime_IsEqualTo(self.as_ptr(), datetime) != 0 }
     }
 
-    pub fn is_equal_up_to(&self, date_time: &impl WxObject, time_span: *mut c_void) -> bool {
+    pub fn is_equal_up_to(&self, date_time: &impl WxDateTime, time_span: *mut c_void) -> bool {
         unsafe { sys::wxDateTime_IsEqualUpTo(self.as_ptr(), date_time.as_ptr(), time_span) != 0 }
     }
 
@@ -366,19 +381,19 @@ impl DateTime {
         unsafe { sys::wxDateTime_IsLaterThan(self.as_ptr(), datetime) != 0 }
     }
 
-    pub fn is_leap_year(&self, year: i32, cal: i32) -> bool {
+    pub fn is_leap_year(year: i32, cal: i32) -> bool {
         unsafe { sys::wxDateTime_IsLeapYear(year as c_int, cal as c_int) != 0 }
     }
 
-    pub fn is_same_date(&self, date_time: &impl WxObject) -> bool {
+    pub fn is_same_date(&self, date_time: &impl WxDateTime) -> bool {
         unsafe { sys::wxDateTime_IsSameDate(self.as_ptr(), date_time.as_ptr()) != 0 }
     }
 
-    pub fn is_same_time(&self, date_time: &impl WxObject) -> bool {
+    pub fn is_same_time(&self, date_time: &impl WxDateTime) -> bool {
         unsafe { sys::wxDateTime_IsSameTime(self.as_ptr(), date_time.as_ptr()) != 0 }
     }
 
-    pub fn is_strictly_between(&self, t1: &impl WxObject, t2: &impl WxObject) -> bool {
+    pub fn is_strictly_between(&self, t1: &impl WxDateTime, t2: &impl WxDateTime) -> bool {
         unsafe { sys::wxDateTime_IsStrictlyBetween(self.as_ptr(), t1.as_ptr(), t2.as_ptr()) != 0 }
     }
 
@@ -386,7 +401,7 @@ impl DateTime {
         unsafe { sys::wxDateTime_IsValid(self.as_ptr()) != 0 }
     }
 
-    pub fn is_west_european_country(&self, country: i32) -> bool {
+    pub fn is_west_european_country(country: i32) -> bool {
         unsafe { sys::wxDateTime_IsWestEuropeanCountry(country as c_int) != 0 }
     }
 
@@ -435,7 +450,7 @@ impl DateTime {
         unsafe { sys::wxDateTime_Set(self.as_ptr(), day as c_int, month as c_int, year as c_int, hour as c_int, minute as c_int, second as c_int, millisec as c_int) }
     }
 
-    pub fn set_country(&self, country: i32) {
+    pub fn set_country(country: i32) {
         unsafe { sys::wxDateTime_SetCountry(country as c_int) }
     }
 
@@ -499,11 +514,11 @@ impl DateTime {
         unsafe { sys::wxDateTime_SetYear(self.as_ptr(), year as c_int) }
     }
 
-    pub fn subtract_date(&self, diff: *mut c_void, ref_: &impl WxObject) {
+    pub fn subtract_date(&self, diff: *mut c_void, ref_: &impl WxDateTime) {
         unsafe { sys::wxDateTime_SubtractDate(self.as_ptr(), diff, ref_.as_ptr()) }
     }
 
-    pub fn subtract_time(&self, diff: *mut c_void, ref_: &impl WxObject) {
+    pub fn subtract_time(&self, diff: *mut c_void, ref_: &impl WxDateTime) {
         unsafe { sys::wxDateTime_SubtractTime(self.as_ptr(), diff, ref_.as_ptr()) }
     }
 
@@ -523,7 +538,7 @@ impl DateTime {
         unsafe { sys::wxDateTime_UNow(self.as_ptr()) }
     }
 
-    pub fn wx_date_time(&self, hi_long: i32, lo_long: i32) -> *mut c_void {
+    pub fn wx_date_time(hi_long: i32, lo_long: i32) -> *mut c_void {
         unsafe { sys::wxDateTime_wxDateTime(hi_long as c_int, lo_long as c_int) }
     }
 

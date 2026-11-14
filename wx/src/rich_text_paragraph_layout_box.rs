@@ -16,6 +16,13 @@ impl RichTextParagraphLayoutBox {
         Self(RichTextCompositeObject::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,6 +46,7 @@ impl WxRichTextCompositeObject for RichTextParagraphLayoutBox {}
 impl WxRichTextObject for RichTextParagraphLayoutBox {}
 impl WxRichTextParagraphLayoutBox for RichTextParagraphLayoutBox {}
 
+use crate::rich_text_buffer::RichTextBuffer;
 use crate::rich_text_ctrl::RichTextCtrl;
 use crate::rich_text_style_sheet::RichTextStyleSheet;
 use crate::support::WxStr;
@@ -61,6 +69,13 @@ impl RichTextParagraphLayoutBox {
         unsafe { sys::wxRichTextParagraphLayoutBox_GetLeafObjectAtPosition(self.as_ptr(), position as c_long) }
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxRichTextParagraphLayoutBox_Delete(self.as_ptr()) }
+    }
+
     pub fn clear(&self) {
         unsafe { sys::wxRichTextParagraphLayoutBox_Clear(self.as_ptr()) }
     }
@@ -69,17 +84,17 @@ impl RichTextParagraphLayoutBox {
         unsafe { sys::wxRichTextParagraphLayoutBox_Reset(self.as_ptr()) }
     }
 
-    pub fn add_paragraph(&self, text: impl AsRef<str>, para_style: &impl WxObject, start: *mut i64, end: *mut i64) {
+    pub fn add_paragraph(&self, text: impl AsRef<str>, para_style: &impl WxRichTextAttr, start: *mut i64, end: *mut i64) {
         let text_wx = WxStr::new(text.as_ref());
         unsafe { sys::wxRichTextParagraphLayoutBox_AddParagraph(self.as_ptr(), text_wx.as_ptr(), para_style.as_ptr(), start as *mut c_long, end as *mut c_long) }
     }
 
-    pub fn add_paragraphs(&self, text: impl AsRef<str>, para_style: &impl WxObject, start: *mut i64, end: *mut i64) {
+    pub fn add_paragraphs(&self, text: impl AsRef<str>, para_style: &impl WxRichTextAttr, start: *mut i64, end: *mut i64) {
         let text_wx = WxStr::new(text.as_ref());
         unsafe { sys::wxRichTextParagraphLayoutBox_AddParagraphs(self.as_ptr(), text_wx.as_ptr(), para_style.as_ptr(), start as *mut c_long, end as *mut c_long) }
     }
 
-    pub fn add_image(&self, image: &impl WxObject, para_style: &impl WxObject, start: *mut i64, end: *mut i64) {
+    pub fn add_image(&self, image: &impl WxImage, para_style: &impl WxRichTextAttr, start: *mut i64, end: *mut i64) {
         unsafe { sys::wxRichTextParagraphLayoutBox_AddImage(self.as_ptr(), image.as_ptr(), para_style.as_ptr(), start as *mut c_long, end as *mut c_long) }
     }
 
@@ -91,15 +106,15 @@ impl RichTextParagraphLayoutBox {
         unsafe { sys::wxRichTextParagraphLayoutBox_DeleteRange(self.as_ptr(), start as c_long, end as c_long) != 0 }
     }
 
-    pub fn set_style(&self, start: i32, end: i32, style: &impl WxObject, flags: i32) -> bool {
+    pub fn set_style(&self, start: i32, end: i32, style: &impl WxRichTextAttr, flags: i32) -> bool {
         unsafe { sys::wxRichTextParagraphLayoutBox_SetStyle(self.as_ptr(), start as c_long, end as c_long, style.as_ptr(), flags as c_int) != 0 }
     }
 
-    pub fn get_style(&self, position: i32, style: &impl WxObject) -> bool {
+    pub fn get_style(&self, position: i32, style: &impl WxRichTextAttr) -> bool {
         unsafe { sys::wxRichTextParagraphLayoutBox_GetStyle(self.as_ptr(), position as c_long, style.as_ptr()) != 0 }
     }
 
-    pub fn get_uncombined_style(&self, position: i32, style: &impl WxObject) -> bool {
+    pub fn get_uncombined_style(&self, position: i32, style: &impl WxRichTextAttr) -> bool {
         unsafe { sys::wxRichTextParagraphLayoutBox_GetUncombinedStyle(self.as_ptr(), position as c_long, style.as_ptr()) != 0 }
     }
 
@@ -119,23 +134,23 @@ impl RichTextParagraphLayoutBox {
         unsafe { sys::wxRichTextParagraphLayoutBox_XYToPosition(self.as_ptr(), x as c_long, y as c_long) as i64 }
     }
 
-    pub fn position_to_xy(&self, position: i32, arg: i32) -> bool {
-        unsafe { sys::wxRichTextParagraphLayoutBox_PositionToXY(self.as_ptr(), position as c_long, arg as c_int) != 0 }
+    pub fn position_to_xy(&self, position: i32, x: *mut c_long, y: *mut c_long) -> bool {
+        unsafe { sys::wxRichTextParagraphLayoutBox_PositionToXY(self.as_ptr(), position as c_long, x, y) != 0 }
     }
 
-    pub fn set_default_style(&self, style: &impl WxObject) -> bool {
+    pub fn set_default_style(&self, style: &impl WxRichTextAttr) -> bool {
         unsafe { sys::wxRichTextParagraphLayoutBox_SetDefaultStyle(self.as_ptr(), style.as_ptr()) != 0 }
     }
 
-    pub fn get_default_style(&self, style: &impl WxObject) {
+    pub fn get_default_style(&self, style: &impl WxRichTextAttr) {
         unsafe { sys::wxRichTextParagraphLayoutBox_GetDefaultStyle(self.as_ptr(), style.as_ptr()) }
     }
 
-    pub fn set_basic_style(&self, style: &impl WxObject) {
+    pub fn set_basic_style(&self, style: &impl WxRichTextAttr) {
         unsafe { sys::wxRichTextParagraphLayoutBox_SetBasicStyle(self.as_ptr(), style.as_ptr()) }
     }
 
-    pub fn get_basic_style(&self, style: &impl WxObject) {
+    pub fn get_basic_style(&self, style: &impl WxRichTextAttr) {
         unsafe { sys::wxRichTextParagraphLayoutBox_GetBasicStyle(self.as_ptr(), style.as_ptr()) }
     }
 
@@ -148,7 +163,7 @@ impl RichTextParagraphLayoutBox {
         }
     }
 
-    pub fn set_rich_text_ctrl(&self, ctrl: &impl WxObject) {
+    pub fn set_rich_text_ctrl(&self, ctrl: &impl WxRichTextCtrl) {
         unsafe { sys::wxRichTextParagraphLayoutBox_SetRichTextCtrl(self.as_ptr(), ctrl.as_ptr()) }
     }
 
@@ -171,6 +186,15 @@ impl RichTextParagraphLayoutBox {
 
     pub fn update_ranges(&self) {
         unsafe { sys::wxRichTextParagraphLayoutBox_UpdateRanges(self.as_ptr()) }
+    }
+
+    pub fn get_buffer(&self) -> Option<RichTextBuffer> {
+        let ptr = unsafe { sys::wxRichTextParagraphLayoutBox_GetBuffer(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(RichTextBuffer::from_raw(ptr))
+        }
     }
 
 }

@@ -1,16 +1,15 @@
 # kwxRust - Rust bindings for wxWidgets via wxFFI
 #
 # This workspace contains:
-# - kwxrust-sys: Raw FFI bindings (extern "C" declarations)
-# - kwxrust: Safe Rust wrappers with RAII and builders
 # - samples/minimal: Port of the wxWidgets minimal sample
 
 [workspace]
 resolver = "2"
 members = [
-    "crates/kwxrust-sys",
-    "crates/kwxrust",
     "samples/minimal",
+    "samples/preferences",
+    "samples/menu",
+    "samples/widgets",
 ]
 
 [workspace.package]

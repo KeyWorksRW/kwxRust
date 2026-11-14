@@ -16,6 +16,13 @@ impl NotificationMessage {
         Self(EvtHandler::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -66,7 +73,14 @@ impl NotificationMessage {
         Self::from_raw(ptr)
     }
 
-    pub fn msw_use_toasts(&self, shortcut_path: impl AsRef<str>, app_id: impl AsRef<str>) -> bool {
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxNotificationMessage_Delete(self.as_ptr()) }
+    }
+
+    pub fn msw_use_toasts(shortcut_path: impl AsRef<str>, app_id: impl AsRef<str>) -> bool {
         let shortcut_path_wx = WxStr::new(shortcut_path.as_ref());
         let app_id_wx = WxStr::new(app_id.as_ref());
         unsafe { sys::wxNotificationMessage_MSWUseToasts(shortcut_path_wx.as_ptr(), app_id_wx.as_ptr()) != 0 }
@@ -76,7 +90,7 @@ impl NotificationMessage {
         unsafe { sys::wxNotificationMessage_SetFlags(self.as_ptr(), flags as c_int) }
     }
 
-    pub fn set_icon(&self, icon: &impl WxObject) {
+    pub fn set_icon(&self, icon: &impl WxIcon) {
         unsafe { sys::wxNotificationMessage_SetIcon(self.as_ptr(), icon.as_ptr()) }
     }
 
@@ -102,7 +116,7 @@ impl NotificationMessage {
         unsafe { sys::wxNotificationMessage_Show(self.as_ptr(), timeout as c_int) != 0 }
     }
 
-    pub fn use_task_bar_icon(&self, icon: &impl WxObject) -> bool {
+    pub fn use_task_bar_icon(icon: &impl WxTaskBarIcon) -> bool {
         unsafe { sys::wxNotificationMessage_UseTaskBarIcon(icon.as_ptr()) != 0 }
     }
 

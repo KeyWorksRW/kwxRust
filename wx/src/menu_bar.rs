@@ -16,6 +16,13 @@ impl MenuBar {
         Self(EvtHandler::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -36,6 +43,7 @@ impl WxObject for MenuBar {
 }
 
 impl WxEvtHandler for MenuBar {}
+impl WxMenuBar for MenuBar {}
 
 use crate::frame::Frame;
 use crate::menu::Menu;
@@ -65,7 +73,7 @@ impl MenuBar {
         unsafe { sys::wxMenuBar_Detach(self.as_ptr()) }
     }
 
-    pub fn append(&self, menu: &impl WxObject, title: impl AsRef<str>) -> i32 {
+    pub fn append(&self, menu: &impl WxMenu, title: impl AsRef<str>) -> i32 {
         let title_wx = WxStr::new(title.as_ref());
         unsafe { sys::wxMenuBar_Append(self.as_ptr(), menu.as_ptr(), title_wx.as_ptr()) as i32 }
     }
@@ -147,7 +155,7 @@ impl MenuBar {
         unsafe { sys::wxMenuBar_GetMenuCount(self.as_ptr()) as i32 }
     }
 
-    pub fn insert(&self, pos: i32, menu: &impl WxObject, title: impl AsRef<str>) -> i32 {
+    pub fn insert(&self, pos: i32, menu: &impl WxMenu, title: impl AsRef<str>) -> i32 {
         let title_wx = WxStr::new(title.as_ref());
         unsafe { sys::wxMenuBar_Insert(self.as_ptr(), pos as c_int, menu.as_ptr(), title_wx.as_ptr()) as i32 }
     }
@@ -169,7 +177,7 @@ impl MenuBar {
         }
     }
 
-    pub fn replace(&self, pos: i32, menu: &impl WxObject, title: impl AsRef<str>) -> Option<Menu> {
+    pub fn replace(&self, pos: i32, menu: &impl WxMenu, title: impl AsRef<str>) -> Option<Menu> {
         let title_wx = WxStr::new(title.as_ref());
         let ptr = unsafe { sys::wxMenuBar_Replace(self.as_ptr(), pos as c_int, menu.as_ptr(), title_wx.as_ptr()) };
         if ptr.is_null() {

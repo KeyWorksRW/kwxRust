@@ -16,6 +16,13 @@ impl SearchCtrl {
         Self(Control::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,6 +45,7 @@ impl WxObject for SearchCtrl {
 impl WxControl for SearchCtrl {}
 impl WxWindow for SearchCtrl {}
 impl WxEvtHandler for SearchCtrl {}
+impl WxSearchCtrl for SearchCtrl {}
 
 use crate::menu::Menu;
 use crate::support::Rect;
@@ -59,7 +67,7 @@ impl SearchCtrl {
         Self::from_raw(ptr)
     }
 
-    pub fn set_menu(&self, menu: &impl WxObject) {
+    pub fn set_menu(&self, menu: &impl WxMenu) {
         unsafe { sys::wxSearchCtrl_SetMenu(self.as_ptr(), menu.as_ptr()) }
     }
 

@@ -16,6 +16,13 @@ impl RibbonBar {
         Self(RibbonControl::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,6 +46,7 @@ impl WxRibbonControl for RibbonBar {}
 impl WxControl for RibbonBar {}
 impl WxWindow for RibbonBar {}
 impl WxEvtHandler for RibbonBar {}
+impl WxRibbonBar for RibbonBar {}
 
 use crate::ribbon_art_provider::RibbonArtProvider;
 use crate::ribbon_page::RibbonPage;
@@ -130,7 +138,7 @@ impl RibbonBar {
         unsafe { sys::wxRibbonBar_SetActivePage_ByIndex(self.as_ptr(), page) }
     }
 
-    pub fn set_active_page_by_ptr(&self, page: &impl WxObject) {
+    pub fn set_active_page_by_ptr(&self, page: &impl WxRibbonPage) {
         unsafe { sys::wxRibbonBar_SetActivePage_ByPtr(self.as_ptr(), page.as_ptr()) }
     }
 
@@ -138,7 +146,7 @@ impl RibbonBar {
         unsafe { sys::wxRibbonBar_Realize(self.as_ptr()) != 0 }
     }
 
-    pub fn set_art_provider(&self, art: &impl WxObject) {
+    pub fn set_art_provider(&self, art: &impl WxRibbonArtProvider) {
         unsafe { sys::wxRibbonBar_SetArtProvider(self.as_ptr(), art.as_ptr()) }
     }
 

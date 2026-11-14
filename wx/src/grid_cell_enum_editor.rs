@@ -16,6 +16,13 @@ impl GridCellEnumEditor {
         Self(GridCellChoiceEditor::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,11 +45,12 @@ impl WxObject for GridCellEnumEditor {
 impl WxGridCellChoiceEditor for GridCellEnumEditor {}
 impl WxGridCellEditor for GridCellEnumEditor {}
 impl WxGridCellWorker for GridCellEnumEditor {}
+impl WxGridCellEnumEditor for GridCellEnumEditor {}
 
 use crate::support::WxStr;
 
 impl GridCellEnumEditor {
-    pub fn ctor(&self, choices: impl AsRef<str>) -> Option<GridCellEnumEditor> {
+    pub fn ctor(choices: impl AsRef<str>) -> Option<GridCellEnumEditor> {
         let choices_wx = WxStr::new(choices.as_ref());
         let ptr = unsafe { sys::wxGridCellEnumEditor_Ctor(choices_wx.as_ptr()) };
         if ptr.is_null() {
@@ -59,6 +67,13 @@ impl GridCellEnumEditor {
     pub fn set_parameters(&self, params: impl AsRef<str>) {
         let params_wx = WxStr::new(params.as_ref());
         unsafe { sys::wxGridCellEnumEditor_SetParameters(self.as_ptr(), params_wx.as_ptr()) }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxGridCellEnumEditor_Delete(self.as_ptr()) }
     }
 
 }

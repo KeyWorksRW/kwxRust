@@ -16,6 +16,13 @@ impl AuiTabCtrl {
         Self(Control::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,6 +45,7 @@ impl WxObject for AuiTabCtrl {
 impl WxControl for AuiTabCtrl {}
 impl WxWindow for AuiTabCtrl {}
 impl WxEvtHandler for AuiTabCtrl {}
+impl WxAuiTabCtrl for AuiTabCtrl {}
 
 use crate::aui_notebook_page::AuiNotebookPage;
 use crate::aui_notebook_page_array::AuiNotebookPageArray;
@@ -66,11 +74,11 @@ impl AuiTabCtrl {
         unsafe { sys::wxAuiTabCtrl_GetFlags(self.as_ptr()) as i32 }
     }
 
-    pub fn add_page(&self, page: &impl WxWindow, info: &impl WxObject) -> bool {
+    pub fn add_page(&self, page: &impl WxWindow, info: &impl WxAuiNotebookPage) -> bool {
         unsafe { sys::wxAuiTabCtrl_AddPage(self.as_ptr(), page.as_ptr(), info.as_ptr()) != 0 }
     }
 
-    pub fn insert_page(&self, page: &impl WxWindow, info: &impl WxObject, idx: usize) -> bool {
+    pub fn insert_page(&self, page: &impl WxWindow, info: &impl WxAuiNotebookPage, idx: usize) -> bool {
         unsafe { sys::wxAuiTabCtrl_InsertPage(self.as_ptr(), page.as_ptr(), info.as_ptr(), idx) != 0 }
     }
 
@@ -133,23 +141,23 @@ impl AuiTabCtrl {
         }
     }
 
-    pub fn set_normal_font(&self, normal_font: &impl WxObject) {
+    pub fn set_normal_font(&self, normal_font: &impl WxFont) {
         unsafe { sys::wxAuiTabCtrl_SetNormalFont(self.as_ptr(), normal_font.as_ptr()) }
     }
 
-    pub fn set_selected_font(&self, selected_font: &impl WxObject) {
+    pub fn set_selected_font(&self, selected_font: &impl WxFont) {
         unsafe { sys::wxAuiTabCtrl_SetSelectedFont(self.as_ptr(), selected_font.as_ptr()) }
     }
 
-    pub fn set_measuring_font(&self, measuring_font: &impl WxObject) {
+    pub fn set_measuring_font(&self, measuring_font: &impl WxFont) {
         unsafe { sys::wxAuiTabCtrl_SetMeasuringFont(self.as_ptr(), measuring_font.as_ptr()) }
     }
 
-    pub fn set_colour(&self, colour: &impl WxObject) {
+    pub fn set_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxAuiTabCtrl_SetColour(self.as_ptr(), colour.as_ptr()) }
     }
 
-    pub fn set_active_colour(&self, colour: &impl WxObject) {
+    pub fn set_active_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxAuiTabCtrl_SetActiveColour(self.as_ptr(), colour.as_ptr()) }
     }
 
@@ -157,7 +165,7 @@ impl AuiTabCtrl {
         unsafe { sys::wxAuiTabCtrl_DoShowHide(self.as_ptr()) }
     }
 
-    pub fn set_rect(&self, rect: &impl WxObject) {
+    pub fn set_rect(&self, rect: &impl WxRect) {
         unsafe { sys::wxAuiTabCtrl_SetRect(self.as_ptr(), rect.as_ptr()) }
     }
 

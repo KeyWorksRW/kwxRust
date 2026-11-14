@@ -16,6 +16,13 @@ impl NumberFormatter {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,56 +42,57 @@ impl WxObject for NumberFormatter {
     }
 }
 
+impl WxNumberFormatter for NumberFormatter {}
 use crate::support::WxStr;
 use crate::support::take_string;
 
 impl NumberFormatter {
-    pub fn to_string_long(&self, value: i32, style: i32) -> String {
+    pub fn to_string_long(value: i32, style: i32) -> String {
         take_string(unsafe { sys::wxNumberFormatter_ToStringLong(value as c_long, style as c_int) })
     }
 
-    pub fn to_string(&self, val: i32, style: i32) -> String {
+    pub fn to_string(val: i32, style: i32) -> String {
         take_string(unsafe { sys::wxNumberFormatter_ToString(val as c_long, style as c_int) })
     }
 
-    pub fn format(&self, format: impl AsRef<str>, value: f64) -> String {
+    pub fn format(format: impl AsRef<str>, value: f64) -> String {
         let format_wx = WxStr::new(format.as_ref());
         take_string(unsafe { sys::wxNumberFormatter_Format(format_wx.as_ptr(), value as c_double) })
     }
 
-    pub fn from_string_long(&self, text: impl AsRef<str>, value: *mut i64) -> bool {
+    pub fn from_string_long(text: impl AsRef<str>, value: *mut i64) -> bool {
         let text_wx = WxStr::new(text.as_ref());
         unsafe { sys::wxNumberFormatter_FromStringLong(text_wx.as_ptr(), value as *mut c_long) != 0 }
     }
 
-    pub fn from_string_double(&self, text: impl AsRef<str>, value: *mut f64) -> bool {
+    pub fn from_string_double(text: impl AsRef<str>, value: *mut f64) -> bool {
         let text_wx = WxStr::new(text.as_ref());
         unsafe { sys::wxNumberFormatter_FromStringDouble(text_wx.as_ptr(), value as *mut c_double) != 0 }
     }
 
-    pub fn remove_trailing_zeroes(&self, text: impl AsRef<str>) {
+    pub fn remove_trailing_zeroes(text: impl AsRef<str>) {
         let text_wx = WxStr::new(text.as_ref());
         unsafe { sys::wxNumberFormatter_RemoveTrailingZeroes(text_wx.as_ptr()) }
     }
 
-    pub fn remove_currency_symbol_or_code(&self, text: impl AsRef<str>, style: i32) -> String {
+    pub fn remove_currency_symbol_or_code(text: impl AsRef<str>, style: i32) -> String {
         let text_wx = WxStr::new(text.as_ref());
         take_string(unsafe { sys::wxNumberFormatter_RemoveCurrencySymbolOrCode(text_wx.as_ptr(), style as c_int) })
     }
 
-    pub fn get_decimal_separator(&self) -> String {
+    pub fn get_decimal_separator() -> String {
         take_string(unsafe { sys::wxNumberFormatter_GetDecimalSeparator() })
     }
 
-    pub fn get_thousands_separator(&self) -> String {
+    pub fn get_thousands_separator() -> String {
         take_string(unsafe { sys::wxNumberFormatter_GetThousandsSeparator() })
     }
 
-    pub fn to_string_double(&self, value: f64, precision: i32, style: i32) -> String {
+    pub fn to_string_double(value: f64, precision: i32, style: i32) -> String {
         take_string(unsafe { sys::wxNumberFormatter_ToStringDouble(value as c_double, precision as c_int, style as c_int) })
     }
 
-    pub fn to_string_long_long(&self, value: i32, style: i32) -> String {
+    pub fn to_string_long_long(value: i32, style: i32) -> String {
         take_string(unsafe { sys::wxNumberFormatter_ToStringLongLong(value as c_int, style as c_int) })
     }
 

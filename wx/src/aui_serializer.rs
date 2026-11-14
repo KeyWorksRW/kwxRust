@@ -4,16 +4,23 @@
 
 use std::os::raw::*;
 
-use crate::aui_serializer::AuiSerializer;
+use crate::object::Object;
 use crate::sys;
 use crate::traits::*;
 
 #[derive(Copy, Clone)]
-pub struct AuiSerializer(pub(crate) AuiSerializer);
+pub struct AuiSerializer(pub(crate) Object);
 
 impl AuiSerializer {
     pub(crate) const fn from_raw(ptr: *mut c_void) -> Self {
-        Self(AuiSerializer::from_raw(ptr))
+        Self(Object::from_raw(ptr))
+    }
+
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
     }
 
     pub fn as_ptr(&self) -> *mut c_void {
@@ -22,9 +29,9 @@ impl AuiSerializer {
 }
 
 impl std::ops::Deref for AuiSerializer {
-    type Target = AuiSerializer;
+    type Target = Object;
 
-    fn deref(&self) -> &AuiSerializer {
+    fn deref(&self) -> &Object {
         &self.0
     }
 }
@@ -36,7 +43,6 @@ impl WxObject for AuiSerializer {
 }
 
 impl WxAuiSerializer for AuiSerializer {}
-
 impl AuiSerializer {
     pub fn new(p_object: *mut c_void) -> Self {
         let ptr = unsafe { sys::kwxAuiSerializer_Create(p_object) };
@@ -48,6 +54,13 @@ impl AuiSerializer {
         let ptr = unsafe { sys::kwxAuiSerializer_Create(p_object) };
         assert!(!ptr.is_null(), "kwxAuiSerializer_Create returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::kwxAuiSerializer_Delete(self.as_ptr()) }
     }
 
     pub fn set_on_before_save(&self, p_function: *mut c_void) {

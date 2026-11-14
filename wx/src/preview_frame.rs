@@ -16,6 +16,13 @@ impl PreviewFrame {
         Self(Frame::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -47,7 +54,7 @@ use crate::support::Rect;
 use crate::support::WxStr;
 
 impl PreviewFrame {
-    pub fn new(preview: &impl WxObject, parent: &impl WxFrame, title: impl AsRef<str>, x: i32, y: i32, width: i32, height: i32, name: impl AsRef<str>) -> Self {
+    pub fn new(preview: &impl WxPrintPreview, parent: &impl WxFrame, title: impl AsRef<str>, x: i32, y: i32, width: i32, height: i32, name: impl AsRef<str>) -> Self {
         let title_wx = WxStr::new(title.as_ref());
         let name_wx = WxStr::new(name.as_ref());
         let ptr = unsafe { sys::wxPreviewFrame_Create(preview.as_ptr(), parent.as_ptr(), title_wx.as_ptr(), x as c_int, y as c_int, width as c_int, height as c_int, 0, name_wx.as_ptr()) };
@@ -55,7 +62,7 @@ impl PreviewFrame {
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(preview: &impl WxObject, parent: &impl WxFrame, title: impl AsRef<str>, x: i32, y: i32, width: i32, height: i32, style: i32, name: impl AsRef<str>) -> Self {
+    pub fn new_full(preview: &impl WxPrintPreview, parent: &impl WxFrame, title: impl AsRef<str>, x: i32, y: i32, width: i32, height: i32, style: i32, name: impl AsRef<str>) -> Self {
         let title_wx = WxStr::new(title.as_ref());
         let name_wx = WxStr::new(name.as_ref());
         let ptr = unsafe { sys::wxPreviewFrame_Create(preview.as_ptr(), parent.as_ptr(), title_wx.as_ptr(), x as c_int, y as c_int, width as c_int, height as c_int, style as c_int, name_wx.as_ptr()) };
@@ -67,8 +74,23 @@ impl PreviewFrame {
         unsafe { sys::wxPreviewFrame_InitializeWithModality(self.as_ptr(), kind as c_int) }
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxPreviewFrame_Delete(self.as_ptr()) }
+    }
+
     pub fn initialize(&self) {
         unsafe { sys::wxPreviewFrame_Initialize(self.as_ptr()) }
+    }
+
+    /// Alternative constructor wrapping `kwxPreviewFrame_Create`; takes every
+    /// declared parameter.  `new`/`new_full` wrap the wxWidgets-own constructor.
+    pub fn new_with_state(p_object: *mut c_void, init: *mut c_void, create_canvas: *mut c_void, create_toolbar: *mut c_void, preview: *mut c_void, parent: &impl WxWindow, title: *mut c_void, rect: Rect, style: i32) -> Self {
+        let ptr = unsafe { sys::kwxPreviewFrame_Create(p_object, init, create_canvas, create_toolbar, preview, parent.as_ptr(), title, rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int, style as c_int) };
+        assert!(!ptr.is_null(), "kwxPreviewFrame_Create returned null");
+        Self::from_raw(ptr)
     }
 
     pub fn get_control_bar(&self) -> *mut c_void {
@@ -97,11 +119,11 @@ impl PreviewFrame {
         unsafe { sys::kwxPreviewFrame_SetControlBar(self.as_ptr(), obj) }
     }
 
-    pub fn set_preview_canvas(&self, obj: &impl WxObject) {
+    pub fn set_preview_canvas(&self, obj: &impl WxPreviewCanvas) {
         unsafe { sys::kwxPreviewFrame_SetPreviewCanvas(self.as_ptr(), obj.as_ptr()) }
     }
 
-    pub fn set_print_preview(&self, obj: &impl WxObject) {
+    pub fn set_print_preview(&self, obj: &impl WxPrintPreview) {
         unsafe { sys::kwxPreviewFrame_SetPrintPreview(self.as_ptr(), obj.as_ptr()) }
     }
 

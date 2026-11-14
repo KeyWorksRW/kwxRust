@@ -16,6 +16,13 @@ impl SingleChoiceDialog {
         Self(Dialog::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,12 +46,13 @@ impl WxDialog for SingleChoiceDialog {}
 impl WxTopLevelWindow for SingleChoiceDialog {}
 impl WxWindow for SingleChoiceDialog {}
 impl WxEvtHandler for SingleChoiceDialog {}
+impl WxSingleChoiceDialog for SingleChoiceDialog {}
 
 use crate::support::WxStr;
 use crate::support::take_string;
 
 impl SingleChoiceDialog {
-    pub fn new(parent: &impl WxWindow, message: impl AsRef<str>, caption: impl AsRef<str>, choices: &impl WxObject) -> Self {
+    pub fn new(parent: &impl WxWindow, message: impl AsRef<str>, caption: impl AsRef<str>, choices: &impl WxArrayString) -> Self {
         let message_wx = WxStr::new(message.as_ref());
         let caption_wx = WxStr::new(caption.as_ref());
         let ptr = unsafe { sys::wxSingleChoiceDialog_Create(parent.as_ptr(), message_wx.as_ptr(), caption_wx.as_ptr(), choices.as_ptr(), 0) };
@@ -52,12 +60,19 @@ impl SingleChoiceDialog {
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(parent: &impl WxWindow, message: impl AsRef<str>, caption: impl AsRef<str>, choices: &impl WxObject, style: i32) -> Self {
+    pub fn new_full(parent: &impl WxWindow, message: impl AsRef<str>, caption: impl AsRef<str>, choices: &impl WxArrayString, style: i32) -> Self {
         let message_wx = WxStr::new(message.as_ref());
         let caption_wx = WxStr::new(caption.as_ref());
         let ptr = unsafe { sys::wxSingleChoiceDialog_Create(parent.as_ptr(), message_wx.as_ptr(), caption_wx.as_ptr(), choices.as_ptr(), style as c_int) };
         assert!(!ptr.is_null(), "wxSingleChoiceDialog_Create returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxSingleChoiceDialog_Delete(self.as_ptr()) }
     }
 
     pub fn set_selection(&self, selection: i32) {

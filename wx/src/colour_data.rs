@@ -16,6 +16,13 @@ impl ColourData {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for ColourData {
     }
 }
 
+impl WxColourData for ColourData {}
 
 impl ColourData {
     pub fn new() -> Self {
@@ -53,15 +61,22 @@ impl ColourData {
         unsafe { sys::wxColourData_SetChooseAlpha(self.as_ptr(), flag as c_int) }
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxColourData_Delete(self.as_ptr()) }
+    }
+
     pub fn get_choose_full(&self) -> bool {
         unsafe { sys::wxColourData_GetChooseFull(self.as_ptr()) != 0 }
     }
 
-    pub fn get_colour(&self, ref_: &impl WxObject) {
+    pub fn get_colour(&self, ref_: &impl WxColour) {
         unsafe { sys::wxColourData_GetColour(self.as_ptr(), ref_.as_ptr()) }
     }
 
-    pub fn get_custom_colour(&self, index: i32, ref_: &impl WxObject) {
+    pub fn get_custom_colour(&self, index: i32, ref_: &impl WxColour) {
         unsafe { sys::wxColourData_GetCustomColour(self.as_ptr(), index as c_int, ref_.as_ptr()) }
     }
 
@@ -69,11 +84,11 @@ impl ColourData {
         unsafe { sys::wxColourData_SetChooseFull(self.as_ptr(), flag as c_int) }
     }
 
-    pub fn set_colour(&self, colour: &impl WxObject) {
+    pub fn set_colour(&self, colour: &impl WxColour) {
         unsafe { sys::wxColourData_SetColour(self.as_ptr(), colour.as_ptr()) }
     }
 
-    pub fn set_custom_colour(&self, index: i32, colour: &impl WxObject) {
+    pub fn set_custom_colour(&self, index: i32, colour: &impl WxColour) {
         unsafe { sys::wxColourData_SetCustomColour(self.as_ptr(), index as c_int, colour.as_ptr()) }
     }
 

@@ -16,6 +16,13 @@ impl FontEnumerator {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for FontEnumerator {
     }
 }
 
+impl WxFontEnumerator for FontEnumerator {}
 use crate::support::WxStr;
 
 impl FontEnumerator {
@@ -48,6 +56,13 @@ impl FontEnumerator {
         let ptr = unsafe { sys::wxFontEnumerator_Create(p_object, p_function) };
         assert!(!ptr.is_null(), "wxFontEnumerator_Create returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxFontEnumerator_Delete(self.as_ptr()) }
     }
 
     pub fn enumerate_encodings(&self, facename: impl AsRef<str>) -> bool {
@@ -65,11 +80,11 @@ impl FontEnumerator {
         Self::from_raw(ptr)
     }
 
-    pub fn enumerate_facenames_to_array(&self, encoding: i32, fixed_width_only: bool, out: &impl WxObject) -> i32 {
+    pub fn enumerate_facenames_to_array(&self, encoding: i32, fixed_width_only: bool, out: &impl WxArrayString) -> i32 {
         unsafe { sys::wxFontEnumerator_EnumerateFacenamesToArray(self.as_ptr(), encoding as c_int, fixed_width_only as c_int, out.as_ptr()) as i32 }
     }
 
-    pub fn enumerate_encodings_to_array(&self, facename: impl AsRef<str>, out: &impl WxObject) -> i32 {
+    pub fn enumerate_encodings_to_array(&self, facename: impl AsRef<str>, out: &impl WxArrayString) -> i32 {
         let facename_wx = WxStr::new(facename.as_ref());
         unsafe { sys::wxFontEnumerator_EnumerateEncodingsToArray(self.as_ptr(), facename_wx.as_ptr(), out.as_ptr()) as i32 }
     }

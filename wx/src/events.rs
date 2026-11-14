@@ -1043,6 +1043,11 @@ pub fn EVT_MENU_HIGHLIGHT() -> i32 {
 }
 
 #[inline]
+pub fn EVT_MENU_HIGHLIGHT_ALL() -> i32 {
+    unsafe { sys::exp_wxEVT_MENU_HIGHLIGHT_ALL() as i32 }
+}
+
+#[inline]
 pub fn EVT_MENU_OPEN() -> i32 {
     unsafe { sys::exp_wxEVT_MENU_OPEN() as i32 }
 }
@@ -1988,6 +1993,11 @@ pub fn EVT_WINDOW_MODAL_DIALOG_CLOSED() -> i32 {
 }
 
 #[inline]
+pub fn EVT_WIZARD_BEFORE_PAGE_CHANGED() -> i32 {
+    unsafe { sys::exp_wxEVT_WIZARD_BEFORE_PAGE_CHANGED() as i32 }
+}
+
+#[inline]
 pub fn EVT_WIZARD_CANCEL() -> i32 {
     unsafe { sys::exp_wxEVT_WIZARD_CANCEL() as i32 }
 }
@@ -2236,6 +2246,7 @@ mod drift {
         assert!(EVT_MENU() >= 10000, "EVT_MENU is not a wx event type");
         assert!(EVT_MENU_CLOSE() >= 10000, "EVT_MENU_CLOSE is not a wx event type");
         assert!(EVT_MENU_HIGHLIGHT() >= 10000, "EVT_MENU_HIGHLIGHT is not a wx event type");
+        assert!(EVT_MENU_HIGHLIGHT_ALL() >= 10000, "EVT_MENU_HIGHLIGHT_ALL is not a wx event type");
         assert!(EVT_MENU_OPEN() >= 10000, "EVT_MENU_OPEN is not a wx event type");
         assert!(EVT_MIDDLE_DCLICK() >= 10000, "EVT_MIDDLE_DCLICK is not a wx event type");
         assert!(EVT_MIDDLE_DOWN() >= 10000, "EVT_MIDDLE_DOWN is not a wx event type");
@@ -2425,6 +2436,7 @@ mod drift {
         assert!(EVT_WEBVIEW_TITLE_CHANGED() >= 10000, "EVT_WEBVIEW_TITLE_CHANGED is not a wx event type");
         assert!(EVT_WEBVIEW_WINDOW_CLOSE_REQUESTED() >= 10000, "EVT_WEBVIEW_WINDOW_CLOSE_REQUESTED is not a wx event type");
         assert!(EVT_WINDOW_MODAL_DIALOG_CLOSED() >= 10000, "EVT_WINDOW_MODAL_DIALOG_CLOSED is not a wx event type");
+        assert!(EVT_WIZARD_BEFORE_PAGE_CHANGED() >= 10000, "EVT_WIZARD_BEFORE_PAGE_CHANGED is not a wx event type");
         assert!(EVT_WIZARD_CANCEL() >= 10000, "EVT_WIZARD_CANCEL is not a wx event type");
         assert!(EVT_WIZARD_FINISHED() >= 10000, "EVT_WIZARD_FINISHED is not a wx event type");
         assert!(EVT_WIZARD_HELP() >= 10000, "EVT_WIZARD_HELP is not a wx event type");

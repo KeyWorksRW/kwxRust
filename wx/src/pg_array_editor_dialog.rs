@@ -16,6 +16,13 @@ impl PGArrayEditorDialog {
         Self(Dialog::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,12 +46,13 @@ impl WxDialog for PGArrayEditorDialog {}
 impl WxTopLevelWindow for PGArrayEditorDialog {}
 impl WxWindow for PGArrayEditorDialog {}
 impl WxEvtHandler for PGArrayEditorDialog {}
+impl WxPGArrayEditorDialog for PGArrayEditorDialog {}
 
 use crate::support::WxStr;
 use crate::variant::Variant;
 
 impl PGArrayEditorDialog {
-    pub fn set_dialog_value(&self, value: &impl WxObject) {
+    pub fn set_dialog_value(&self, value: &impl WxVariant) {
         unsafe { sys::wxPGArrayEditorDialog_SetDialogValue(self.as_ptr(), value.as_ptr()) }
     }
 

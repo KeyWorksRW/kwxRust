@@ -16,6 +16,13 @@ impl Thread {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for Thread {
     }
 }
 
+impl WxThread for Thread {}
 impl Thread {
     pub fn new(p_object: *mut c_void, entry_func: *mut c_void, flags: i32) -> Self {
         let ptr = unsafe { sys::wxThread_Create(p_object, entry_func, flags as c_int) };
@@ -48,15 +56,15 @@ impl Thread {
         Self::from_raw(ptr)
     }
 
-    pub fn get_cpu_count(&self) -> i32 {
+    pub fn get_cpu_count() -> i32 {
         unsafe { sys::wxThread_GetCPUCount() as i32 }
     }
 
-    pub fn get_current_id(&self) -> i32 {
+    pub fn get_current_id() -> i32 {
         unsafe { sys::wxThread_GetCurrentId() as i32 }
     }
 
-    pub fn get_main_id(&self) -> i32 {
+    pub fn get_main_id() -> i32 {
         unsafe { sys::wxThread_GetMainId() as i32 }
     }
 
@@ -64,8 +72,15 @@ impl Thread {
         unsafe { sys::wxThread_IsPaused(self.as_ptr()) != 0 }
     }
 
-    pub fn sleep(&self, milliseconds: u64) {
+    pub fn sleep(milliseconds: u64) {
         unsafe { sys::wxThread_Sleep(milliseconds as c_ulong) }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxThread_Delete(self.as_ptr()) }
     }
 
     pub fn start(&self) -> i32 {

@@ -16,6 +16,13 @@ impl RibbonGalleryEvent {
         Self(CommandEvent::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -37,6 +44,7 @@ impl WxObject for RibbonGalleryEvent {
 
 impl WxCommandEvent for RibbonGalleryEvent {}
 impl WxEvent for RibbonGalleryEvent {}
+impl WxRibbonGalleryEvent for RibbonGalleryEvent {}
 
 use crate::ribbon_gallery::RibbonGallery;
 use crate::ribbon_gallery_item::RibbonGalleryItem;
@@ -60,11 +68,11 @@ impl RibbonGalleryEvent {
         }
     }
 
-    pub fn set_gallery(&self, gallery: &impl WxObject) {
+    pub fn set_gallery(&self, gallery: &impl WxRibbonGallery) {
         unsafe { sys::wxRibbonGalleryEvent_SetGallery(self.as_ptr(), gallery.as_ptr()) }
     }
 
-    pub fn set_gallery_item(&self, item: &impl WxObject) {
+    pub fn set_gallery_item(&self, item: &impl WxRibbonGalleryItem) {
         unsafe { sys::wxRibbonGalleryEvent_SetGalleryItem(self.as_ptr(), item.as_ptr()) }
     }
 

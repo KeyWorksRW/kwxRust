@@ -16,6 +16,13 @@ impl WizardEvent {
         Self(NotifyEvent::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,10 +45,22 @@ impl WxObject for WizardEvent {
 impl WxNotifyEvent for WizardEvent {}
 impl WxCommandEvent for WizardEvent {}
 impl WxEvent for WizardEvent {}
+impl WxWizardEvent for WizardEvent {}
+
+use crate::wizard_page::WizardPage;
 
 impl WizardEvent {
     pub fn get_direction(&self) -> i32 {
         unsafe { sys::wxWizardEvent_GetDirection(self.as_ptr()) as i32 }
+    }
+
+    pub fn get_page(&self) -> Option<WizardPage> {
+        let ptr = unsafe { sys::wxWizardEvent_GetPage(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(WizardPage::from_raw(ptr))
+        }
     }
 
 }

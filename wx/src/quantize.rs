@@ -16,6 +16,13 @@ impl Quantize {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for Quantize {
     }
 }
 
+impl WxQuantize for Quantize {}
 
 impl Quantize {
     pub fn new() -> Self {
@@ -49,7 +57,14 @@ impl Quantize {
         Self::from_raw(ptr)
     }
 
-    pub fn quantize(&self, src: &impl WxObject, dest: &impl WxObject, desired_no_colours: i32, flags: i32) -> bool {
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxQuantize_Delete(self.as_ptr()) }
+    }
+
+    pub fn quantize(src: &impl WxImage, dest: &impl WxImage, desired_no_colours: i32, flags: i32) -> bool {
         unsafe { sys::wxQuantize_Quantize(src.as_ptr(), dest.as_ptr(), desired_no_colours as c_int, flags as c_int) != 0 }
     }
 

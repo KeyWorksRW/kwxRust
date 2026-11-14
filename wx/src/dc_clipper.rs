@@ -16,6 +16,13 @@ impl DCClipper {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for DCClipper {
     }
 }
 
+impl WxDCClipper for DCClipper {}
 impl DCClipper {
     pub fn new(dc: &impl WxDC, x: i32, y: i32, width: i32, height: i32) -> Self {
         let ptr = unsafe { sys::wxDCClipper_Create(dc.as_ptr(), x as c_int, y as c_int, width as c_int, height as c_int) };
@@ -48,16 +56,23 @@ impl DCClipper {
         Self::from_raw(ptr)
     }
 
-    pub fn create_from_rect(dc: &impl WxDC, rect: &impl WxObject) -> Self {
+    pub fn create_from_rect(dc: &impl WxDC, rect: &impl WxRect) -> Self {
         let ptr = unsafe { sys::wxDCClipper_CreateFromRect(dc.as_ptr(), rect.as_ptr()) };
         assert!(!ptr.is_null(), "wxDCClipper_CreateFromRect returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn create_from_region(dc: &impl WxDC, region: &impl WxObject) -> Self {
+    pub fn create_from_region(dc: &impl WxDC, region: &impl WxRegion) -> Self {
         let ptr = unsafe { sys::wxDCClipper_CreateFromRegion(dc.as_ptr(), region.as_ptr()) };
         assert!(!ptr.is_null(), "wxDCClipper_CreateFromRegion returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxDCClipper_Delete(self.as_ptr()) }
     }
 
 }

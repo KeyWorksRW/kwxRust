@@ -16,6 +16,13 @@ impl TimePickerCtrl {
         Self(Control::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,25 +45,26 @@ impl WxObject for TimePickerCtrl {
 impl WxControl for TimePickerCtrl {}
 impl WxWindow for TimePickerCtrl {}
 impl WxEvtHandler for TimePickerCtrl {}
+impl WxTimePickerCtrl for TimePickerCtrl {}
 
 impl TimePickerCtrl {
-    pub fn new(parent: &impl WxWindow, date: &impl WxObject, x: i32, y: i32, width: i32, height: i32) -> Self {
+    pub fn new(parent: &impl WxWindow, date: &impl WxDateTime, x: i32, y: i32, width: i32, height: i32) -> Self {
         let ptr = unsafe { sys::wxTimePickerCtrl_Create(parent.as_ptr(), -1, date.as_ptr(), x as c_int, y as c_int, width as c_int, height as c_int, 0) };
         assert!(!ptr.is_null(), "wxTimePickerCtrl_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(parent: &impl WxWindow, id: i32, date: &impl WxObject, x: i32, y: i32, width: i32, height: i32, style: i32) -> Self {
+    pub fn new_full(parent: &impl WxWindow, id: i32, date: &impl WxDateTime, x: i32, y: i32, width: i32, height: i32, style: i32) -> Self {
         let ptr = unsafe { sys::wxTimePickerCtrl_Create(parent.as_ptr(), id as c_int, date.as_ptr(), x as c_int, y as c_int, width as c_int, height as c_int, style as c_long) };
         assert!(!ptr.is_null(), "wxTimePickerCtrl_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn set_value(&self, date_time: &impl WxObject) {
+    pub fn set_value(&self, date_time: &impl WxDateTime) {
         unsafe { sys::wxTimePickerCtrl_SetValue(self.as_ptr(), date_time.as_ptr()) }
     }
 
-    pub fn get_value(&self, date_time: &impl WxObject) {
+    pub fn get_value(&self, date_time: &impl WxDateTime) {
         unsafe { sys::wxTimePickerCtrl_GetValue(self.as_ptr(), date_time.as_ptr()) }
     }
 

@@ -16,6 +16,13 @@ impl AuiMDIChildFrame {
         Self(Frame::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,6 +46,7 @@ impl WxFrame for AuiMDIChildFrame {}
 impl WxTopLevelWindow for AuiMDIChildFrame {}
 impl WxWindow for AuiMDIChildFrame {}
 impl WxEvtHandler for AuiMDIChildFrame {}
+impl WxAuiMDIChildFrame for AuiMDIChildFrame {}
 
 use crate::icon::Icon;
 use crate::icon_bundle::IconBundle;
@@ -51,14 +59,14 @@ use crate::tool_bar::ToolBar;
 use crate::window::Window;
 
 impl AuiMDIChildFrame {
-    pub fn new(parent: &impl WxObject, title: impl AsRef<str>) -> Self {
+    pub fn new(parent: &impl WxAuiMDIParentFrame, title: impl AsRef<str>) -> Self {
         let title_wx = WxStr::new(title.as_ref());
         let ptr = unsafe { sys::wxAuiMDIChildFrame_Create(parent.as_ptr(), -1, title_wx.as_ptr(), Rect::default().x as c_int, Rect::default().y as c_int, Rect::default().width as c_int, Rect::default().height as c_int, 0) };
         assert!(!ptr.is_null(), "wxAuiMDIChildFrame_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(parent: &impl WxObject, id: i32, title: impl AsRef<str>, rect: Rect, style: i32) -> Self {
+    pub fn new_full(parent: &impl WxAuiMDIParentFrame, id: i32, title: impl AsRef<str>, rect: Rect, style: i32) -> Self {
         let title_wx = WxStr::new(title.as_ref());
         let ptr = unsafe { sys::wxAuiMDIChildFrame_Create(parent.as_ptr(), id as c_int, title_wx.as_ptr(), rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int, style as c_int) };
         assert!(!ptr.is_null(), "wxAuiMDIChildFrame_Create returned null");
@@ -78,7 +86,7 @@ impl AuiMDIChildFrame {
         }
     }
 
-    pub fn set_menu_bar(&self, menu_bar: &impl WxObject) {
+    pub fn set_menu_bar(&self, menu_bar: &impl WxMenuBar) {
         unsafe { sys::wxAuiMDIChildFrame_SetMenuBar(self.as_ptr(), menu_bar.as_ptr()) }
     }
 
@@ -127,7 +135,7 @@ impl AuiMDIChildFrame {
         take_string(unsafe { sys::wxAuiMDIChildFrame_GetTitle(self.as_ptr()) })
     }
 
-    pub fn set_icons(&self, icons: &impl WxObject) {
+    pub fn set_icons(&self, icons: &impl WxIconBundle) {
         unsafe { sys::wxAuiMDIChildFrame_SetIcons(self.as_ptr(), icons.as_ptr()) }
     }
 
@@ -140,7 +148,7 @@ impl AuiMDIChildFrame {
         }
     }
 
-    pub fn set_icon(&self, icon: &impl WxObject) {
+    pub fn set_icon(&self, icon: &impl WxIcon) {
         unsafe { sys::wxAuiMDIChildFrame_SetIcon(self.as_ptr(), icon.as_ptr()) }
     }
 

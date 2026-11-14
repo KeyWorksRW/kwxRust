@@ -16,6 +16,13 @@ impl ListView {
         Self(ListCtrl::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,6 +46,7 @@ impl WxListCtrl for ListView {}
 impl WxControl for ListView {}
 impl WxWindow for ListView {}
 impl WxEvtHandler for ListView {}
+impl WxListView for ListView {}
 
 use crate::combo_ctrl::ComboCtrl;
 use crate::support::Rect;
@@ -135,11 +143,11 @@ impl ListView {
         unsafe { sys::wxComboPopup_PaintComboControl(self.as_ptr(), dc.as_ptr(), rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int) }
     }
 
-    pub fn on_combo_key_event(&self, event: &impl WxObject) {
+    pub fn on_combo_key_event(&self, event: &impl WxKeyEvent) {
         unsafe { sys::wxComboPopup_OnComboKeyEvent(self.as_ptr(), event.as_ptr()) }
     }
 
-    pub fn on_combo_char_event(&self, event: &impl WxObject) {
+    pub fn on_combo_char_event(&self, event: &impl WxKeyEvent) {
         unsafe { sys::wxComboPopup_OnComboCharEvent(self.as_ptr(), event.as_ptr()) }
     }
 

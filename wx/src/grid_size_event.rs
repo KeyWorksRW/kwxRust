@@ -16,6 +16,13 @@ impl GridSizeEvent {
         Self(NotifyEvent::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,6 +45,7 @@ impl WxObject for GridSizeEvent {
 impl WxNotifyEvent for GridSizeEvent {}
 impl WxCommandEvent for GridSizeEvent {}
 impl WxEvent for GridSizeEvent {}
+impl WxGridSizeEvent for GridSizeEvent {}
 
 impl GridSizeEvent {
     pub fn get_row_or_col(&self) -> i32 {

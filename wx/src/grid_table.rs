@@ -16,6 +16,13 @@ impl GridTable {
         Self(GridTableBase::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -36,6 +43,7 @@ impl WxObject for GridTable {
 }
 
 impl WxGridTableBase for GridTable {}
+impl WxGridTable for GridTable {}
 
 use crate::grid::Grid;
 
@@ -50,6 +58,13 @@ impl GridTable {
         let ptr = unsafe { sys::kwxGridTable_Create(p_object, fn_get_number_rows, fn_get_number_cols, fn_get_value, fn_set_value, fn_is_empty_cell, fn_clear, fn_insert_rows, fn_append_rows, fn_delete_rows, fn_insert_cols, fn_append_cols, fn_delete_cols, fn_set_row_label_value, fn_set_col_label_value, fn_get_row_label_value, fn_get_col_label_value) };
         assert!(!ptr.is_null(), "kwxGridTable_Create returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::kwxGridTable_Delete(self.as_ptr()) }
     }
 
     pub fn get_view(&self) -> Option<Grid> {

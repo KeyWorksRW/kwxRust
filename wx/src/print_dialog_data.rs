@@ -16,6 +16,13 @@ impl PrintDialogData {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,9 +42,10 @@ impl WxObject for PrintDialogData {
     }
 }
 
+impl WxPrintDialogData for PrintDialogData {}
 
 impl PrintDialogData {
-    pub fn assign(&self, data: &impl WxObject) {
+    pub fn assign(&self, data: &impl WxPrintDialogData) {
         unsafe { sys::wxPrintDialogData_Assign(self.as_ptr(), data.as_ptr()) }
     }
 
@@ -49,7 +57,7 @@ impl PrintDialogData {
         unsafe { sys::wxPrintDialogData_GetCurrentPage(self.as_ptr()) != 0 }
     }
 
-    pub fn assign_data(&self, data: &impl WxObject) {
+    pub fn assign_data(&self, data: &impl WxPrintData) {
         unsafe { sys::wxPrintDialogData_AssignData(self.as_ptr(), data.as_ptr()) }
     }
 
@@ -59,10 +67,17 @@ impl PrintDialogData {
         Self::from_raw(ptr)
     }
 
-    pub fn create_from_data(print_data: &impl WxObject) -> Self {
+    pub fn create_from_data(print_data: &impl WxPrintData) -> Self {
         let ptr = unsafe { sys::wxPrintDialogData_CreateFromData(print_data.as_ptr()) };
         assert!(!ptr.is_null(), "wxPrintDialogData_CreateFromData returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxPrintDialogData_Delete(self.as_ptr()) }
     }
 
     pub fn enable_help(&self, flag: bool) {
@@ -121,7 +136,7 @@ impl PrintDialogData {
         unsafe { sys::wxPrintDialogData_GetNoCopies(self.as_ptr()) as i32 }
     }
 
-    pub fn get_print_data(&self, ref_: &impl WxObject) {
+    pub fn get_print_data(&self, ref_: &impl WxPrintData) {
         unsafe { sys::wxPrintDialogData_GetPrintData(self.as_ptr(), ref_.as_ptr()) }
     }
 
@@ -161,7 +176,7 @@ impl PrintDialogData {
         unsafe { sys::wxPrintDialogData_SetNoCopies(self.as_ptr(), value as c_int) }
     }
 
-    pub fn set_print_data(&self, print_data: &impl WxObject) {
+    pub fn set_print_data(&self, print_data: &impl WxPrintData) {
         unsafe { sys::wxPrintDialogData_SetPrintData(self.as_ptr(), print_data.as_ptr()) }
     }
 

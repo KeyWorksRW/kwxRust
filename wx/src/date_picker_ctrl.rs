@@ -16,6 +16,13 @@ impl DatePickerCtrl {
         Self(Control::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,34 +45,42 @@ impl WxObject for DatePickerCtrl {
 impl WxControl for DatePickerCtrl {}
 impl WxWindow for DatePickerCtrl {}
 impl WxEvtHandler for DatePickerCtrl {}
+impl WxDatePickerCtrl for DatePickerCtrl {}
+
+use crate::support::WxStr;
 
 impl DatePickerCtrl {
-    pub fn new(parent: &impl WxWindow, date: &impl WxObject, x: i32, y: i32, width: i32, height: i32) -> Self {
+    pub fn new(parent: &impl WxWindow, date: &impl WxDateTime, x: i32, y: i32, width: i32, height: i32) -> Self {
         let ptr = unsafe { sys::wxDatePickerCtrl_Create(parent.as_ptr(), -1, date.as_ptr(), x as c_int, y as c_int, width as c_int, height as c_int, 0) };
         assert!(!ptr.is_null(), "wxDatePickerCtrl_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(parent: &impl WxWindow, id: i32, date: &impl WxObject, x: i32, y: i32, width: i32, height: i32, style: i32) -> Self {
+    pub fn new_full(parent: &impl WxWindow, id: i32, date: &impl WxDateTime, x: i32, y: i32, width: i32, height: i32, style: i32) -> Self {
         let ptr = unsafe { sys::wxDatePickerCtrl_Create(parent.as_ptr(), id as c_int, date.as_ptr(), x as c_int, y as c_int, width as c_int, height as c_int, style as c_long) };
         assert!(!ptr.is_null(), "wxDatePickerCtrl_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn set_value(&self, date_time: &impl WxObject) {
+    pub fn set_value(&self, date_time: &impl WxDateTime) {
         unsafe { sys::wxDatePickerCtrl_SetValue(self.as_ptr(), date_time.as_ptr()) }
     }
 
-    pub fn get_value(&self, date_time: &impl WxObject) {
+    pub fn get_value(&self, date_time: &impl WxDateTime) {
         unsafe { sys::wxDatePickerCtrl_GetValue(self.as_ptr(), date_time.as_ptr()) }
     }
 
-    pub fn set_range(&self, dt1: &impl WxObject, dt2: &impl WxObject) {
+    pub fn set_range(&self, dt1: &impl WxDateTime, dt2: &impl WxDateTime) {
         unsafe { sys::wxDatePickerCtrl_SetRange(self.as_ptr(), dt1.as_ptr(), dt2.as_ptr()) }
     }
 
-    pub fn get_range(&self, dt1: &impl WxObject, dt2: &impl WxObject) -> bool {
+    pub fn get_range(&self, dt1: &impl WxDateTime, dt2: &impl WxDateTime) -> bool {
         unsafe { sys::wxDatePickerCtrl_GetRange(self.as_ptr(), dt1.as_ptr(), dt2.as_ptr()) != 0 }
+    }
+
+    pub fn set_null_text(&self, text: impl AsRef<str>) {
+        let text_wx = WxStr::new(text.as_ref());
+        unsafe { sys::wxDatePickerCtrl_SetNullText(self.as_ptr(), text_wx.as_ptr()) }
     }
 
 }

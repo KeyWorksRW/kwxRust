@@ -1,31 +1,215 @@
-//! Build script for the minimal sample port
+//! Build script for the `minimal` sample port.
 //!
-//! Embeds the Windows manifest for Common Controls 6.0 support.
+//! 1. Compiles the repository's `src/kwxApp.cpp` GUI entry shim and archives it,
+//!    because that file is not part of the `kwxFFI` target but defines the
+//!    `kwxApp_*` symbols every GUI sample links against.
+//! 2. Emits the native link line: the shim archive, `libkwxFFI.a`, the
+//!    wxWidgets static modules CMake produced, the C++ runtime and the Windows
+//!    system libraries. The libraries are emitted as link arguments so they are
+//!    scanned after the Rust rlibs.
+//! 3. Embeds the Common Controls 6.0 manifest.
 
 use std::env;
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 
+/// Locates the repository root (the folder holding `kwxgen.config.json`).
+fn repo_root(start: &Path) -> Option<PathBuf> {
+    let mut dir = Some(start);
+    while let Some(current) = dir {
+        if current.join("kwxgen.config.json").is_file() {
+            return Some(current.to_path_buf());
+        }
+        dir = current.parent();
+    }
+    None
+}
+
+/// Compiles `src/kwxApp.cpp` and archives it as `libkwxapp_entry.a`.
+fn compile_entry_shim(repo: &Path, debug: bool) -> Option<PathBuf> {
+    let source = repo.join("src").join("kwxApp.cpp");
+    if !source.is_file() {
+        println!(
+            "cargo:warning={} not found; the kwxApp_* entry points stay unresolved",
+            source.display()
+        );
+        return None;
+    }
+    println!("cargo:rerun-if-changed={}", source.display());
+
+    let out_dir = PathBuf::from(env::var("OUT_DIR").ok()?);
+    let object = out_dir.join("kwxApp.o");
+    let archive = out_dir.join("libkwxapp_entry.a");
+
+    let compiler = env::var("CXX").unwrap_or_else(|_| "x86_64-w64-mingw32-clang++".to_string());
+    let wx_include = repo
+        .join("build")
+        .join("_deps")
+        .join("wxwidgets-src")
+        .join("include");
+    let wx_setup = repo
+        .join("build")
+        .join("_deps")
+        .join("wxwidgets-build")
+        .join("lib")
+        .join("clang_x64_lib")
+        .join("mswud");
+    let kwxffi_include = repo
+        .parent()
+        .map(|p| p.join("kwxFFI").join("include"))
+        .unwrap_or_else(|| PathBuf::from("../kwxFFI/include"));
+
+    let status = Command::new(&compiler)
+        .arg("-std=c++23")
+        .arg(if debug { "-O0" } else { "-O2" })
+        .arg("-c")
+        .arg(&source)
+        .arg("-o")
+        .arg(&object)
+        .arg(format!("-I{}", kwxffi_include.display()))
+        .arg(format!("-I{}", wx_include.display()))
+        .arg(format!("-I{}", wx_setup.display()))
+        .status();
+    match status {
+        Ok(s) if s.success() => {}
+        _ => {
+            println!(
+                "cargo:warning=could not compile {} with {compiler}",
+                source.display()
+            );
+            return None;
+        }
+    }
+
+    let archiver = env::var("AR").unwrap_or_else(|_| "llvm-ar".to_string());
+    let status = Command::new(&archiver)
+        .arg("crs")
+        .arg(&archive)
+        .arg(&object)
+        .status();
+    match status {
+        Ok(s) if s.success() => Some(archive),
+        _ => {
+            println!(
+                "cargo:warning=could not archive {} with {archiver}",
+                object.display()
+            );
+            None
+        }
+    }
+}
+
 fn main() {
-    // Build scripts run for the host, so the target must come from the environment.
+    let manifest_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR"));
+    println!("cargo:rerun-if-changed=build.rs");
+
+    let Some(repo) = repo_root(&manifest_dir) else {
+        println!("cargo:warning=kwxgen.config.json not found; skipping native link directives");
+        return;
+    };
+
+    // Debug cargo profile -> lib/Debug and the `d`-suffixed wx archives.
+    let debug = env::var("PROFILE").as_deref() != Ok("release");
+    let kwx_config = if debug { "Debug" } else { "Release" };
+
+    let kwx_lib_dir = repo.join("lib").join(kwx_config);
+    let wx_lib_dir = repo
+        .join("build")
+        .join("_deps")
+        .join("wxwidgets-build")
+        .join("lib")
+        .join("clang_x64_lib");
+    println!("cargo:rustc-link-search=native={}", kwx_lib_dir.display());
+    println!("cargo:rustc-link-search=native={}", wx_lib_dir.display());
+
+    // ---- link line --------------------------------------------------------
+    // Emitted as link arguments (not `rustc-link-lib`) so the archives are
+    // scanned after the Rust rlibs that reference them.
+    let entry_archive = compile_entry_shim(&repo, debug);
+    if let Some(archive) = &entry_archive {
+        println!(
+            "cargo:rustc-link-search=native={}",
+            archive.parent().unwrap().display()
+        );
+        println!("cargo:rustc-link-arg=-lkwxapp_entry");
+    }
+
+    // The archives are passed by path: the search path also holds stale
+    // `lib`-prefixed copies that would otherwise win over the current output.
+    println!(
+        "cargo:rustc-link-arg={}",
+        kwx_lib_dir.join("libkwxFFI.a").display()
+    );
+
+    // wxWidgets modules the generated bindings reference, in dependency order:
+    // the GUI libraries build on `core`, which builds on `base`; the bundled
+    // image/codec libraries satisfy `core`. CMake inserts a `d` before the
+    // module name in the debug archives.
+    let wx_libs = [
+        ("wxmsw33ud_adv", "wxmsw33u_adv"),
+        ("wxmsw33ud_aui", "wxmsw33u_aui"),
+        ("wxmsw33ud_html", "wxmsw33u_html"),
+        ("wxmsw33ud_media", "wxmsw33u_media"),
+        ("wxmsw33ud_propgrid", "wxmsw33u_propgrid"),
+        ("wxmsw33ud_ribbon", "wxmsw33u_ribbon"),
+        ("wxmsw33ud_richtext", "wxmsw33u_richtext"),
+        ("wxmsw33ud_stc", "wxmsw33u_stc"),
+        ("wxmsw33ud_webview", "wxmsw33u_webview"),
+        ("wxmsw33ud_xrc", "wxmsw33u_xrc"),
+        ("wxmsw33ud_gl", "wxmsw33u_gl"),
+        ("wxmsw33ud_core", "wxmsw33u_core"),
+        ("wxbase33ud", "wxbase33u"),
+        ("wxbase33ud_net", "wxbase33u_net"),
+        ("wxbase33ud_xml", "wxbase33u_xml"),
+        ("wxpngd", "wxpng"),
+        ("wxjpegd", "wxjpeg"),
+        ("wxtiffd", "wxtiff"),
+        ("wxzlibd", "wxzlib"),
+        ("wxregexud", "wxregexu"),
+        ("wxexpatd", "wxexpat"),
+        ("wxwebpd", "wxwebp"),
+        ("wxwebpdemuxd", "wxwebpdemux"),
+        ("wxsharpyuvd", "wxsharpyuv"),
+        ("wxlunasvgd", "wxlunasvg"),
+        ("wxscintillad", "wxscintilla"),
+        ("wxlexillad", "wxlexilla"),
+    ];
+    for (debug_name, release_name) in wx_libs {
+        let name = if debug { debug_name } else { release_name };
+        println!(
+            "cargo:rustc-link-arg={}",
+            wx_lib_dir.join(format!("{name}.a")).display()
+        );
+    }
+
+    // The native libraries are C++ (LLVM-MinGW / libc++). This toolchain's
+    // libc++.a and libc++abi.a both define the standard exception classes, so
+    // the duplicate definitions are tolerated instead of failing the link.
+    println!("cargo:rustc-link-arg=-Wl,--allow-multiple-definition");
+    println!("cargo:rustc-link-arg=-lc++");
+    println!("cargo:rustc-link-arg=-lc++abi");
+
+    // Windows system libraries required by wxWidgets.
+    for lib in [
+        "comctl32", "uxtheme", "rpcrt4", "ole32", "oleaut32", "oleacc", "uuid", "winmm", "ws2_32",
+        "shell32", "shlwapi", "comdlg32", "gdi32", "gdiplus", "msimg32", "winspool", "version",
+        "advapi32", "user32", "kernel32", "winhttp", "opengl32", "urlmon", "wininet", "dwmapi",
+    ] {
+        println!("cargo:rustc-link-arg=-l{lib}");
+    }
+
+    // ---- Windows manifest (Common Controls 6.0) ----------------------------
     if env::var("CARGO_CFG_TARGET_OS").as_deref() != Ok("windows") {
         return;
     }
-
-    let manifest_dir = match env::var("CARGO_MANIFEST_DIR") {
-        Ok(dir) => PathBuf::from(dir),
-        Err(_) => return,
-    };
     let manifest_path = manifest_dir.join("minimal.manifest");
     if !manifest_path.exists() {
         return;
     }
-
     println!("cargo:rerun-if-changed={}", manifest_path.display());
 
     if env::var("CARGO_CFG_TARGET_ENV").as_deref() == Ok("msvc") {
-        // Tell the MSVC linker to embed the manifest.
         println!("cargo:rustc-link-arg=/MANIFEST:EMBED");
         println!(
             "cargo:rustc-link-arg=/MANIFESTINPUT:{}",
@@ -35,10 +219,10 @@ fn main() {
     }
 
     // GNU ABI (gnullvm): link the manifest as a windres resource object.
-    let out_dir = match env::var("OUT_DIR") {
-        Ok(dir) => PathBuf::from(dir),
-        Err(_) => return,
+    let Ok(out_dir) = env::var("OUT_DIR") else {
+        return;
     };
+    let out_dir = PathBuf::from(out_dir);
     let rc_path = out_dir.join("minimal.rc");
     let obj_path = out_dir.join("minimal_manifest.o");
     let manifest = manifest_path.display().to_string().replace('\\', "/");

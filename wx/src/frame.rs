@@ -16,6 +16,13 @@ impl Frame {
         Self(TopLevelWindow::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -88,11 +95,11 @@ impl Frame {
         unsafe { sys::wxFrame_Maximize(self.as_ptr()) }
     }
 
-    pub fn set_icon(&self, icon: &impl WxObject) {
+    pub fn set_icon(&self, icon: &impl WxIcon) {
         unsafe { sys::wxFrame_SetIcon(self.as_ptr(), icon.as_ptr()) }
     }
 
-    pub fn set_shape(&self, region: &impl WxObject) -> bool {
+    pub fn set_shape(&self, region: &impl WxRegion) -> bool {
         unsafe { sys::wxFrame_SetShape(self.as_ptr(), region.as_ptr()) != 0 }
     }
 
@@ -118,11 +125,11 @@ impl Frame {
         unsafe { sys::wxFrame_SetWindowModality(self.as_ptr(), modality as c_int) }
     }
 
-    pub fn process_command_item(&self, item: &impl WxObject) -> bool {
+    pub fn process_command_item(&self, item: &impl WxMenuItem) -> bool {
         unsafe { sys::wxFrame_ProcessCommandItem(self.as_ptr(), item.as_ptr()) != 0 }
     }
 
-    pub fn do_menu_updates(&self, menu: &impl WxObject) {
+    pub fn do_menu_updates(&self, menu: &impl WxMenu) {
         unsafe { sys::wxFrame_DoMenuUpdates(self.as_ptr(), menu.as_ptr()) }
     }
 
@@ -214,11 +221,11 @@ impl Frame {
         unsafe { sys::wxFrame_Restore(self.as_ptr()) }
     }
 
-    pub fn set_menu_bar(&self, menubar: &impl WxObject) {
+    pub fn set_menu_bar(&self, menubar: &impl WxMenuBar) {
         unsafe { sys::wxFrame_SetMenuBar(self.as_ptr(), menubar.as_ptr()) }
     }
 
-    pub fn set_status_bar(&self, stat_bar: &impl WxObject) {
+    pub fn set_status_bar(&self, stat_bar: &impl WxStatusBar) {
         unsafe { sys::wxFrame_SetStatusBar(self.as_ptr(), stat_bar.as_ptr()) }
     }
 
@@ -231,7 +238,7 @@ impl Frame {
         unsafe { sys::wxFrame_SetStatusWidths(self.as_ptr(), count as c_int, widths) }
     }
 
-    pub fn set_tool_bar(&self, toolbar: &impl WxObject) {
+    pub fn set_tool_bar(&self, toolbar: &impl WxToolBar) {
         unsafe { sys::wxFrame_SetToolBar(self.as_ptr(), toolbar.as_ptr()) }
     }
 

@@ -4,16 +4,23 @@
 
 use std::os::raw::*;
 
-use crate::object::Object;
+use crate::control::Control;
 use crate::sys;
 use crate::traits::*;
 
 #[derive(Copy, Clone)]
-pub struct HeaderCtrl(pub(crate) Object);
+pub struct HeaderCtrl(pub(crate) Control);
 
 impl HeaderCtrl {
     pub(crate) const fn from_raw(ptr: *mut c_void) -> Self {
-        Self(Object::from_raw(ptr))
+        Self(Control::from_raw(ptr))
+    }
+
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
     }
 
     pub fn as_ptr(&self) -> *mut c_void {
@@ -22,9 +29,9 @@ impl HeaderCtrl {
 }
 
 impl std::ops::Deref for HeaderCtrl {
-    type Target = Object;
+    type Target = Control;
 
-    fn deref(&self) -> &Object {
+    fn deref(&self) -> &Control {
         &self.0
     }
 }
@@ -34,6 +41,11 @@ impl WxObject for HeaderCtrl {
         self.0.as_ptr()
     }
 }
+
+impl WxControl for HeaderCtrl {}
+impl WxWindow for HeaderCtrl {}
+impl WxEvtHandler for HeaderCtrl {}
+impl WxHeaderCtrl for HeaderCtrl {}
 
 impl HeaderCtrl {
     pub fn get_column_at(&self, pos: u32) -> u32 {

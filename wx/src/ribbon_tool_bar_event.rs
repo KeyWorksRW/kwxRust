@@ -16,6 +16,13 @@ impl RibbonToolBarEvent {
         Self(CommandEvent::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -37,6 +44,7 @@ impl WxObject for RibbonToolBarEvent {
 
 impl WxCommandEvent for RibbonToolBarEvent {}
 impl WxEvent for RibbonToolBarEvent {}
+impl WxRibbonToolBarEvent for RibbonToolBarEvent {}
 
 use crate::ribbon_tool_bar::RibbonToolBar;
 
@@ -50,11 +58,11 @@ impl RibbonToolBarEvent {
         }
     }
 
-    pub fn popup_menu(&self, menu: &impl WxObject) -> bool {
+    pub fn popup_menu(&self, menu: &impl WxMenu) -> bool {
         unsafe { sys::wxRibbonToolBarEvent_PopupMenu(self.as_ptr(), menu.as_ptr()) != 0 }
     }
 
-    pub fn set_bar(&self, bar: &impl WxObject) {
+    pub fn set_bar(&self, bar: &impl WxRibbonToolBar) {
         unsafe { sys::wxRibbonToolBarEvent_SetBar(self.as_ptr(), bar.as_ptr()) }
     }
 

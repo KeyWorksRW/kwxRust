@@ -16,6 +16,13 @@ impl AddRemoveCtrl {
         Self(Panel::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,6 +45,7 @@ impl WxObject for AddRemoveCtrl {
 impl WxPanel for AddRemoveCtrl {}
 impl WxWindow for AddRemoveCtrl {}
 impl WxEvtHandler for AddRemoveCtrl {}
+impl WxAddRemoveCtrl for AddRemoveCtrl {}
 
 use crate::support::Point;
 use crate::support::Size;
@@ -64,6 +72,13 @@ impl AddRemoveCtrl {
         let addtip_wx = WxStr::new(addtip.as_ref());
         let removetip_wx = WxStr::new(removetip.as_ref());
         unsafe { sys::wxAddRemoveCtrl_SetButtonsToolTips(self.as_ptr(), addtip_wx.as_ptr(), removetip_wx.as_ptr()) }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxAddRemoveCtrl_Delete(self.as_ptr()) }
     }
 
 }

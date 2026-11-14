@@ -16,6 +16,13 @@ impl GridCellEditor {
         Self(GridCellWorker::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -43,7 +50,7 @@ use crate::support::Rect;
 use crate::support::WxStr;
 
 impl GridCellEditor {
-    pub fn begin_edit(&self, row: i32, col: i32, grid: &impl WxObject) {
+    pub fn begin_edit(&self, row: i32, col: i32, grid: &impl WxGrid) {
         unsafe { sys::wxGridCellEditor_BeginEdit(self.as_ptr(), row as c_int, col as c_int, grid.as_ptr()) }
     }
 
@@ -55,7 +62,7 @@ impl GridCellEditor {
         unsafe { sys::wxGridCellEditor_Destroy(self.as_ptr()) }
     }
 
-    pub fn end_edit(&self, row: i32, col: i32, grid: &impl WxObject, old_str: impl AsRef<str>, new_str: impl AsRef<str>) -> i32 {
+    pub fn end_edit(&self, row: i32, col: i32, grid: &impl WxGrid, old_str: impl AsRef<str>, new_str: impl AsRef<str>) -> i32 {
         let old_str_wx = WxStr::new(old_str.as_ref());
         let new_str_wx = WxStr::new(new_str.as_ref());
         unsafe { sys::wxGridCellEditor_EndEdit(self.as_ptr(), row as c_int, col as c_int, grid.as_ptr(), old_str_wx.as_ptr(), new_str_wx.as_ptr()) as i32 }
@@ -82,7 +89,7 @@ impl GridCellEditor {
         unsafe { sys::wxGridCellEditor_IsCreated(self.as_ptr()) != 0 }
     }
 
-    pub fn paint_background(&self, dc: &impl WxDC, rect: Rect, attr: &impl WxObject) {
+    pub fn paint_background(&self, dc: &impl WxDC, rect: Rect, attr: &impl WxGridCellAttr) {
         unsafe { sys::wxGridCellEditor_PaintBackground(self.as_ptr(), dc.as_ptr(), rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int, attr.as_ptr()) }
     }
 
@@ -103,7 +110,7 @@ impl GridCellEditor {
         unsafe { sys::wxGridCellEditor_SetSize(self.as_ptr(), rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int) }
     }
 
-    pub fn show(&self, show: bool, attr: &impl WxObject) {
+    pub fn show(&self, show: bool, attr: &impl WxGridCellAttr) {
         unsafe { sys::wxGridCellEditor_Show(self.as_ptr(), show as c_int, attr.as_ptr()) }
     }
 

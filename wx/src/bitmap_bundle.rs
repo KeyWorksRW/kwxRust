@@ -16,6 +16,13 @@ impl BitmapBundle {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,12 +42,21 @@ impl WxObject for BitmapBundle {
     }
 }
 
+impl WxBitmapBundle for BitmapBundle {}
 use crate::bitmap::Bitmap;
+use crate::icon::Icon;
 use crate::support::Size;
 use crate::support::WxStr;
 
 impl BitmapBundle {
-    pub fn from_resources(&self, name: impl AsRef<str>) -> Option<BitmapBundle> {
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxBitmapBundle_Delete(self.as_ptr()) }
+    }
+
+    pub fn from_resources(name: impl AsRef<str>) -> Option<BitmapBundle> {
         let name_wx = WxStr::new(name.as_ref());
         let ptr = unsafe { sys::wxBitmapBundle_FromResources(name_wx.as_ptr()) };
         if ptr.is_null() {
@@ -50,7 +66,7 @@ impl BitmapBundle {
         }
     }
 
-    pub fn from_bitmaps(&self, bitmaps: &impl WxObject) -> Option<BitmapBundle> {
+    pub fn from_bitmaps(bitmaps: &impl WxBitmapVector) -> Option<BitmapBundle> {
         let ptr = unsafe { sys::wxBitmapBundle_FromBitmaps(bitmaps.as_ptr()) };
         if ptr.is_null() {
             None
@@ -65,6 +81,15 @@ impl BitmapBundle {
             None
         } else {
             Some(Bitmap::from_raw(ptr))
+        }
+    }
+
+    pub fn get_icon(&self, size: Size) -> Option<Icon> {
+        let ptr = unsafe { sys::wxBitmapBundle_GetIcon(self.as_ptr(), size.width as c_int, size.height as c_int) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(Icon::from_raw(ptr))
         }
     }
 
@@ -99,7 +124,7 @@ impl BitmapBundle {
         Self::from_raw(ptr)
     }
 
-    pub fn from_svg_file(&self, file: impl AsRef<str>, size: Size) -> Option<BitmapBundle> {
+    pub fn from_svg_file(file: impl AsRef<str>, size: Size) -> Option<BitmapBundle> {
         let file_wx = WxStr::new(file.as_ref());
         let ptr = unsafe { sys::wxBitmapBundle_FromSVGFile(file_wx.as_ptr(), size.width as c_int, size.height as c_int) };
         if ptr.is_null() {

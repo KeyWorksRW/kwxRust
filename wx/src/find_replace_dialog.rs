@@ -16,6 +16,13 @@ impl FindReplaceDialog {
         Self(Dialog::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,19 +46,20 @@ impl WxDialog for FindReplaceDialog {}
 impl WxTopLevelWindow for FindReplaceDialog {}
 impl WxWindow for FindReplaceDialog {}
 impl WxEvtHandler for FindReplaceDialog {}
+impl WxFindReplaceDialog for FindReplaceDialog {}
 
 use crate::find_replace_data::FindReplaceData;
 use crate::support::WxStr;
 
 impl FindReplaceDialog {
-    pub fn new(parent: &impl WxWindow, data: &impl WxObject, title: impl AsRef<str>) -> Self {
+    pub fn new(parent: &impl WxWindow, data: &impl WxFindReplaceData, title: impl AsRef<str>) -> Self {
         let title_wx = WxStr::new(title.as_ref());
         let ptr = unsafe { sys::wxFindReplaceDialog_Create(parent.as_ptr(), data.as_ptr(), title_wx.as_ptr(), 0) };
         assert!(!ptr.is_null(), "wxFindReplaceDialog_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(parent: &impl WxWindow, data: &impl WxObject, title: impl AsRef<str>, style: i32) -> Self {
+    pub fn new_full(parent: &impl WxWindow, data: &impl WxFindReplaceData, title: impl AsRef<str>, style: i32) -> Self {
         let title_wx = WxStr::new(title.as_ref());
         let ptr = unsafe { sys::wxFindReplaceDialog_Create(parent.as_ptr(), data.as_ptr(), title_wx.as_ptr(), style as c_int) };
         assert!(!ptr.is_null(), "wxFindReplaceDialog_Create returned null");
@@ -71,7 +79,7 @@ impl FindReplaceDialog {
         }
     }
 
-    pub fn set_data(&self, data: &impl WxObject) {
+    pub fn set_data(&self, data: &impl WxFindReplaceData) {
         unsafe { sys::wxFindReplaceDialog_SetData(self.as_ptr(), data.as_ptr()) }
     }
 

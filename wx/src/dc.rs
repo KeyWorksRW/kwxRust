@@ -16,6 +16,13 @@ impl DC {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -46,7 +53,7 @@ use crate::support::WxStr;
 use crate::window::Window;
 
 impl DC {
-    pub fn get_pixel2(&self, x: i32, y: i32, col: &impl WxObject) {
+    pub fn get_pixel2(&self, x: i32, y: i32, col: &impl WxColour) {
         unsafe { sys::wxDC_GetPixel2(self.as_ptr(), x as c_int, y as c_int, col.as_ptr()) }
     }
 
@@ -212,19 +219,19 @@ impl DC {
         unsafe { sys::wxDC_GetClippingRect(self.as_ptr(), x, y, width, height) != 0 }
     }
 
-    pub fn flood_fill_ex(&self, point: Point, col: &impl WxObject, style: i32) -> bool {
+    pub fn flood_fill_ex(&self, point: Point, col: &impl WxColour, style: i32) -> bool {
         unsafe { sys::wxDC_FloodFillEx(self.as_ptr(), point.x as c_int, point.y as c_int, col.as_ptr(), style as c_int) != 0 }
     }
 
-    pub fn gradient_fill_concentric(&self, rect: Rect, initial_colour: &impl WxObject, dest_colour: &impl WxObject) {
+    pub fn gradient_fill_concentric(&self, rect: Rect, initial_colour: &impl WxColour, dest_colour: &impl WxColour) {
         unsafe { sys::wxDC_GradientFillConcentric(self.as_ptr(), rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int, initial_colour.as_ptr(), dest_colour.as_ptr()) }
     }
 
-    pub fn gradient_fill_concentric_center(&self, rect: Rect, initial_colour: &impl WxObject, dest_colour: &impl WxObject, point: Point) {
+    pub fn gradient_fill_concentric_center(&self, rect: Rect, initial_colour: &impl WxColour, dest_colour: &impl WxColour, point: Point) {
         unsafe { sys::wxDC_GradientFillConcentricCenter(self.as_ptr(), rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int, initial_colour.as_ptr(), dest_colour.as_ptr(), point.x as c_int, point.y as c_int) }
     }
 
-    pub fn gradient_fill_linear(&self, rect: Rect, initial_colour: &impl WxObject, dest_colour: &impl WxObject, direction: i32) {
+    pub fn gradient_fill_linear(&self, rect: Rect, initial_colour: &impl WxColour, dest_colour: &impl WxColour, direction: i32) {
         unsafe { sys::wxDC_GradientFillLinear(self.as_ptr(), rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int, initial_colour.as_ptr(), dest_colour.as_ptr(), direction as c_int) }
     }
 
@@ -258,7 +265,7 @@ impl DC {
         }
     }
 
-    pub fn set_graphics_context(&self, ctx: &impl WxObject) {
+    pub fn set_graphics_context(&self, ctx: &impl WxGraphicsContext) {
         unsafe { sys::wxDC_SetGraphicsContext(self.as_ptr(), ctx.as_ptr()) }
     }
 
@@ -270,7 +277,7 @@ impl DC {
         unsafe { sys::wxDC_CanUseTransformMatrix(self.as_ptr()) != 0 }
     }
 
-    pub fn set_transform_matrix(&self, matrix: &impl WxObject) -> bool {
+    pub fn set_transform_matrix(&self, matrix: &impl WxAffineMatrix2D) -> bool {
         unsafe { sys::wxDC_SetTransformMatrix(self.as_ptr(), matrix.as_ptr()) != 0 }
     }
 
@@ -292,6 +299,13 @@ impl DC {
 
     pub fn cross_hair(&self, point: Point) {
         unsafe { sys::wxDC_CrossHair(self.as_ptr(), point.x as c_int, point.y as c_int) }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxDC_Delete(self.as_ptr()) }
     }
 
     pub fn destroy_clipping_region(&self) {
@@ -338,7 +352,7 @@ impl DC {
         unsafe { sys::wxDC_DrawEllipticArc(self.as_ptr(), rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int, start_angle as c_double, end_angle as c_double) }
     }
 
-    pub fn draw_icon(&self, icon: &impl WxObject, point: Point) {
+    pub fn draw_icon(&self, icon: &impl WxIcon, point: Point) {
         unsafe { sys::wxDC_DrawIcon(self.as_ptr(), icon.as_ptr(), point.x as c_int, point.y as c_int) }
     }
 
@@ -403,11 +417,11 @@ impl DC {
         unsafe { sys::wxDC_EndPage(self.as_ptr()) }
     }
 
-    pub fn flood_fill(&self, point: Point, col: &impl WxObject, style: i32) {
+    pub fn flood_fill(&self, point: Point, col: &impl WxColour, style: i32) {
         unsafe { sys::wxDC_FloodFill(self.as_ptr(), point.x as c_int, point.y as c_int, col.as_ptr(), style as c_int) }
     }
 
-    pub fn get_background(&self, ref_: &impl WxObject) {
+    pub fn get_background(&self, ref_: &impl WxBrush) {
         unsafe { sys::wxDC_GetBackground(self.as_ptr(), ref_.as_ptr()) }
     }
 
@@ -415,7 +429,7 @@ impl DC {
         unsafe { sys::wxDC_GetBackgroundMode(self.as_ptr()) as i32 }
     }
 
-    pub fn get_brush(&self, ref_: &impl WxObject) {
+    pub fn get_brush(&self, ref_: &impl WxBrush) {
         unsafe { sys::wxDC_GetBrush(self.as_ptr(), ref_.as_ptr()) }
     }
 
@@ -439,7 +453,7 @@ impl DC {
         unsafe { sys::wxDC_GetDeviceOrigin(self.as_ptr(), x, y) }
     }
 
-    pub fn get_font(&self, ref_: &impl WxObject) {
+    pub fn get_font(&self, ref_: &impl WxFont) {
         unsafe { sys::wxDC_GetFont(self.as_ptr(), ref_.as_ptr()) }
     }
 
@@ -468,11 +482,11 @@ impl DC {
         }
     }
 
-    pub fn get_pen(&self, ref_: &impl WxObject) {
+    pub fn get_pen(&self, ref_: &impl WxPen) {
         unsafe { sys::wxDC_GetPen(self.as_ptr(), ref_.as_ptr()) }
     }
 
-    pub fn get_pixel(&self, point: Point, col: &impl WxObject) -> bool {
+    pub fn get_pixel(&self, point: Point, col: &impl WxColour) -> bool {
         unsafe { sys::wxDC_GetPixel(self.as_ptr(), point.x as c_int, point.y as c_int, col.as_ptr()) != 0 }
     }
 
@@ -494,21 +508,21 @@ impl DC {
         }
     }
 
-    pub fn get_text_background(&self, ref_: &impl WxObject) {
+    pub fn get_text_background(&self, ref_: &impl WxColour) {
         unsafe { sys::wxDC_GetTextBackground(self.as_ptr(), ref_.as_ptr()) }
     }
 
-    pub fn get_text_extent(&self, string: impl AsRef<str>, width: *mut c_void, height: *mut c_void, descent: *mut c_void, external_leading: *mut c_void, the_font: &impl WxObject) {
+    pub fn get_text_extent(&self, string: impl AsRef<str>, width: *mut c_void, height: *mut c_void, descent: *mut c_void, external_leading: *mut c_void, the_font: &impl WxFont) {
         let string_wx = WxStr::new(string.as_ref());
         unsafe { sys::wxDC_GetTextExtent(self.as_ptr(), string_wx.as_ptr(), width, height, descent, external_leading, the_font.as_ptr()) }
     }
 
-    pub fn get_multi_line_text_extent(&self, string: impl AsRef<str>, width: *mut c_void, height: *mut c_void, height_line: *mut c_void, the_font: &impl WxObject) {
+    pub fn get_multi_line_text_extent(&self, string: impl AsRef<str>, width: *mut c_void, height: *mut c_void, height_line: *mut c_void, the_font: &impl WxFont) {
         let string_wx = WxStr::new(string.as_ref());
         unsafe { sys::wxDC_GetMultiLineTextExtent(self.as_ptr(), string_wx.as_ptr(), width, height, height_line, the_font.as_ptr()) }
     }
 
-    pub fn get_text_foreground(&self, ref_: &impl WxObject) {
+    pub fn get_text_foreground(&self, ref_: &impl WxColour) {
         unsafe { sys::wxDC_GetTextForeground(self.as_ptr(), ref_.as_ptr()) }
     }
 
@@ -560,7 +574,7 @@ impl DC {
         unsafe { sys::wxDC_SetAxisOrientation(self.as_ptr(), x_left_right as c_int, y_bottom_up as c_int) }
     }
 
-    pub fn set_background(&self, brush: &impl WxObject) {
+    pub fn set_background(&self, brush: &impl WxBrush) {
         unsafe { sys::wxDC_SetBackground(self.as_ptr(), brush.as_ptr()) }
     }
 
@@ -568,7 +582,7 @@ impl DC {
         unsafe { sys::wxDC_SetBackgroundMode(self.as_ptr(), mode as c_int) }
     }
 
-    pub fn set_brush(&self, brush: &impl WxObject) {
+    pub fn set_brush(&self, brush: &impl WxBrush) {
         unsafe { sys::wxDC_SetBrush(self.as_ptr(), brush.as_ptr()) }
     }
 
@@ -576,11 +590,11 @@ impl DC {
         unsafe { sys::wxDC_SetClippingRegion(self.as_ptr(), rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int) }
     }
 
-    pub fn set_clipping_region_from_region(&self, region: &impl WxObject) {
+    pub fn set_clipping_region_from_region(&self, region: &impl WxRegion) {
         unsafe { sys::wxDC_SetClippingRegionFromRegion(self.as_ptr(), region.as_ptr()) }
     }
 
-    pub fn set_device_clipping_region(&self, region: &impl WxObject) {
+    pub fn set_device_clipping_region(&self, region: &impl WxRegion) {
         unsafe { sys::wxDC_SetDeviceClippingRegion(self.as_ptr(), region.as_ptr()) }
     }
 
@@ -588,7 +602,7 @@ impl DC {
         unsafe { sys::wxDC_SetDeviceOrigin(self.as_ptr(), point.x as c_int, point.y as c_int) }
     }
 
-    pub fn set_font(&self, font: &impl WxObject) {
+    pub fn set_font(&self, font: &impl WxFont) {
         unsafe { sys::wxDC_SetFont(self.as_ptr(), font.as_ptr()) }
     }
 
@@ -608,19 +622,19 @@ impl DC {
         unsafe { sys::wxDC_SetMapMode(self.as_ptr(), mode as c_int) }
     }
 
-    pub fn set_palette(&self, palette: &impl WxObject) {
+    pub fn set_palette(&self, palette: &impl WxPalette) {
         unsafe { sys::wxDC_SetPalette(self.as_ptr(), palette.as_ptr()) }
     }
 
-    pub fn set_pen(&self, pen: &impl WxObject) {
+    pub fn set_pen(&self, pen: &impl WxPen) {
         unsafe { sys::wxDC_SetPen(self.as_ptr(), pen.as_ptr()) }
     }
 
-    pub fn set_text_background(&self, colour: &impl WxObject) {
+    pub fn set_text_background(&self, colour: &impl WxColour) {
         unsafe { sys::wxDC_SetTextBackground(self.as_ptr(), colour.as_ptr()) }
     }
 
-    pub fn set_text_foreground(&self, colour: &impl WxObject) {
+    pub fn set_text_foreground(&self, colour: &impl WxColour) {
         unsafe { sys::wxDC_SetTextForeground(self.as_ptr(), colour.as_ptr()) }
     }
 

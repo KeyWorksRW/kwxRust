@@ -16,6 +16,13 @@ impl Wizard {
         Self(Dialog::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,15 +46,17 @@ impl WxDialog for Wizard {}
 impl WxTopLevelWindow for Wizard {}
 impl WxWindow for Wizard {}
 impl WxEvtHandler for Wizard {}
+impl WxWizard for Wizard {}
 
 use crate::sizer::Sizer;
+use crate::support::Point;
 use crate::support::Rect;
 use crate::support::Size;
 use crate::support::WxStr;
 use crate::wizard_page::WizardPage;
 
 impl Wizard {
-    pub fn chain(&self, first: &impl WxObject, second: &impl WxObject) {
+    pub fn chain(first: &impl WxWizardPageSimple, second: &impl WxWizardPageSimple) {
         unsafe { sys::wxWizard_Chain(first.as_ptr(), second.as_ptr()) }
     }
 
@@ -126,6 +135,25 @@ impl Wizard {
 
     pub fn get_bitmap(&self, ref_: &impl WxBitmap) {
         unsafe { sys::wxWizard_GetBitmap(self.as_ptr(), ref_.as_ptr()) }
+    }
+
+    pub fn create_default() -> Self {
+        let ptr = unsafe { sys::wxWizard_CreateDefault() };
+        assert!(!ptr.is_null(), "wxWizard_CreateDefault returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn create2(&self, parent: &impl WxWindow, id: i32, text: impl AsRef<str>, bitmap: &impl WxBitmapBundle, point: Point, style: i32) -> bool {
+        let text_wx = WxStr::new(text.as_ref());
+        unsafe { sys::wxWizard_Create2(self.as_ptr(), parent.as_ptr(), id as c_int, text_wx.as_ptr(), bitmap.as_ptr(), point.x as c_int, point.y as c_int, style as c_long) != 0 }
+    }
+
+    pub fn set_bitmap(&self, bitmap: &impl WxBitmapBundle) {
+        unsafe { sys::wxWizard_SetBitmap(self.as_ptr(), bitmap.as_ptr()) }
+    }
+
+    pub fn get_bitmap_placement(&self) -> i32 {
+        unsafe { sys::wxWizard_GetBitmapPlacement(self.as_ptr()) as i32 }
     }
 
 }

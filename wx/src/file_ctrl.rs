@@ -16,6 +16,13 @@ impl FileCtrl {
         Self(Control::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,6 +45,7 @@ impl WxObject for FileCtrl {
 impl WxControl for FileCtrl {}
 impl WxWindow for FileCtrl {}
 impl WxEvtHandler for FileCtrl {}
+impl WxFileCtrl for FileCtrl {}
 
 use crate::support::Rect;
 use crate::support::WxStr;
@@ -70,7 +78,7 @@ impl FileCtrl {
         take_string(unsafe { sys::wxFileCtrl_GetFilename(self.as_ptr()) })
     }
 
-    pub fn get_filenames(&self, filenames: &impl WxObject) {
+    pub fn get_filenames(&self, filenames: &impl WxArrayString) {
         unsafe { sys::wxFileCtrl_GetFilenames(self.as_ptr(), filenames.as_ptr()) }
     }
 
@@ -82,7 +90,7 @@ impl FileCtrl {
         take_string(unsafe { sys::wxFileCtrl_GetPath(self.as_ptr()) })
     }
 
-    pub fn get_paths(&self, paths: &impl WxObject) {
+    pub fn get_paths(&self, paths: &impl WxArrayString) {
         unsafe { sys::wxFileCtrl_GetPaths(self.as_ptr(), paths.as_ptr()) }
     }
 

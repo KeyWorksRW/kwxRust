@@ -16,6 +16,13 @@ impl RichTextFormattingDialog {
         Self(PropertySheetDialog::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -40,6 +47,7 @@ impl WxDialog for RichTextFormattingDialog {}
 impl WxTopLevelWindow for RichTextFormattingDialog {}
 impl WxWindow for RichTextFormattingDialog {}
 impl WxEvtHandler for RichTextFormattingDialog {}
+impl WxRichTextFormattingDialog for RichTextFormattingDialog {}
 
 use crate::rich_text_object::RichTextObject;
 use crate::rich_text_style_definition::RichTextStyleDefinition;
@@ -62,15 +70,22 @@ impl RichTextFormattingDialog {
         Self::from_raw(ptr)
     }
 
-    pub fn get_style(&self, ctrl: &impl WxObject, start: i32, end: i32) -> bool {
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxRichTextFormattingDialog_Delete(self.as_ptr()) }
+    }
+
+    pub fn get_style(&self, ctrl: &impl WxRichTextCtrl, start: i32, end: i32) -> bool {
         unsafe { sys::wxRichTextFormattingDialog_GetStyle(self.as_ptr(), ctrl.as_ptr(), start as c_long, end as c_long) != 0 }
     }
 
-    pub fn set_style(&self, style: &impl WxObject, update: bool) -> bool {
+    pub fn set_style(&self, style: &impl WxRichTextAttr, update: bool) -> bool {
         unsafe { sys::wxRichTextFormattingDialog_SetStyle(self.as_ptr(), style.as_ptr(), update as c_int) != 0 }
     }
 
-    pub fn set_style_definition(&self, style_def: &impl WxObject, sheet: &impl WxObject, update: bool) -> bool {
+    pub fn set_style_definition(&self, style_def: &impl WxRichTextStyleDefinition, sheet: &impl WxRichTextStyleSheet, update: bool) -> bool {
         unsafe { sys::wxRichTextFormattingDialog_SetStyleDefinition(self.as_ptr(), style_def.as_ptr(), sheet.as_ptr(), update as c_int) != 0 }
     }
 
@@ -96,15 +111,19 @@ impl RichTextFormattingDialog {
         unsafe { sys::wxRichTextFormattingDialog_UpdateDisplay(self.as_ptr()) != 0 }
     }
 
-    pub fn apply_style(&self, ctrl: &impl WxObject, start: i32, end: i32, flags: i32) -> bool {
+    pub fn apply_style(&self, ctrl: &impl WxRichTextCtrl, start: i32, end: i32, flags: i32) -> bool {
         unsafe { sys::wxRichTextFormattingDialog_ApplyStyle(self.as_ptr(), ctrl.as_ptr(), start as c_long, end as c_long, flags as c_int) != 0 }
     }
 
-    pub fn get_attributes(&self, attr: &impl WxObject) {
+    pub fn apply_style_to_ctrl(&self, ctrl: &impl WxRichTextCtrl, flags: i32) -> bool {
+        unsafe { sys::wxRichTextFormattingDialog_ApplyStyleToCtrl(self.as_ptr(), ctrl.as_ptr(), flags as c_int) != 0 }
+    }
+
+    pub fn get_attributes(&self, attr: &impl WxRichTextAttr) {
         unsafe { sys::wxRichTextFormattingDialog_GetAttributes(self.as_ptr(), attr.as_ptr()) }
     }
 
-    pub fn set_attributes(&self, attr: &impl WxObject) {
+    pub fn set_attributes(&self, attr: &impl WxRichTextAttr) {
         unsafe { sys::wxRichTextFormattingDialog_SetAttributes(self.as_ptr(), attr.as_ptr()) }
     }
 

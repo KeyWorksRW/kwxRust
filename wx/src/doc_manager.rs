@@ -16,6 +16,13 @@ impl DocManager {
         Self(EvtHandler::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -36,6 +43,7 @@ impl WxObject for DocManager {
 }
 
 impl WxEvtHandler for DocManager {}
+impl WxDocManager for DocManager {}
 
 use crate::document::Document;
 use crate::support::WxStr;
@@ -76,7 +84,7 @@ impl DocManager {
         unsafe { sys::wxDocManager_FileHistoryUseMenu(self.as_ptr(), menu) }
     }
 
-    pub fn get_document_manager(&self) -> *mut c_void {
+    pub fn get_document_manager() -> *mut c_void {
         unsafe { sys::wxDocManager_GetDocumentManager() }
     }
 

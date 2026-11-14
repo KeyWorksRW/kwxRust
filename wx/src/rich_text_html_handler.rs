@@ -16,6 +16,13 @@ impl RichTextHTMLHandler {
         Self(RichTextFileHandler::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -36,7 +43,9 @@ impl WxObject for RichTextHTMLHandler {
 }
 
 impl WxRichTextFileHandler for RichTextHTMLHandler {}
+impl WxRichTextHTMLHandler for RichTextHTMLHandler {}
 
+use crate::array_int::ArrayInt;
 use crate::support::WxStr;
 use crate::support::take_string;
 
@@ -55,6 +64,13 @@ impl RichTextHTMLHandler {
         let ptr = unsafe { sys::wxRichTextHTMLHandler_Create(name_wx.as_ptr(), ext_wx.as_ptr(), type_ as c_int) };
         assert!(!ptr.is_null(), "wxRichTextHTMLHandler_Create returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxRichTextHTMLHandler_Delete(self.as_ptr()) }
     }
 
     pub fn can_handle(&self, filename: impl AsRef<str>) -> bool {
@@ -77,6 +93,19 @@ impl RichTextHTMLHandler {
 
     pub fn get_temp_dir(&self) -> String {
         take_string(unsafe { sys::wxRichTextHTMLHandler_GetTempDir(self.as_ptr()) })
+    }
+
+    pub fn set_font_size_mapping(&self, mapping: &impl WxArrayInt) {
+        unsafe { sys::wxRichTextHTMLHandler_SetFontSizeMapping(self.as_ptr(), mapping.as_ptr()) }
+    }
+
+    pub fn get_font_size_mapping(&self) -> Option<ArrayInt> {
+        let ptr = unsafe { sys::wxRichTextHTMLHandler_GetFontSizeMapping(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(ArrayInt::from_raw(ptr))
+        }
     }
 
 }

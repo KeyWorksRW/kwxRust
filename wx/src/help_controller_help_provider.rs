@@ -16,6 +16,13 @@ impl HelpControllerHelpProvider {
         Self(SimpleHelpProvider::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -37,6 +44,7 @@ impl WxObject for HelpControllerHelpProvider {
 
 impl WxSimpleHelpProvider for HelpControllerHelpProvider {}
 impl WxHelpProvider for HelpControllerHelpProvider {}
+impl WxHelpControllerHelpProvider for HelpControllerHelpProvider {}
 
 use crate::help_controller_base::HelpControllerBase;
 
@@ -62,7 +70,7 @@ impl HelpControllerHelpProvider {
         }
     }
 
-    pub fn set_help_controller(&self, help_controller: &impl WxObject) {
+    pub fn set_help_controller(&self, help_controller: &impl WxHelpController) {
         unsafe { sys::wxHelpControllerHelpProvider_SetHelpController(self.as_ptr(), help_controller.as_ptr()) }
     }
 

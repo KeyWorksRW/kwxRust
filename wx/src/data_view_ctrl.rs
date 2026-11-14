@@ -16,6 +16,13 @@ impl DataViewCtrl {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,12 +42,13 @@ impl WxObject for DataViewCtrl {
     }
 }
 
+impl WxDataViewCtrl for DataViewCtrl {}
 use crate::data_view_column::DataViewColumn;
 use crate::data_view_model::DataViewModel;
 use crate::support::WxStr;
 
 impl DataViewCtrl {
-    pub fn set_header_attr(&self, attr: &impl WxObject) -> bool {
+    pub fn set_header_attr(&self, attr: &impl WxItemAttr) -> bool {
         unsafe { sys::wxDataViewCtrl_SetHeaderAttr(self.as_ptr(), attr.as_ptr()) != 0 }
     }
 
@@ -48,11 +56,11 @@ impl DataViewCtrl {
         unsafe { sys::wxDataViewCtrl_Enable(self.as_ptr(), enable as c_int) != 0 }
     }
 
-    pub fn enable_drag_source(&self, format: &impl WxObject) -> bool {
+    pub fn enable_drag_source(&self, format: &impl WxDataFormat) -> bool {
         unsafe { sys::wxDataViewCtrl_EnableDragSource(self.as_ptr(), format.as_ptr()) != 0 }
     }
 
-    pub fn set_background_colour(&self, colour: &impl WxObject) -> bool {
+    pub fn set_background_colour(&self, colour: &impl WxColour) -> bool {
         unsafe { sys::wxDataViewCtrl_SetBackgroundColour(self.as_ptr(), colour.as_ptr()) != 0 }
     }
 
@@ -60,7 +68,7 @@ impl DataViewCtrl {
         unsafe { sys::wxDataViewCtrl_SetFocus(self.as_ptr()) }
     }
 
-    pub fn set_foreground_colour(&self, colour: &impl WxObject) -> bool {
+    pub fn set_foreground_colour(&self, colour: &impl WxColour) -> bool {
         unsafe { sys::wxDataViewCtrl_SetForegroundColour(self.as_ptr(), colour.as_ptr()) != 0 }
     }
 
@@ -129,15 +137,15 @@ impl DataViewCtrl {
         }
     }
 
-    pub fn append_column(&self, col: &impl WxObject) -> bool {
+    pub fn append_column(&self, col: &impl WxDataViewColumn) -> bool {
         unsafe { sys::wxDataViewCtrl_AppendColumn(self.as_ptr(), col.as_ptr()) != 0 }
     }
 
-    pub fn prepend_column(&self, col: &impl WxObject) -> bool {
+    pub fn prepend_column(&self, col: &impl WxDataViewColumn) -> bool {
         unsafe { sys::wxDataViewCtrl_PrependColumn(self.as_ptr(), col.as_ptr()) != 0 }
     }
 
-    pub fn insert_column(&self, pos: u32, col: &impl WxObject) -> bool {
+    pub fn insert_column(&self, pos: u32, col: &impl WxDataViewColumn) -> bool {
         unsafe { sys::wxDataViewCtrl_InsertColumn(self.as_ptr(), pos as c_uint, col.as_ptr()) != 0 }
     }
 
@@ -154,11 +162,11 @@ impl DataViewCtrl {
         }
     }
 
-    pub fn get_column_position(&self, column: &impl WxObject) -> i32 {
+    pub fn get_column_position(&self, column: &impl WxDataViewColumn) -> i32 {
         unsafe { sys::wxDataViewCtrl_GetColumnPosition(self.as_ptr(), column.as_ptr()) as i32 }
     }
 
-    pub fn delete_column(&self, column: &impl WxObject) -> bool {
+    pub fn delete_column(&self, column: &impl WxDataViewColumn) -> bool {
         unsafe { sys::wxDataViewCtrl_DeleteColumn(self.as_ptr(), column.as_ptr()) != 0 }
     }
 
@@ -166,7 +174,7 @@ impl DataViewCtrl {
         unsafe { sys::wxDataViewCtrl_ClearColumns(self.as_ptr()) != 0 }
     }
 
-    pub fn set_expander_column(&self, col: &impl WxObject) {
+    pub fn set_expander_column(&self, col: &impl WxDataViewColumn) {
         unsafe { sys::wxDataViewCtrl_SetExpanderColumn(self.as_ptr(), col.as_ptr()) }
     }
 
@@ -196,11 +204,11 @@ impl DataViewCtrl {
         unsafe { sys::wxDataViewCtrl_GetIndent(self.as_ptr()) as i32 }
     }
 
-    pub fn get_current_item(&self, item: &impl WxObject) {
+    pub fn get_current_item(&self, item: &impl WxDataViewItem) {
         unsafe { sys::wxDataViewCtrl_GetCurrentItem(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn set_current_item(&self, item: &impl WxObject) {
+    pub fn set_current_item(&self, item: &impl WxDataViewItem) {
         unsafe { sys::wxDataViewCtrl_SetCurrentItem(self.as_ptr(), item.as_ptr()) }
     }
 
@@ -221,27 +229,27 @@ impl DataViewCtrl {
         unsafe { sys::wxDataViewCtrl_HasSelection(self.as_ptr()) != 0 }
     }
 
-    pub fn get_selection(&self, item: &impl WxObject) {
+    pub fn get_selection(&self, item: &impl WxDataViewItem) {
         unsafe { sys::wxDataViewCtrl_GetSelection(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn get_selections(&self, sel: &impl WxObject) -> i32 {
+    pub fn get_selections(&self, sel: &impl WxDataViewItemArray) -> i32 {
         unsafe { sys::wxDataViewCtrl_GetSelections(self.as_ptr(), sel.as_ptr()) as i32 }
     }
 
-    pub fn set_selections(&self, sel: &impl WxObject) {
+    pub fn set_selections(&self, sel: &impl WxDataViewItemArray) {
         unsafe { sys::wxDataViewCtrl_SetSelections(self.as_ptr(), sel.as_ptr()) }
     }
 
-    pub fn select(&self, item: &impl WxObject) {
+    pub fn select(&self, item: &impl WxDataViewItem) {
         unsafe { sys::wxDataViewCtrl_Select(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn unselect(&self, item: &impl WxObject) {
+    pub fn unselect(&self, item: &impl WxDataViewItem) {
         unsafe { sys::wxDataViewCtrl_Unselect(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn is_selected(&self, item: &impl WxObject) -> bool {
+    pub fn is_selected(&self, item: &impl WxDataViewItem) -> bool {
         unsafe { sys::wxDataViewCtrl_IsSelected(self.as_ptr(), item.as_ptr()) != 0 }
     }
 
@@ -253,31 +261,31 @@ impl DataViewCtrl {
         unsafe { sys::wxDataViewCtrl_UnselectAll(self.as_ptr()) }
     }
 
-    pub fn expand(&self, item: &impl WxObject) {
+    pub fn expand(&self, item: &impl WxDataViewItem) {
         unsafe { sys::wxDataViewCtrl_Expand(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn collapse(&self, item: &impl WxObject) {
+    pub fn collapse(&self, item: &impl WxDataViewItem) {
         unsafe { sys::wxDataViewCtrl_Collapse(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn is_expanded(&self, item: &impl WxObject) -> bool {
+    pub fn is_expanded(&self, item: &impl WxDataViewItem) -> bool {
         unsafe { sys::wxDataViewCtrl_IsExpanded(self.as_ptr(), item.as_ptr()) != 0 }
     }
 
-    pub fn ensure_visible(&self, item: &impl WxObject, column: &impl WxObject) {
+    pub fn ensure_visible(&self, item: &impl WxDataViewItem, column: &impl WxDataViewColumn) {
         unsafe { sys::wxDataViewCtrl_EnsureVisible(self.as_ptr(), item.as_ptr(), column.as_ptr()) }
     }
 
-    pub fn hit_test(&self, x: i32, y: i32, item: &impl WxObject, col: &impl WxObject) {
+    pub fn hit_test(&self, x: i32, y: i32, item: &impl WxDataViewItem, col: &impl WxDataViewColumn) {
         unsafe { sys::wxDataViewCtrl_HitTest(self.as_ptr(), x as c_int, y as c_int, item.as_ptr(), col.as_ptr()) }
     }
 
-    pub fn get_item_rect(&self, item: &impl WxObject, column: &impl WxObject, x: *mut i32, y: *mut i32, width: *mut i32, height: *mut i32) {
+    pub fn get_item_rect(&self, item: &impl WxDataViewItem, column: &impl WxDataViewColumn, x: *mut i32, y: *mut i32, width: *mut i32, height: *mut i32) {
         unsafe { sys::wxDataViewCtrl_GetItemRect(self.as_ptr(), item.as_ptr(), column.as_ptr(), x as *mut c_int, y as *mut c_int, width as *mut c_int, height as *mut c_int) }
     }
 
-    pub fn edit_item(&self, item: &impl WxObject, column: &impl WxObject) {
+    pub fn edit_item(&self, item: &impl WxDataViewItem, column: &impl WxDataViewColumn) {
         unsafe { sys::wxDataViewCtrl_EditItem(self.as_ptr(), item.as_ptr(), column.as_ptr()) }
     }
 
@@ -285,15 +293,15 @@ impl DataViewCtrl {
         unsafe { sys::wxDataViewCtrl_GetCountPerPage(self.as_ptr()) as i32 }
     }
 
-    pub fn get_top_item(&self, item: &impl WxObject) {
+    pub fn get_top_item(&self, item: &impl WxDataViewItem) {
         unsafe { sys::wxDataViewCtrl_GetTopItem(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn expand_children(&self, item: &impl WxObject) {
+    pub fn expand_children(&self, item: &impl WxDataViewItem) {
         unsafe { sys::wxDataViewCtrl_ExpandChildren(self.as_ptr(), item.as_ptr()) }
     }
 
-    pub fn expand_ancestors(&self, item: &impl WxObject) {
+    pub fn expand_ancestors(&self, item: &impl WxDataViewItem) {
         unsafe { sys::wxDataViewCtrl_ExpandAncestors(self.as_ptr(), item.as_ptr()) }
     }
 
@@ -313,7 +321,7 @@ impl DataViewCtrl {
         unsafe { sys::wxDataViewCtrl_SetRowHeight(self.as_ptr(), row_height as c_int) != 0 }
     }
 
-    pub fn set_alternate_row_colour(&self, colour: &impl WxObject) -> bool {
+    pub fn set_alternate_row_colour(&self, colour: &impl WxColour) -> bool {
         unsafe { sys::wxDataViewCtrl_SetAlternateRowColour(self.as_ptr(), colour.as_ptr()) != 0 }
     }
 

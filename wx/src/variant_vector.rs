@@ -16,6 +16,13 @@ impl VariantVector {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,6 +42,7 @@ impl WxObject for VariantVector {
     }
 }
 
+impl WxVariantVector for VariantVector {}
 use crate::support::WxStr;
 
 impl VariantVector {
@@ -50,28 +58,35 @@ impl VariantVector {
         Self::from_raw(ptr)
     }
 
-    pub fn add(&self, vec: *mut c_void, value: &impl WxObject) {
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxVariantVector_Delete(self.as_ptr()) }
+    }
+
+    pub fn add(vec: *mut c_void, value: &impl WxVariant) {
         unsafe { sys::wxVariantVector_Add(vec, value.as_ptr()) }
     }
 
-    pub fn add_string(&self, vec: *mut c_void, value: impl AsRef<str>) {
+    pub fn add_string(vec: *mut c_void, value: impl AsRef<str>) {
         let value_wx = WxStr::new(value.as_ref());
         unsafe { sys::wxVariantVector_AddString(vec, value_wx.as_ptr()) }
     }
 
-    pub fn add_long(&self, vec: *mut c_void, value: i32) {
+    pub fn add_long(vec: *mut c_void, value: i32) {
         unsafe { sys::wxVariantVector_AddLong(vec, value as c_long) }
     }
 
-    pub fn add_bool(&self, vec: *mut c_void, value: bool) {
+    pub fn add_bool(vec: *mut c_void, value: bool) {
         unsafe { sys::wxVariantVector_AddBool(vec, value as c_int) }
     }
 
-    pub fn get_count(&self, vec: *mut c_void) -> usize {
+    pub fn get_count(vec: *mut c_void) -> usize {
         unsafe { sys::wxVariantVector_GetCount(vec) as usize }
     }
 
-    pub fn clear(&self, vec: *mut c_void) {
+    pub fn clear(vec: *mut c_void) {
         unsafe { sys::wxVariantVector_Clear(vec) }
     }
 

@@ -4,16 +4,23 @@
 
 use std::os::raw::*;
 
-use crate::object::Object;
+use crate::picker_base::PickerBase;
 use crate::sys;
 use crate::traits::*;
 
 #[derive(Copy, Clone)]
-pub struct FontPickerCtrl(pub(crate) Object);
+pub struct FontPickerCtrl(pub(crate) PickerBase);
 
 impl FontPickerCtrl {
     pub(crate) const fn from_raw(ptr: *mut c_void) -> Self {
-        Self(Object::from_raw(ptr))
+        Self(PickerBase::from_raw(ptr))
+    }
+
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
     }
 
     pub fn as_ptr(&self) -> *mut c_void {
@@ -22,9 +29,9 @@ impl FontPickerCtrl {
 }
 
 impl std::ops::Deref for FontPickerCtrl {
-    type Target = Object;
+    type Target = PickerBase;
 
-    fn deref(&self) -> &Object {
+    fn deref(&self) -> &PickerBase {
         &self.0
     }
 }
@@ -35,16 +42,22 @@ impl WxObject for FontPickerCtrl {
     }
 }
 
+impl WxPickerBase for FontPickerCtrl {}
+impl WxControl for FontPickerCtrl {}
+impl WxWindow for FontPickerCtrl {}
+impl WxEvtHandler for FontPickerCtrl {}
+impl WxFontPickerCtrl for FontPickerCtrl {}
+
 use crate::font::Font;
 
 impl FontPickerCtrl {
-    pub fn new(parent: &impl WxWindow, initial: &impl WxObject, x: i32, y: i32, width: i32, height: i32) -> Self {
+    pub fn new(parent: &impl WxWindow, initial: &impl WxFont, x: i32, y: i32, width: i32, height: i32) -> Self {
         let ptr = unsafe { sys::wxFontPickerCtrl_Create(parent.as_ptr(), -1, initial.as_ptr(), x as c_int, y as c_int, width as c_int, height as c_int, 0) };
         assert!(!ptr.is_null(), "wxFontPickerCtrl_Create returned null");
         Self::from_raw(ptr)
     }
 
-    pub fn new_full(parent: &impl WxWindow, id: i32, initial: &impl WxObject, x: i32, y: i32, width: i32, height: i32, style: i32) -> Self {
+    pub fn new_full(parent: &impl WxWindow, id: i32, initial: &impl WxFont, x: i32, y: i32, width: i32, height: i32, style: i32) -> Self {
         let ptr = unsafe { sys::wxFontPickerCtrl_Create(parent.as_ptr(), id as c_int, initial.as_ptr(), x as c_int, y as c_int, width as c_int, height as c_int, style as c_long) };
         assert!(!ptr.is_null(), "wxFontPickerCtrl_Create returned null");
         Self::from_raw(ptr)
@@ -59,7 +72,7 @@ impl FontPickerCtrl {
         }
     }
 
-    pub fn set_selected_font(&self, font: &impl WxObject) {
+    pub fn set_selected_font(&self, font: &impl WxFont) {
         unsafe { sys::wxFontPickerCtrl_SetSelectedFont(self.as_ptr(), font.as_ptr()) }
     }
 

@@ -16,6 +16,13 @@ impl TextCtrl {
         Self(Control::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -38,6 +45,7 @@ impl WxObject for TextCtrl {
 impl WxControl for TextCtrl {}
 impl WxWindow for TextCtrl {}
 impl WxEvtHandler for TextCtrl {}
+impl WxTextCtrl for TextCtrl {}
 
 use crate::support::Point;
 use crate::support::Rect;
@@ -46,7 +54,7 @@ use crate::support::take_string;
 use crate::text_attr::TextAttr;
 
 impl TextCtrl {
-    pub fn emulate_key_press(&self, keyevent: &impl WxObject) -> i32 {
+    pub fn emulate_key_press(&self, keyevent: &impl WxKeyEvent) -> i32 {
         unsafe { sys::wxTextCtrl_EmulateKeyPress(self.as_ptr(), keyevent.as_ptr()) as i32 }
     }
 
@@ -197,8 +205,8 @@ impl TextCtrl {
         unsafe { sys::wxTextCtrl_Paste(self.as_ptr()) }
     }
 
-    pub fn position_to_xy(&self, pos: i32, arg: i32) -> i32 {
-        unsafe { sys::wxTextCtrl_PositionToXY(self.as_ptr(), pos as c_long, arg as c_int) as i32 }
+    pub fn position_to_xy(&self, pos: i32, x: *mut c_long, y: *mut c_long) -> i32 {
+        unsafe { sys::wxTextCtrl_PositionToXY(self.as_ptr(), pos as c_long, x, y) as i32 }
     }
 
     pub fn redo(&self) {

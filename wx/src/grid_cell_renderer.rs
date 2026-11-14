@@ -16,6 +16,13 @@ impl GridCellRenderer {
         Self(GridCellWorker::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -41,11 +48,11 @@ impl WxGridCellRenderer for GridCellRenderer {}
 use crate::support::Rect;
 
 impl GridCellRenderer {
-    pub fn draw(&self, grid: &impl WxObject, attr: &impl WxObject, dc: &impl WxDC, rect: Rect, row: i32, col: i32, is_selected: bool) {
+    pub fn draw(&self, grid: &impl WxGrid, attr: &impl WxGridCellAttr, dc: &impl WxDC, rect: Rect, row: i32, col: i32, is_selected: bool) {
         unsafe { sys::wxGridCellRenderer_Draw(self.as_ptr(), grid.as_ptr(), attr.as_ptr(), dc.as_ptr(), rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int, row as c_int, col as c_int, is_selected as c_int) }
     }
 
-    pub fn get_preferred_size(&self, grid: &impl WxObject, attr: &impl WxObject, dc: &impl WxDC, row: i32, col: i32) -> Option<crate::size::Size> {
+    pub fn get_preferred_size(&self, grid: &impl WxGrid, attr: &impl WxGridCellAttr, dc: &impl WxDC, row: i32, col: i32) -> Option<crate::size::Size> {
         let ptr = unsafe { sys::wxGridCellRenderer_GetPreferredSize(self.as_ptr(), grid.as_ptr(), attr.as_ptr(), dc.as_ptr(), row as c_int, col as c_int) };
         if ptr.is_null() {
             None
@@ -54,11 +61,11 @@ impl GridCellRenderer {
         }
     }
 
-    pub fn get_preferred_height(&self, grid: &impl WxObject, attr: &impl WxObject, dc: &impl WxDC, row: i32, col: i32, width: i32) -> i32 {
+    pub fn get_preferred_height(&self, grid: &impl WxGrid, attr: &impl WxGridCellAttr, dc: &impl WxDC, row: i32, col: i32, width: i32) -> i32 {
         unsafe { sys::wxGridCellRenderer_GetPreferredHeight(self.as_ptr(), grid.as_ptr(), attr.as_ptr(), dc.as_ptr(), row as c_int, col as c_int, width as c_int) as i32 }
     }
 
-    pub fn get_preferred_width(&self, grid: &impl WxObject, attr: &impl WxObject, dc: &impl WxDC, row: i32, col: i32, height: i32) -> i32 {
+    pub fn get_preferred_width(&self, grid: &impl WxGrid, attr: &impl WxGridCellAttr, dc: &impl WxDC, row: i32, col: i32, height: i32) -> i32 {
         unsafe { sys::wxGridCellRenderer_GetPreferredWidth(self.as_ptr(), grid.as_ptr(), attr.as_ptr(), dc.as_ptr(), row as c_int, col as c_int, height as c_int) as i32 }
     }
 

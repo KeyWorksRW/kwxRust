@@ -16,6 +16,13 @@ impl GenericFileDialog {
         Self(Dialog::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -39,6 +46,7 @@ impl WxDialog for GenericFileDialog {}
 impl WxTopLevelWindow for GenericFileDialog {}
 impl WxWindow for GenericFileDialog {}
 impl WxEvtHandler for GenericFileDialog {}
+impl WxGenericFileDialog for GenericFileDialog {}
 
 use crate::support::WxStr;
 use crate::support::take_string;
@@ -111,8 +119,15 @@ impl GenericFileDialog {
         unsafe { sys::wxGenericFileDialog_SetFilterIndex(self.as_ptr(), filter_index as c_int) }
     }
 
-    pub fn set_customize_hook(&self, customize_hook: &impl WxObject) -> bool {
+    pub fn set_customize_hook(&self, customize_hook: &impl WxFileDialogCustomizeHook) -> bool {
         unsafe { sys::wxGenericFileDialog_SetCustomizeHook(self.as_ptr(), customize_hook.as_ptr()) != 0 }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxGenericFileDialog_Delete(self.as_ptr()) }
     }
 
 }

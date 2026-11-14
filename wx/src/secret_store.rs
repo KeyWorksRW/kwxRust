@@ -16,6 +16,13 @@ impl SecretStore {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -35,16 +42,24 @@ impl WxObject for SecretStore {
     }
 }
 
+impl WxSecretStore for SecretStore {}
 use crate::support::WxStr;
 
 impl SecretStore {
-    pub fn get_default(&self) -> Option<SecretStore> {
+    pub fn get_default() -> Option<SecretStore> {
         let ptr = unsafe { sys::wxSecretStore_GetDefault() };
         if ptr.is_null() {
             None
         } else {
             Some(SecretStore::from_raw(ptr))
         }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxSecretStore_Delete(self.as_ptr()) }
     }
 
     pub fn is_ok(&self) -> bool {
@@ -56,13 +71,13 @@ impl SecretStore {
         unsafe { sys::wxSecretStore_IsOkWithError(self.as_ptr(), error_message_wx.as_ptr()) != 0 }
     }
 
-    pub fn save(&self, service: impl AsRef<str>, username: impl AsRef<str>, password: &impl WxObject) -> bool {
+    pub fn save(&self, service: impl AsRef<str>, username: impl AsRef<str>, password: &impl WxSecretValue) -> bool {
         let service_wx = WxStr::new(service.as_ref());
         let username_wx = WxStr::new(username.as_ref());
         unsafe { sys::wxSecretStore_Save(self.as_ptr(), service_wx.as_ptr(), username_wx.as_ptr(), password.as_ptr()) != 0 }
     }
 
-    pub fn load(&self, service: impl AsRef<str>, username: impl AsRef<str>, password: &impl WxObject) -> bool {
+    pub fn load(&self, service: impl AsRef<str>, username: impl AsRef<str>, password: &impl WxSecretValue) -> bool {
         let service_wx = WxStr::new(service.as_ref());
         let username_wx = WxStr::new(username.as_ref());
         unsafe { sys::wxSecretStore_Load(self.as_ptr(), service_wx.as_ptr(), username_wx.as_ptr(), password.as_ptr()) != 0 }

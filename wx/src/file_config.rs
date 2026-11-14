@@ -16,6 +16,13 @@ impl FileConfig {
         Self(ConfigBase::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -36,6 +43,7 @@ impl WxObject for FileConfig {
 }
 
 impl WxConfigBase for FileConfig {}
+impl WxFileConfig for FileConfig {}
 
 use crate::support::WxStr;
 use crate::support::take_string;
@@ -63,12 +71,12 @@ impl FileConfig {
         Self::from_raw(ptr)
     }
 
-    pub fn get_global_file_name(&self, file_name: impl AsRef<str>) -> String {
+    pub fn get_global_file_name(file_name: impl AsRef<str>) -> String {
         let file_name_wx = WxStr::new(file_name.as_ref());
         take_string(unsafe { sys::wxFileConfig_GetGlobalFileName(file_name_wx.as_ptr()) })
     }
 
-    pub fn get_local_file_name(&self, file_name: impl AsRef<str>, style: i32) -> String {
+    pub fn get_local_file_name(file_name: impl AsRef<str>, style: i32) -> String {
         let file_name_wx = WxStr::new(file_name.as_ref());
         take_string(unsafe { sys::wxFileConfig_GetLocalFileName(file_name_wx.as_ptr(), style as c_int) })
     }

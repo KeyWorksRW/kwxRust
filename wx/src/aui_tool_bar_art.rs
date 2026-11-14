@@ -16,6 +16,13 @@ impl AuiToolBarArt {
         Self(Object::from_raw(ptr))
     }
 
+    /// Wraps a raw pointer without taking ownership of the native object.
+    /// Mirrors Go's `XFromPtr` and TypeScript's `(ptr, borrowed = true)`
+    /// constructor.  The pointer must really be an object of this type.
+    pub unsafe fn from_ptr(ptr: *mut c_void) -> Self {
+        Self::from_raw(ptr)
+    }
+
     pub fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -56,7 +63,7 @@ impl AuiToolBarArt {
         unsafe { sys::wxAuiToolBarArt_GetFlags(self.as_ptr()) as i32 }
     }
 
-    pub fn set_font(&self, font: &impl WxObject) {
+    pub fn set_font(&self, font: &impl WxFont) {
         unsafe { sys::wxAuiToolBarArt_SetFont(self.as_ptr(), font.as_ptr()) }
     }
 
@@ -77,43 +84,43 @@ impl AuiToolBarArt {
         unsafe { sys::wxAuiToolBarArt_GetTextOrientation(self.as_ptr()) as i32 }
     }
 
-    pub fn draw_background(&self, dc: &impl WxDC, window: &impl WxWindow, rect: &impl WxObject) {
+    pub fn draw_background(&self, dc: &impl WxDC, window: &impl WxWindow, rect: &impl WxRect) {
         unsafe { sys::wxAuiToolBarArt_DrawBackground(self.as_ptr(), dc.as_ptr(), window.as_ptr(), rect.as_ptr()) }
     }
 
-    pub fn draw_plain_background(&self, dc: &impl WxDC, window: &impl WxWindow, rect: &impl WxObject) {
+    pub fn draw_plain_background(&self, dc: &impl WxDC, window: &impl WxWindow, rect: &impl WxRect) {
         unsafe { sys::wxAuiToolBarArt_DrawPlainBackground(self.as_ptr(), dc.as_ptr(), window.as_ptr(), rect.as_ptr()) }
     }
 
-    pub fn draw_label(&self, dc: &impl WxDC, window: &impl WxWindow, item: &impl WxObject, rect: &impl WxObject) {
+    pub fn draw_label(&self, dc: &impl WxDC, window: &impl WxWindow, item: &impl WxAuiToolBarItem, rect: &impl WxRect) {
         unsafe { sys::wxAuiToolBarArt_DrawLabel(self.as_ptr(), dc.as_ptr(), window.as_ptr(), item.as_ptr(), rect.as_ptr()) }
     }
 
-    pub fn draw_button(&self, dc: &impl WxDC, window: &impl WxWindow, item: &impl WxObject, rect: &impl WxObject) {
+    pub fn draw_button(&self, dc: &impl WxDC, window: &impl WxWindow, item: &impl WxAuiToolBarItem, rect: &impl WxRect) {
         unsafe { sys::wxAuiToolBarArt_DrawButton(self.as_ptr(), dc.as_ptr(), window.as_ptr(), item.as_ptr(), rect.as_ptr()) }
     }
 
-    pub fn draw_drop_down_button(&self, dc: &impl WxDC, window: &impl WxWindow, item: &impl WxObject, rect: &impl WxObject) {
+    pub fn draw_drop_down_button(&self, dc: &impl WxDC, window: &impl WxWindow, item: &impl WxAuiToolBarItem, rect: &impl WxRect) {
         unsafe { sys::wxAuiToolBarArt_DrawDropDownButton(self.as_ptr(), dc.as_ptr(), window.as_ptr(), item.as_ptr(), rect.as_ptr()) }
     }
 
-    pub fn draw_control_label(&self, dc: &impl WxDC, window: &impl WxWindow, item: &impl WxObject, rect: &impl WxObject) {
+    pub fn draw_control_label(&self, dc: &impl WxDC, window: &impl WxWindow, item: &impl WxAuiToolBarItem, rect: &impl WxRect) {
         unsafe { sys::wxAuiToolBarArt_DrawControlLabel(self.as_ptr(), dc.as_ptr(), window.as_ptr(), item.as_ptr(), rect.as_ptr()) }
     }
 
-    pub fn draw_separator(&self, dc: &impl WxDC, window: &impl WxWindow, rect: &impl WxObject) {
+    pub fn draw_separator(&self, dc: &impl WxDC, window: &impl WxWindow, rect: &impl WxRect) {
         unsafe { sys::wxAuiToolBarArt_DrawSeparator(self.as_ptr(), dc.as_ptr(), window.as_ptr(), rect.as_ptr()) }
     }
 
-    pub fn draw_gripper(&self, dc: &impl WxDC, window: &impl WxWindow, rect: &impl WxObject) {
+    pub fn draw_gripper(&self, dc: &impl WxDC, window: &impl WxWindow, rect: &impl WxRect) {
         unsafe { sys::wxAuiToolBarArt_DrawGripper(self.as_ptr(), dc.as_ptr(), window.as_ptr(), rect.as_ptr()) }
     }
 
-    pub fn draw_overflow_button(&self, dc: &impl WxDC, window: &impl WxWindow, rect: &impl WxObject, state: i32) {
+    pub fn draw_overflow_button(&self, dc: &impl WxDC, window: &impl WxWindow, rect: &impl WxRect, state: i32) {
         unsafe { sys::wxAuiToolBarArt_DrawOverflowButton(self.as_ptr(), dc.as_ptr(), window.as_ptr(), rect.as_ptr(), state as c_int) }
     }
 
-    pub fn get_label_size(&self, dc: &impl WxDC, window: &impl WxWindow, item: &impl WxObject) -> Option<crate::size::Size> {
+    pub fn get_label_size(&self, dc: &impl WxDC, window: &impl WxWindow, item: &impl WxAuiToolBarItem) -> Option<crate::size::Size> {
         let ptr = unsafe { sys::wxAuiToolBarArt_GetLabelSize(self.as_ptr(), dc.as_ptr(), window.as_ptr(), item.as_ptr()) };
         if ptr.is_null() {
             None
@@ -122,7 +129,7 @@ impl AuiToolBarArt {
         }
     }
 
-    pub fn get_tool_size(&self, dc: &impl WxDC, window: &impl WxWindow, item: &impl WxObject) -> Option<crate::size::Size> {
+    pub fn get_tool_size(&self, dc: &impl WxDC, window: &impl WxWindow, item: &impl WxAuiToolBarItem) -> Option<crate::size::Size> {
         let ptr = unsafe { sys::wxAuiToolBarArt_GetToolSize(self.as_ptr(), dc.as_ptr(), window.as_ptr(), item.as_ptr()) };
         if ptr.is_null() {
             None
@@ -139,7 +146,7 @@ impl AuiToolBarArt {
         unsafe { sys::wxAuiToolBarArt_SetElementSize(self.as_ptr(), element_id as c_int, size as c_int) }
     }
 
-    pub fn show_drop_down(&self, window: &impl WxWindow, items: &impl WxObject) -> i32 {
+    pub fn show_drop_down(&self, window: &impl WxWindow, items: &impl WxAuiToolBarItemArray) -> i32 {
         unsafe { sys::wxAuiToolBarArt_ShowDropDown(self.as_ptr(), window.as_ptr(), items.as_ptr()) as i32 }
     }
 
