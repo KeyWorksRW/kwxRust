@@ -43,7 +43,7 @@ impl WxObject for InputSinkEvent {
 }
 
 impl WxInputSinkEvent for InputSinkEvent {}
-use crate::support::take_string;
+use crate::support::borrow_cstring;
 
 impl InputSinkEvent {
     pub fn last_error(&self) -> i32 {
@@ -51,7 +51,7 @@ impl InputSinkEvent {
     }
 
     pub fn last_input(&self) -> String {
-        take_string(unsafe { sys::wxInputSinkEvent_LastInput(self.as_ptr()) })
+        borrow_cstring(unsafe { sys::wxInputSinkEvent_LastInput(self.as_ptr()) })
     }
 
     pub fn last_read(&self) -> i32 {

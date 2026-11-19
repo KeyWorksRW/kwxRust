@@ -45,9 +45,20 @@ impl WxObject for DataObjectComposite {
 impl WxDataObject for DataObjectComposite {}
 impl WxDataObjectComposite for DataObjectComposite {}
 
+use crate::data_format::DataFormat;
+
 impl DataObjectComposite {
     pub fn add(&self, data: *mut c_void, preferred: i32) {
         unsafe { sys::wxDataObjectComposite_Add(self.as_ptr(), data, preferred as c_int) }
+    }
+
+    pub fn get_received_format(&self) -> Option<DataFormat> {
+        let ptr = unsafe { sys::wxDataObjectComposite_GetReceivedFormat(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(DataFormat::from_raw(ptr))
+        }
     }
 
     pub fn new() -> Self {

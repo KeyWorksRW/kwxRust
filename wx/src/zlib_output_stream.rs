@@ -83,8 +83,8 @@ impl ZlibOutputStream {
         unsafe { sys::wxZlibOutputStream_Close(self.as_ptr()) != 0 }
     }
 
-    pub fn get_length(&self) -> i32 {
-        unsafe { sys::wxZlibOutputStream_GetLength(self.as_ptr()) as i32 }
+    pub fn get_length(&self) -> i64 {
+        unsafe { sys::wxZlibOutputStream_GetLength(self.as_ptr()) as i64 }
     }
 
 }

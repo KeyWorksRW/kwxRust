@@ -84,16 +84,16 @@ impl ZipEntry {
         }
     }
 
-    pub fn get_size(&self) -> i32 {
-        unsafe { sys::wxZipEntry_GetSize(self.as_ptr()) as i32 }
+    pub fn get_size(&self) -> i64 {
+        unsafe { sys::wxZipEntry_GetSize(self.as_ptr()) as i64 }
     }
 
-    pub fn get_offset(&self) -> i32 {
-        unsafe { sys::wxZipEntry_GetOffset(self.as_ptr()) as i32 }
+    pub fn get_offset(&self) -> i64 {
+        unsafe { sys::wxZipEntry_GetOffset(self.as_ptr()) as i64 }
     }
 
-    pub fn get_compressed_size(&self) -> i32 {
-        unsafe { sys::wxZipEntry_GetCompressedSize(self.as_ptr()) as i32 }
+    pub fn get_compressed_size(&self) -> i64 {
+        unsafe { sys::wxZipEntry_GetCompressedSize(self.as_ptr()) as i64 }
     }
 
     pub fn get_name(&self, path_format: i32) -> String {
@@ -148,8 +148,8 @@ impl ZipEntry {
         unsafe { sys::wxZipEntry_IsMadeByUnix(self.as_ptr()) != 0 }
     }
 
-    pub fn set_size(&self, size: i32) {
-        unsafe { sys::wxZipEntry_SetSize(self.as_ptr(), size as c_int) }
+    pub fn set_size(&self, size: i64) {
+        unsafe { sys::wxZipEntry_SetSize(self.as_ptr(), size) }
     }
 
     pub fn set_method(&self, method: i32) {

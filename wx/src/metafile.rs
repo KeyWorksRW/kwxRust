@@ -81,5 +81,22 @@ impl Metafile {
         unsafe { sys::wxMetafile_SetClipboard(self.as_ptr(), size.width as c_int, size.height as c_int) != 0 }
     }
 
+    pub fn get_width(&self) -> i32 {
+        unsafe { sys::wxMetafile_GetWidth(self.as_ptr()) as i32 }
+    }
+
+    pub fn get_height(&self) -> i32 {
+        unsafe { sys::wxMetafile_GetHeight(self.as_ptr()) as i32 }
+    }
+
+    pub fn get_size(&self) -> Option<crate::size::Size> {
+        let ptr = unsafe { sys::wxMetafile_GetSize(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(crate::size::Size::from_raw(ptr))
+        }
+    }
+
 }
 

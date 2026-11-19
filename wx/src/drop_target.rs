@@ -43,9 +43,20 @@ impl WxObject for DropTarget {
 }
 
 impl WxDropTarget for DropTarget {}
+use crate::data_object::DataObject;
+
 impl DropTarget {
-    pub fn get_data(&self) {
-        unsafe { sys::wxDropTarget_GetData(self.as_ptr()) }
+    pub fn get_data(&self) -> bool {
+        unsafe { sys::wxDropTarget_GetData(self.as_ptr()) != 0 }
+    }
+
+    pub fn get_data_object(&self) -> Option<DataObject> {
+        let ptr = unsafe { sys::wxDropTarget_GetDataObject(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(DataObject::from_raw(ptr))
+        }
     }
 
     pub fn set_data_object(&self, data_object: &impl WxDataObject) {
@@ -89,6 +100,46 @@ impl DropTarget {
 
     pub fn set_on_leave(&self, p_function: *mut c_void) {
         unsafe { sys::kwxDropTarget_SetOnLeave(self.as_ptr(), p_function) }
+    }
+
+    pub fn set_on_data_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxDropTarget_SetOnDataWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_drop_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxDropTarget_SetOnDropWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_enter_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxDropTarget_SetOnEnterWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_drag_over_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxDropTarget_SetOnDragOverWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_leave_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxDropTarget_SetOnLeaveWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_data_result(&self, result: i32) {
+        unsafe { sys::kwxDropTarget_SetDataResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_drop_result(&self, result: i32) {
+        unsafe { sys::kwxDropTarget_SetDropResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_enter_result(&self, result: i32) {
+        unsafe { sys::kwxDropTarget_SetEnterResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_drag_over_result(&self, result: i32) {
+        unsafe { sys::kwxDropTarget_SetDragOverResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn get_drop_result(&self) -> i32 {
+        unsafe { sys::kwxDropTarget_GetDropResult(self.as_ptr()) as i32 }
     }
 
 }

@@ -272,5 +272,53 @@ impl Frame {
         unsafe { sys::wxFrame_PopStatusText(self.as_ptr(), field as c_int) }
     }
 
+    /// Alternative constructor wrapping `kwxFrame_Create`; takes every
+    /// declared parameter.  `new`/`new_full` wrap the wxWidgets-own constructor.
+    pub fn new_with_state(parent: &impl WxWindow, id: i32, title: impl AsRef<str>, x: i32, y: i32, width: i32, height: i32, style: i32) -> Self {
+        let title_wx = WxStr::new(title.as_ref());
+        let ptr = unsafe { sys::kwxFrame_Create(parent.as_ptr(), id as c_int, title_wx.as_ptr(), x as c_int, y as c_int, width as c_int, height as c_int, style as c_long) };
+        assert!(!ptr.is_null(), "kwxFrame_Create returned null");
+        Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::kwxFrame_Delete(self.as_ptr()) }
+    }
+
+    pub fn set_callback_object(&self, object: *mut c_void) {
+        unsafe { sys::kwxFrame_SetCallbackObject(self.as_ptr(), object) }
+    }
+
+    pub fn get_callback_object(&self) -> *mut c_void {
+        unsafe { sys::kwxFrame_GetCallbackObject(self.as_ptr()) }
+    }
+
+    pub fn set_on_process_event(&self, p_function: *mut c_void) {
+        unsafe { sys::kwxFrame_SetOnProcessEvent(self.as_ptr(), p_function) }
+    }
+
+    pub fn set_on_process_event_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxFrame_SetOnProcessEventWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_process_event_result(&self, result: bool) {
+        unsafe { sys::kwxFrame_SetProcessEventResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_on_try_before(&self, p_function: *mut c_void) {
+        unsafe { sys::kwxFrame_SetOnTryBefore(self.as_ptr(), p_function) }
+    }
+
+    pub fn set_on_try_before_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxFrame_SetOnTryBeforeWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_try_before_result(&self, result: bool) {
+        unsafe { sys::kwxFrame_SetTryBeforeResult(self.as_ptr(), result as c_int) }
+    }
+
 }
 

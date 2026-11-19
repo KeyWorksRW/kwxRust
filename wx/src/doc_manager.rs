@@ -45,10 +45,49 @@ impl WxObject for DocManager {
 impl WxEvtHandler for DocManager {}
 impl WxDocManager for DocManager {}
 
+use crate::doc_template::DocTemplate;
 use crate::document::Document;
 use crate::support::WxStr;
+use crate::view::View;
 
 impl DocManager {
+    pub fn new(flags: i32, initialize: bool) -> Self {
+        let ptr = unsafe { sys::wxDocManager_Create(flags as c_int, initialize as c_int) };
+        assert!(!ptr.is_null(), "wxDocManager_Create returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn new_full(flags: i32, initialize: bool) -> Self {
+        let ptr = unsafe { sys::wxDocManager_Create(flags as c_int, initialize as c_int) };
+        assert!(!ptr.is_null(), "wxDocManager_Create returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn create_default() -> Self {
+        let ptr = unsafe { sys::wxDocManager_CreateDefault() };
+        assert!(!ptr.is_null(), "wxDocManager_CreateDefault returned null");
+        Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxDocManager_Delete(self.as_ptr()) }
+    }
+
+    pub fn add_document(&self, doc: &impl WxDocument) {
+        unsafe { sys::wxDocManager_AddDocument(self.as_ptr(), doc.as_ptr()) }
+    }
+
+    pub fn associate_template(&self, doc_template: &impl WxDocTemplate) {
+        unsafe { sys::wxDocManager_AssociateTemplate(self.as_ptr(), doc_template.as_ptr()) }
+    }
+
+    pub fn clear(&self, force: bool) -> bool {
+        unsafe { sys::wxDocManager_Clear(self.as_ptr(), force as c_int) != 0 }
+    }
+
     pub fn close_documents(&self, force: bool) -> bool {
         unsafe { sys::wxDocManager_CloseDocuments(self.as_ptr(), force as c_int) != 0 }
     }
@@ -72,6 +111,10 @@ impl DocManager {
         }
     }
 
+    pub fn disassociate_template(&self, doc_template: &impl WxDocTemplate) {
+        unsafe { sys::wxDocManager_DisassociateTemplate(self.as_ptr(), doc_template.as_ptr()) }
+    }
+
     pub fn file_history_load(&self, config: &impl WxConfigBase) {
         unsafe { sys::wxDocManager_FileHistoryLoad(self.as_ptr(), config.as_ptr()) }
     }
@@ -80,12 +123,69 @@ impl DocManager {
         unsafe { sys::wxDocManager_FileHistorySave(self.as_ptr(), config.as_ptr()) }
     }
 
-    pub fn file_history_use_menu(&self, menu: *mut c_void) {
-        unsafe { sys::wxDocManager_FileHistoryUseMenu(self.as_ptr(), menu) }
+    pub fn file_history_use_menu(&self, menu: &impl WxMenu) {
+        unsafe { sys::wxDocManager_FileHistoryUseMenu(self.as_ptr(), menu.as_ptr()) }
     }
 
-    pub fn get_document_manager() -> *mut c_void {
-        unsafe { sys::wxDocManager_GetDocumentManager() }
+    pub fn get_current_document(&self) -> Option<Document> {
+        let ptr = unsafe { sys::wxDocManager_GetCurrentDocument(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(Document::from_raw(ptr))
+        }
+    }
+
+    pub fn get_current_view(&self) -> Option<View> {
+        let ptr = unsafe { sys::wxDocManager_GetCurrentView(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(View::from_raw(ptr))
+        }
+    }
+
+    pub fn get_document_count(&self) -> i32 {
+        unsafe { sys::wxDocManager_GetDocumentCount(self.as_ptr()) as i32 }
+    }
+
+    pub fn get_document_at(&self, pos: i32) -> Option<Document> {
+        let ptr = unsafe { sys::wxDocManager_GetDocumentAt(self.as_ptr(), pos as c_int) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(Document::from_raw(ptr))
+        }
+    }
+
+    pub fn get_document_manager() -> Option<DocManager> {
+        let ptr = unsafe { sys::wxDocManager_GetDocumentManager() };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(DocManager::from_raw(ptr))
+        }
+    }
+
+    pub fn get_max_docs_open(&self) -> i32 {
+        unsafe { sys::wxDocManager_GetMaxDocsOpen(self.as_ptr()) as i32 }
+    }
+
+    pub fn get_template_at(&self, pos: i32) -> Option<DocTemplate> {
+        let ptr = unsafe { sys::wxDocManager_GetTemplateAt(self.as_ptr(), pos as c_int) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(DocTemplate::from_raw(ptr))
+        }
+    }
+
+    pub fn get_template_count(&self) -> i32 {
+        unsafe { sys::wxDocManager_GetTemplateCount(self.as_ptr()) as i32 }
+    }
+
+    pub fn remove_document(&self, doc: &impl WxDocument) {
+        unsafe { sys::wxDocManager_RemoveDocument(self.as_ptr(), doc.as_ptr()) }
     }
 
     pub fn set_max_docs_open(&self, n: i32) {

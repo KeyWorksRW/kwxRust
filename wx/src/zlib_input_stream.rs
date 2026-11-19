@@ -75,8 +75,8 @@ impl ZlibInputStream {
         unsafe { sys::wxZlibInputStream_SetDictionary(self.as_ptr(), data, size as c_int) != 0 }
     }
 
-    pub fn get_length(&self) -> i32 {
-        unsafe { sys::wxZlibInputStream_GetLength(self.as_ptr()) as i32 }
+    pub fn get_length(&self) -> i64 {
+        unsafe { sys::wxZlibInputStream_GetLength(self.as_ptr()) as i64 }
     }
 
 }

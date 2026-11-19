@@ -43,3 +43,87 @@ impl WxObject for ItemAttr {
 }
 
 impl WxItemAttr for ItemAttr {}
+use crate::colour::Colour;
+use crate::font::Font;
+
+impl ItemAttr {
+    pub fn new() -> Self {
+        let ptr = unsafe { sys::wxItemAttr_Create() };
+        assert!(!ptr.is_null(), "wxItemAttr_Create returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn new_full() -> Self {
+        let ptr = unsafe { sys::wxItemAttr_Create() };
+        assert!(!ptr.is_null(), "wxItemAttr_Create returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn copy(&self, other: &impl WxItemAttr) {
+        unsafe { sys::wxItemAttr_Copy(self.as_ptr(), other.as_ptr()) }
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxItemAttr_Delete(self.as_ptr()) }
+    }
+
+    pub fn set_text_colour(&self, colour: &impl WxColour) {
+        unsafe { sys::wxItemAttr_SetTextColour(self.as_ptr(), colour.as_ptr()) }
+    }
+
+    pub fn set_background_colour(&self, colour: &impl WxColour) {
+        unsafe { sys::wxItemAttr_SetBackgroundColour(self.as_ptr(), colour.as_ptr()) }
+    }
+
+    pub fn set_font(&self, font: &impl WxFont) {
+        unsafe { sys::wxItemAttr_SetFont(self.as_ptr(), font.as_ptr()) }
+    }
+
+    pub fn has_text_colour(&self) -> bool {
+        unsafe { sys::wxItemAttr_HasTextColour(self.as_ptr()) != 0 }
+    }
+
+    pub fn has_background_colour(&self) -> bool {
+        unsafe { sys::wxItemAttr_HasBackgroundColour(self.as_ptr()) != 0 }
+    }
+
+    pub fn has_font(&self) -> bool {
+        unsafe { sys::wxItemAttr_HasFont(self.as_ptr()) != 0 }
+    }
+
+    pub fn has_colours(&self) -> bool {
+        unsafe { sys::wxItemAttr_HasColours(self.as_ptr()) != 0 }
+    }
+
+    pub fn get_text_colour(&self) -> Option<Colour> {
+        let ptr = unsafe { sys::wxItemAttr_GetTextColour(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(Colour::from_raw(ptr))
+        }
+    }
+
+    pub fn get_background_colour(&self) -> Option<Colour> {
+        let ptr = unsafe { sys::wxItemAttr_GetBackgroundColour(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(Colour::from_raw(ptr))
+        }
+    }
+
+    pub fn get_font(&self) -> Option<Font> {
+        let ptr = unsafe { sys::wxItemAttr_GetFont(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(Font::from_raw(ptr))
+        }
+    }
+
+}
+

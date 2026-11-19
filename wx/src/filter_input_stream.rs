@@ -54,8 +54,8 @@ impl FilterInputStream {
         unsafe { sys::wxFilterInputStream_Delete(self.as_ptr()) }
     }
 
-    pub fn get_length(&self) -> i32 {
-        unsafe { sys::wxFilterInputStream_GetLength(self.as_ptr()) as i32 }
+    pub fn get_length(&self) -> i64 {
+        unsafe { sys::wxFilterInputStream_GetLength(self.as_ptr()) as i64 }
     }
 
     pub fn get_filter_input_stream(&self) -> Option<InputStream> {

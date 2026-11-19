@@ -50,6 +50,7 @@ impl WxAuiNotebook for AuiNotebook {}
 
 use crate::array_int::ArrayInt;
 use crate::aui_tab_art::AuiTabArt;
+use crate::aui_tab_ctrl::AuiTabCtrl;
 use crate::aui_tab_ctrl_array::AuiTabCtrlArray;
 use crate::support::Point;
 use crate::support::Size;
@@ -299,6 +300,51 @@ impl AuiNotebook {
     pub fn load_layout(&self, name: impl AsRef<str>, deserializer: &impl WxAuiDeserializer) {
         let name_wx = WxStr::new(name.as_ref());
         unsafe { sys::wxAuiNotebook_LoadLayout(self.as_ptr(), name_wx.as_ptr(), deserializer.as_ptr()) }
+    }
+
+    pub fn add_page_with_bundle(&self, page: &impl WxWindow, caption: impl AsRef<str>, select: bool, bitmap: &impl WxBitmapBundle) -> bool {
+        let caption_wx = WxStr::new(caption.as_ref());
+        unsafe { sys::wxAuiNotebook_AddPageWithBundle(self.as_ptr(), page.as_ptr(), caption_wx.as_ptr(), select as c_int, bitmap.as_ptr()) != 0 }
+    }
+
+    pub fn insert_page_with_bundle(&self, page_idx: i32, page: &impl WxWindow, caption: impl AsRef<str>, select: bool, bitmap: &impl WxBitmapBundle) -> bool {
+        let caption_wx = WxStr::new(caption.as_ref());
+        unsafe { sys::wxAuiNotebook_InsertPageWithBundle(self.as_ptr(), page_idx as c_int, page.as_ptr(), caption_wx.as_ptr(), select as c_int, bitmap.as_ptr()) != 0 }
+    }
+
+    pub fn set_page_bitmap_bundle(&self, page: i32, bitmap: &impl WxBitmapBundle) -> bool {
+        unsafe { sys::wxAuiNotebook_SetPageBitmapBundle(self.as_ptr(), page as c_int, bitmap.as_ptr()) != 0 }
+    }
+
+    pub fn calculate_new_split_size(&self) -> Option<crate::size::Size> {
+        let ptr = unsafe { sys::wxAuiNotebook_CalculateNewSplitSize(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(crate::size::Size::from_raw(ptr))
+        }
+    }
+
+    pub fn get_tab_ctrl_from_point(&self, point: Point) -> Option<AuiTabCtrl> {
+        let ptr = unsafe { sys::wxAuiNotebook_GetTabCtrlFromPoint(self.as_ptr(), point.x as c_int, point.y as c_int) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(AuiTabCtrl::from_raw(ptr))
+        }
+    }
+
+    pub fn find_tab_ctrl(&self, page: &impl WxWindow) -> Option<AuiTabCtrl> {
+        let ptr = unsafe { sys::wxAuiNotebook_FindTabCtrl(self.as_ptr(), page.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(AuiTabCtrl::from_raw(ptr))
+        }
+    }
+
+    pub fn find_tab_index(&self, page: &impl WxWindow) -> i32 {
+        unsafe { sys::wxAuiNotebook_FindTabIndex(self.as_ptr(), page.as_ptr()) as i32 }
     }
 
 }

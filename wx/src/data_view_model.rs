@@ -44,3 +44,216 @@ impl WxObject for DataViewModel {
 
 impl WxDataViewModel for DataViewModel {}
 
+impl DataViewModel {
+    pub fn create_default(p_object: *mut c_void) -> Self {
+        let ptr = unsafe { sys::wxDataViewModel_CreateDefault(p_object) };
+        assert!(!ptr.is_null(), "wxDataViewModel_CreateDefault returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn set_on_get_value_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxDataViewModel_SetOnGetValueWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_set_value_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxDataViewModel_SetOnSetValueWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_get_parent_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxDataViewModel_SetOnGetParentWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_is_container_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxDataViewModel_SetOnIsContainerWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_get_children_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxDataViewModel_SetOnGetChildrenWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_has_value_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxDataViewModel_SetOnHasValueWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_is_enabled_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxDataViewModel_SetOnIsEnabledWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_has_container_columns_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxDataViewModel_SetOnHasContainerColumnsWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_compare_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxDataViewModel_SetOnCompareWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_has_default_compare_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxDataViewModel_SetOnHasDefaultCompareWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_resort_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxDataViewModel_SetOnResortWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_get_attr_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxDataViewModel_SetOnGetAttrWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn get_pending_column(&self) -> u32 {
+        unsafe { sys::wxDataViewModel_GetPendingColumn(self.as_ptr()) as u32 }
+    }
+
+    pub fn get_pending_ascending(&self) -> bool {
+        unsafe { sys::wxDataViewModel_GetPendingAscending(self.as_ptr()) != 0 }
+    }
+
+    pub fn set_get_value_result(&self, value: &impl WxVariant) {
+        unsafe { sys::wxDataViewModel_SetGetValueResult(self.as_ptr(), value.as_ptr()) }
+    }
+
+    pub fn set_set_value_result(&self, result: bool) {
+        unsafe { sys::wxDataViewModel_SetSetValueResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_get_parent_result(&self, parent: &impl WxDataViewItem) {
+        unsafe { sys::wxDataViewModel_SetGetParentResult(self.as_ptr(), parent.as_ptr()) }
+    }
+
+    pub fn set_is_container_result(&self, result: bool) {
+        unsafe { sys::wxDataViewModel_SetIsContainerResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_get_children_count_result(&self, count: u32) {
+        unsafe { sys::wxDataViewModel_SetGetChildrenCountResult(self.as_ptr(), count as c_uint) }
+    }
+
+    pub fn add_child_result(&self, item: &impl WxDataViewItem) {
+        unsafe { sys::wxDataViewModel_AddChildResult(self.as_ptr(), item.as_ptr()) }
+    }
+
+    pub fn set_has_value_result(&self, result: bool) {
+        unsafe { sys::wxDataViewModel_SetHasValueResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_is_enabled_result(&self, result: bool) {
+        unsafe { sys::wxDataViewModel_SetIsEnabledResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_has_container_columns_result(&self, result: bool) {
+        unsafe { sys::wxDataViewModel_SetHasContainerColumnsResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_compare_result(&self, result: i32) {
+        unsafe { sys::wxDataViewModel_SetCompareResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_has_default_compare_result(&self, result: bool) {
+        unsafe { sys::wxDataViewModel_SetHasDefaultCompareResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_get_attr_result(&self, attr: &impl WxDataViewItemAttr) {
+        unsafe { sys::wxDataViewModel_SetGetAttrResult(self.as_ptr(), attr.as_ptr()) }
+    }
+
+    pub fn get_value(&self, variant: &impl WxVariant, item: &impl WxDataViewItem, col: u32) {
+        unsafe { sys::wxDataViewModel_GetValue(self.as_ptr(), variant.as_ptr(), item.as_ptr(), col as c_uint) }
+    }
+
+    pub fn set_value(&self, variant: &impl WxVariant, item: &impl WxDataViewItem, col: u32) -> bool {
+        unsafe { sys::wxDataViewModel_SetValue(self.as_ptr(), variant.as_ptr(), item.as_ptr(), col as c_uint) != 0 }
+    }
+
+    pub fn change_value(&self, variant: &impl WxVariant, item: &impl WxDataViewItem, col: u32) -> bool {
+        unsafe { sys::wxDataViewModel_ChangeValue(self.as_ptr(), variant.as_ptr(), item.as_ptr(), col as c_uint) != 0 }
+    }
+
+    pub fn has_value(&self, item: &impl WxDataViewItem, col: u32) -> bool {
+        unsafe { sys::wxDataViewModel_HasValue(self.as_ptr(), item.as_ptr(), col as c_uint) != 0 }
+    }
+
+    pub fn is_enabled(&self, item: &impl WxDataViewItem, col: u32) -> bool {
+        unsafe { sys::wxDataViewModel_IsEnabled(self.as_ptr(), item.as_ptr(), col as c_uint) != 0 }
+    }
+
+    pub fn get_attr(&self, item: &impl WxDataViewItem, col: u32, attr: &impl WxDataViewItemAttr) -> bool {
+        unsafe { sys::wxDataViewModel_GetAttr(self.as_ptr(), item.as_ptr(), col as c_uint, attr.as_ptr()) != 0 }
+    }
+
+    pub fn get_parent(&self, item: &impl WxDataViewItem, parent: &impl WxDataViewItem) {
+        unsafe { sys::wxDataViewModel_GetParent(self.as_ptr(), item.as_ptr(), parent.as_ptr()) }
+    }
+
+    pub fn is_container(&self, item: &impl WxDataViewItem) -> bool {
+        unsafe { sys::wxDataViewModel_IsContainer(self.as_ptr(), item.as_ptr()) != 0 }
+    }
+
+    pub fn has_container_columns(&self, item: &impl WxDataViewItem) -> bool {
+        unsafe { sys::wxDataViewModel_HasContainerColumns(self.as_ptr(), item.as_ptr()) != 0 }
+    }
+
+    pub fn get_children(&self, item: &impl WxDataViewItem, children: &impl WxDataViewItemArray) -> u32 {
+        unsafe { sys::wxDataViewModel_GetChildren(self.as_ptr(), item.as_ptr(), children.as_ptr()) as u32 }
+    }
+
+    pub fn item_added(&self, parent: &impl WxDataViewItem, item: &impl WxDataViewItem) -> bool {
+        unsafe { sys::wxDataViewModel_ItemAdded(self.as_ptr(), parent.as_ptr(), item.as_ptr()) != 0 }
+    }
+
+    pub fn items_added(&self, parent: &impl WxDataViewItem, items: &impl WxDataViewItemArray) -> bool {
+        unsafe { sys::wxDataViewModel_ItemsAdded(self.as_ptr(), parent.as_ptr(), items.as_ptr()) != 0 }
+    }
+
+    pub fn item_deleted(&self, parent: &impl WxDataViewItem, item: &impl WxDataViewItem) -> bool {
+        unsafe { sys::wxDataViewModel_ItemDeleted(self.as_ptr(), parent.as_ptr(), item.as_ptr()) != 0 }
+    }
+
+    pub fn items_deleted(&self, parent: &impl WxDataViewItem, items: &impl WxDataViewItemArray) -> bool {
+        unsafe { sys::wxDataViewModel_ItemsDeleted(self.as_ptr(), parent.as_ptr(), items.as_ptr()) != 0 }
+    }
+
+    pub fn item_changed(&self, item: &impl WxDataViewItem) -> bool {
+        unsafe { sys::wxDataViewModel_ItemChanged(self.as_ptr(), item.as_ptr()) != 0 }
+    }
+
+    pub fn items_changed(&self, items: &impl WxDataViewItemArray) -> bool {
+        unsafe { sys::wxDataViewModel_ItemsChanged(self.as_ptr(), items.as_ptr()) != 0 }
+    }
+
+    pub fn value_changed(&self, item: &impl WxDataViewItem, col: u32) -> bool {
+        unsafe { sys::wxDataViewModel_ValueChanged(self.as_ptr(), item.as_ptr(), col as c_uint) != 0 }
+    }
+
+    pub fn cleared(&self) -> bool {
+        unsafe { sys::wxDataViewModel_Cleared(self.as_ptr()) != 0 }
+    }
+
+    pub fn before_reset(&self) -> bool {
+        unsafe { sys::wxDataViewModel_BeforeReset(self.as_ptr()) != 0 }
+    }
+
+    pub fn after_reset(&self) -> bool {
+        unsafe { sys::wxDataViewModel_AfterReset(self.as_ptr()) != 0 }
+    }
+
+    pub fn compare(&self, item1: &impl WxDataViewItem, item2: &impl WxDataViewItem, column: u32, ascending: bool) -> i32 {
+        unsafe { sys::wxDataViewModel_Compare(self.as_ptr(), item1.as_ptr(), item2.as_ptr(), column as c_uint, ascending as c_int) as i32 }
+    }
+
+    pub fn has_default_compare(&self) -> bool {
+        unsafe { sys::wxDataViewModel_HasDefaultCompare(self.as_ptr()) != 0 }
+    }
+
+    pub fn resort(&self) {
+        unsafe { sys::wxDataViewModel_Resort(self.as_ptr()) }
+    }
+
+    pub fn inc_ref(&self) {
+        unsafe { sys::wxDataViewModel_IncRef(self.as_ptr()) }
+    }
+
+    pub fn dec_ref(&self) {
+        unsafe { sys::wxDataViewModel_DecRef(self.as_ptr()) }
+    }
+
+}
+

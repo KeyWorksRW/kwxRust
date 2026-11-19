@@ -93,6 +93,20 @@ impl GenericFileDialog {
         take_string(unsafe { sys::wxGenericFileDialog_GetDirectory(self.as_ptr()) })
     }
 
+    pub fn set_directory(&self, dir: impl AsRef<str>) {
+        let dir_wx = WxStr::new(dir.as_ref());
+        unsafe { sys::wxGenericFileDialog_SetDirectory(self.as_ptr(), dir_wx.as_ptr()) }
+    }
+
+    pub fn get_message(&self) -> String {
+        take_string(unsafe { sys::wxGenericFileDialog_GetMessage(self.as_ptr()) })
+    }
+
+    pub fn set_message(&self, message: impl AsRef<str>) {
+        let message_wx = WxStr::new(message.as_ref());
+        unsafe { sys::wxGenericFileDialog_SetMessage(self.as_ptr(), message_wx.as_ptr()) }
+    }
+
     pub fn get_filename(&self) -> String {
         take_string(unsafe { sys::wxGenericFileDialog_GetFilename(self.as_ptr()) })
     }
@@ -121,6 +135,10 @@ impl GenericFileDialog {
 
     pub fn set_customize_hook(&self, customize_hook: &impl WxFileDialogCustomizeHook) -> bool {
         unsafe { sys::wxGenericFileDialog_SetCustomizeHook(self.as_ptr(), customize_hook.as_ptr()) != 0 }
+    }
+
+    pub fn get_currently_selected_filename(&self) -> String {
+        take_string(unsafe { sys::wxGenericFileDialog_GetCurrentlySelectedFilename(self.as_ptr()) })
     }
 
     /// Deletes the native object.  Call this only when this handle owns it, i.e.

@@ -153,6 +153,12 @@ impl Menu {
         Self::from_raw(ptr)
     }
 
+    pub fn create_default() -> Self {
+        let ptr = unsafe { sys::wxMenu_CreateDefault() };
+        assert!(!ptr.is_null(), "wxMenu_CreateDefault returned null");
+        Self::from_raw(ptr)
+    }
+
     pub fn delete_by_id(&self, id: i32) {
         unsafe { sys::wxMenu_DeleteById(self.as_ptr(), id as c_int) }
     }

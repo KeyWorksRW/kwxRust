@@ -112,6 +112,12 @@ impl BitmapBundle {
         Self::from_raw(ptr)
     }
 
+    pub fn create_default() -> Self {
+        let ptr = unsafe { sys::wxBitmapBundle_CreateDefault() };
+        assert!(!ptr.is_null(), "wxBitmapBundle_CreateDefault returned null");
+        Self::from_raw(ptr)
+    }
+
     pub fn create_from_base64(base64: *mut c_void, len: usize, bitmap_type: i32) -> Self {
         let ptr = unsafe { sys::wxBitmapBundle_CreateFromBase64(base64, len, bitmap_type as c_int) };
         assert!(!ptr.is_null(), "wxBitmapBundle_CreateFromBase64 returned null");

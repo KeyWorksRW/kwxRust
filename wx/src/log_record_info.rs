@@ -62,8 +62,8 @@ impl LogRecordInfo {
         take_string(unsafe { sys::wxLogRecordInfo_GetComponent(self.as_ptr()) })
     }
 
-    pub fn get_timestamp(&self) -> i32 {
-        unsafe { sys::wxLogRecordInfo_GetTimestamp(self.as_ptr()) as i32 }
+    pub fn get_timestamp(&self) -> i64 {
+        unsafe { sys::wxLogRecordInfo_GetTimestamp(self.as_ptr()) as i64 }
     }
 
     pub fn get_level(&self) -> i32 {

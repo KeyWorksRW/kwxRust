@@ -49,6 +49,7 @@ impl WxAuiToolBar for AuiToolBar {}
 
 use crate::aui_tool_bar_art::AuiToolBarArt;
 use crate::aui_tool_bar_item::AuiToolBarItem;
+use crate::object::Object;
 use crate::support::Point;
 use crate::support::Size;
 use crate::support::WxStr;
@@ -244,6 +245,27 @@ impl AuiToolBar {
 
     pub fn delete_by_index(&self, tool_id: i32) -> bool {
         unsafe { sys::wxAuiToolBar_DeleteByIndex(self.as_ptr(), tool_id as c_int) != 0 }
+    }
+
+    pub fn destroy_tool(&self, tool_id: i32) -> bool {
+        unsafe { sys::wxAuiToolBar_DestroyTool(self.as_ptr(), tool_id as c_int) != 0 }
+    }
+
+    pub fn destroy_tool_by_index(&self, idx: i32) -> bool {
+        unsafe { sys::wxAuiToolBar_DestroyToolByIndex(self.as_ptr(), idx as c_int) != 0 }
+    }
+
+    pub fn get_tool_client_data(&self, tool_id: i32) -> Option<Object> {
+        let ptr = unsafe { sys::wxAuiToolBar_GetToolClientData(self.as_ptr(), tool_id as c_int) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(Object::from_raw(ptr))
+        }
+    }
+
+    pub fn set_tool_client_data(&self, tool_id: i32, client_data: &impl WxObject) {
+        unsafe { sys::wxAuiToolBar_SetToolClientData(self.as_ptr(), tool_id as c_int, client_data.as_ptr()) }
     }
 
     pub fn get_tool_count(&self) -> usize {
@@ -442,6 +464,44 @@ impl AuiToolBar {
 
     pub fn is_pane_valid(&self, pane: &impl WxAuiPaneInfo) -> bool {
         unsafe { sys::wxAuiToolBar_IsPaneValid(self.as_ptr(), pane.as_ptr()) != 0 }
+    }
+
+    pub fn add_tool_by_label_bundle(&self, tool_id: i32, label: impl AsRef<str>, bitmap: &impl WxBitmapBundle, short_help_string: impl AsRef<str>, kind: i32) -> Option<AuiToolBarItem> {
+        let label_wx = WxStr::new(label.as_ref());
+        let short_help_string_wx = WxStr::new(short_help_string.as_ref());
+        let ptr = unsafe { sys::wxAuiToolBar_AddToolByLabelBundle(self.as_ptr(), tool_id as c_int, label_wx.as_ptr(), bitmap.as_ptr(), short_help_string_wx.as_ptr(), kind as c_int) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(AuiToolBarItem::from_raw(ptr))
+        }
+    }
+
+    pub fn add_tool_bundle(&self, tool_id: i32, label: impl AsRef<str>, bitmap: &impl WxBitmapBundle, disabled_bitmap: &impl WxBitmapBundle, kind: i32, short_help_string: impl AsRef<str>, long_help_string: impl AsRef<str>, client_data: &impl WxObject) -> Option<AuiToolBarItem> {
+        let label_wx = WxStr::new(label.as_ref());
+        let short_help_string_wx = WxStr::new(short_help_string.as_ref());
+        let long_help_string_wx = WxStr::new(long_help_string.as_ref());
+        let ptr = unsafe { sys::wxAuiToolBar_AddToolBundle(self.as_ptr(), tool_id as c_int, label_wx.as_ptr(), bitmap.as_ptr(), disabled_bitmap.as_ptr(), kind as c_int, short_help_string_wx.as_ptr(), long_help_string_wx.as_ptr(), client_data.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(AuiToolBarItem::from_raw(ptr))
+        }
+    }
+
+    pub fn add_tool_by_bitmap_bundle(&self, tool_id: i32, bitmap: &impl WxBitmapBundle, disabled_bitmap: &impl WxBitmapBundle, toggle: bool, client_data: &impl WxObject, short_help_string: impl AsRef<str>, long_help_string: impl AsRef<str>) -> Option<AuiToolBarItem> {
+        let short_help_string_wx = WxStr::new(short_help_string.as_ref());
+        let long_help_string_wx = WxStr::new(long_help_string.as_ref());
+        let ptr = unsafe { sys::wxAuiToolBar_AddToolByBitmapBundle(self.as_ptr(), tool_id as c_int, bitmap.as_ptr(), disabled_bitmap.as_ptr(), toggle as c_int, client_data.as_ptr(), short_help_string_wx.as_ptr(), long_help_string_wx.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(AuiToolBarItem::from_raw(ptr))
+        }
+    }
+
+    pub fn set_tool_bitmap_bundle(&self, tool_id: i32, bitmap: &impl WxBitmapBundle) {
+        unsafe { sys::wxAuiToolBar_SetToolBitmapBundle(self.as_ptr(), tool_id as c_int, bitmap.as_ptr()) }
     }
 
 }

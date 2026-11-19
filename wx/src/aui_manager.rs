@@ -236,5 +236,67 @@ impl AuiManager {
         }
     }
 
+    pub fn can_dock_panel(&self, pane: &impl WxAuiPaneInfo) -> bool {
+        unsafe { sys::wxAuiManager_CanDockPanel(self.as_ptr(), pane.as_ptr()) != 0 }
+    }
+
+    pub fn calculate_new_split_size(&self) -> Option<crate::size::Size> {
+        let ptr = unsafe { sys::wxAuiManager_CalculateNewSplitSize(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(crate::size::Size::from_raw(ptr))
+        }
+    }
+
+    pub fn calculate_hint_rect(&self, pane_window: &impl WxWindow, point: Point, point_2: Point) -> Option<crate::rect::Rect> {
+        let ptr = unsafe { sys::wxAuiManager_CalculateHintRect(self.as_ptr(), pane_window.as_ptr(), point.x as c_int, point.y as c_int, point_2.x as c_int, point_2.y as c_int) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(crate::rect::Rect::from_raw(ptr))
+        }
+    }
+
+    pub fn close_pane(&self, pane_info: &impl WxAuiPaneInfo) {
+        unsafe { sys::wxAuiManager_ClosePane(self.as_ptr(), pane_info.as_ptr()) }
+    }
+
+    pub fn draw_hint_rect(&self, pane_window: &impl WxWindow, point: Point, point_2: Point) {
+        unsafe { sys::wxAuiManager_DrawHintRect(self.as_ptr(), pane_window.as_ptr(), point.x as c_int, point.y as c_int, point_2.x as c_int, point_2.y as c_int) }
+    }
+
+    pub fn has_live_resize(&self) -> bool {
+        unsafe { sys::wxAuiManager_HasLiveResize(self.as_ptr()) != 0 }
+    }
+
+    pub fn maximize_pane(&self, pane_info: &impl WxAuiPaneInfo) {
+        unsafe { sys::wxAuiManager_MaximizePane(self.as_ptr(), pane_info.as_ptr()) }
+    }
+
+    pub fn minimize_pane(&self, pane_info: &impl WxAuiPaneInfo) {
+        unsafe { sys::wxAuiManager_MinimizePane(self.as_ptr(), pane_info.as_ptr()) }
+    }
+
+    pub fn restore_maximized_pane(&self) {
+        unsafe { sys::wxAuiManager_RestoreMaximizedPane(self.as_ptr()) }
+    }
+
+    pub fn restore_pane(&self, pane_info: &impl WxAuiPaneInfo) {
+        unsafe { sys::wxAuiManager_RestorePane(self.as_ptr(), pane_info.as_ptr()) }
+    }
+
+    pub fn split_pane(&self, window: &impl WxWindow, new_window: &impl WxWindow, direction: i32, point: Point) -> bool {
+        unsafe { sys::wxAuiManager_SplitPane(self.as_ptr(), window.as_ptr(), new_window.as_ptr(), direction as c_int, point.x as c_int, point.y as c_int) != 0 }
+    }
+
+    pub fn start_pane_drag(&self, pane_window: &impl WxWindow, point: Point) {
+        unsafe { sys::wxAuiManager_StartPaneDrag(self.as_ptr(), pane_window.as_ptr(), point.x as c_int, point.y as c_int) }
+    }
+
+    pub fn update_hint(&self, rect: &impl WxRect) {
+        unsafe { sys::wxAuiManager_UpdateHint(self.as_ptr(), rect.as_ptr()) }
+    }
+
 }
 

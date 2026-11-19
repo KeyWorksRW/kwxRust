@@ -45,11 +45,17 @@ impl WxObject for MetafileDC {
 impl WxDC for MetafileDC {}
 impl WxMetafileDC for MetafileDC {}
 
+use crate::metafile::Metafile;
 use crate::support::WxStr;
 
 impl MetafileDC {
-    pub fn close(&self) -> *mut c_void {
-        unsafe { sys::wxMetafileDC_Close(self.as_ptr()) }
+    pub fn close(&self) -> Option<Metafile> {
+        let ptr = unsafe { sys::wxMetafileDC_Close(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(Metafile::from_raw(ptr))
+        }
     }
 
     pub fn new(file_path: impl AsRef<str>) -> Self {
@@ -63,6 +69,19 @@ impl MetafileDC {
         let file_path_wx = WxStr::new(file_path.as_ref());
         let ptr = unsafe { sys::wxMetafileDC_Create(file_path_wx.as_ptr()) };
         assert!(!ptr.is_null(), "wxMetafileDC_Create returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn create_default() -> Self {
+        let ptr = unsafe { sys::wxMetafileDC_CreateDefault() };
+        assert!(!ptr.is_null(), "wxMetafileDC_CreateDefault returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn create_with_extent(file_path: impl AsRef<str>, xext: i32, yext: i32, xorg: i32, yorg: i32) -> Self {
+        let file_path_wx = WxStr::new(file_path.as_ref());
+        let ptr = unsafe { sys::wxMetafileDC_CreateWithExtent(file_path_wx.as_ptr(), xext as c_int, yext as c_int, xorg as c_int, yorg as c_int) };
+        assert!(!ptr.is_null(), "wxMetafileDC_CreateWithExtent returned null");
         Self::from_raw(ptr)
     }
 

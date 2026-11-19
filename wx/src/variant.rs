@@ -119,6 +119,30 @@ impl Variant {
         Self::from_raw(ptr)
     }
 
+    pub fn create_from_data_view_icon_text(text: impl AsRef<str>, icon: &impl WxBitmapBundle, name: impl AsRef<str>) -> Self {
+        let text_wx = WxStr::new(text.as_ref());
+        let name_wx = WxStr::new(name.as_ref());
+        let ptr = unsafe { sys::wxVariant_CreateFromDataViewIconText(text_wx.as_ptr(), icon.as_ptr(), name_wx.as_ptr()) };
+        assert!(!ptr.is_null(), "wxVariant_CreateFromDataViewIconText returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn create_from_data_view_check_icon_text(text: impl AsRef<str>, icon: &impl WxBitmapBundle, checked_state: i32, name: impl AsRef<str>) -> Self {
+        let text_wx = WxStr::new(text.as_ref());
+        let name_wx = WxStr::new(name.as_ref());
+        let ptr = unsafe { sys::wxVariant_CreateFromDataViewCheckIconText(text_wx.as_ptr(), icon.as_ptr(), checked_state as c_int, name_wx.as_ptr()) };
+        assert!(!ptr.is_null(), "wxVariant_CreateFromDataViewCheckIconText returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn get_data_view_icon_text(&self, result: &impl WxDataViewIconText) -> bool {
+        unsafe { sys::wxVariant_GetDataViewIconText(self.as_ptr(), result.as_ptr()) != 0 }
+    }
+
+    pub fn get_data_view_check_icon_text(&self, result: &impl WxDataViewCheckIconText) -> bool {
+        unsafe { sys::wxVariant_GetDataViewCheckIconText(self.as_ptr(), result.as_ptr()) != 0 }
+    }
+
     pub fn set_name(&self, name: impl AsRef<str>) {
         let name_wx = WxStr::new(name.as_ref());
         unsafe { sys::wxVariant_SetName(self.as_ptr(), name_wx.as_ptr()) }

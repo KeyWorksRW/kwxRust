@@ -553,8 +553,8 @@ impl PropertyGridInterface {
         unsafe { sys::wxPropertyGridInterface_GetPropertyValueAsULong(self.as_ptr(), id.as_ptr()) as u64 }
     }
 
-    pub fn get_property_value_as_long_long(&self, id: &impl WxPGProperty) -> i32 {
-        unsafe { sys::wxPropertyGridInterface_GetPropertyValueAsLongLong(self.as_ptr(), id.as_ptr()) as i32 }
+    pub fn get_property_value_as_long_long(&self, id: &impl WxPGProperty) -> i64 {
+        unsafe { sys::wxPropertyGridInterface_GetPropertyValueAsLongLong(self.as_ptr(), id.as_ptr()) as i64 }
     }
 
     pub fn get_property_value_as_array_string(&self, id: &impl WxPGProperty) -> Option<ArrayString> {

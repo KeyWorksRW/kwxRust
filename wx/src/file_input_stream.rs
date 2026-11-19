@@ -63,8 +63,8 @@ impl FileInputStream {
         Self::from_raw(ptr)
     }
 
-    pub fn get_length(&self) -> i32 {
-        unsafe { sys::wxFileInputStream_GetLength(self.as_ptr()) as i32 }
+    pub fn get_length(&self) -> i64 {
+        unsafe { sys::wxFileInputStream_GetLength(self.as_ptr()) as i64 }
     }
 
     /// Deletes the native object.  Call this only when this handle owns it, i.e.

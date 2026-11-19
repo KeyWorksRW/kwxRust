@@ -241,5 +241,25 @@ impl RichTextFieldTypeStandard {
         unsafe { sys::kwxRichTextFieldTypeStandard_SetOnIsTopLevel(self.as_ptr(), p_function) }
     }
 
+    pub fn set_on_can_edit_properties_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxRichTextFieldTypeStandard_SetOnCanEditPropertiesWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_edit_properties_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxRichTextFieldTypeStandard_SetOnEditPropertiesWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_get_properties_menu_label_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxRichTextFieldTypeStandard_SetOnGetPropertiesMenuLabelWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_update_field_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxRichTextFieldTypeStandard_SetOnUpdateFieldWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_is_top_level_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxRichTextFieldTypeStandard_SetOnIsTopLevelWithData(self.as_ptr(), p_function, data) }
+    }
+
 }
 

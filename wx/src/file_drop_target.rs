@@ -45,6 +45,8 @@ impl WxObject for FileDropTarget {
 impl WxDropTarget for FileDropTarget {}
 impl WxFileDropTarget for FileDropTarget {}
 
+use crate::array_string::ArrayString;
+
 impl FileDropTarget {
     pub fn new(p_object: *mut c_void, p_function: *mut c_void) -> Self {
         let ptr = unsafe { sys::kwxFileDropTarget_Create(p_object, p_function) };
@@ -83,6 +85,63 @@ impl FileDropTarget {
 
     pub fn set_on_leave(&self, p_function: *mut c_void) {
         unsafe { sys::kwxFileDropTarget_SetOnLeave(self.as_ptr(), p_function) }
+    }
+
+    pub fn set_on_data_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxFileDropTarget_SetOnDataWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_drop_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxFileDropTarget_SetOnDropWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_enter_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxFileDropTarget_SetOnEnterWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_drag_over_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxFileDropTarget_SetOnDragOverWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_leave_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxFileDropTarget_SetOnLeaveWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_data_result(&self, result: i32) {
+        unsafe { sys::kwxFileDropTarget_SetDataResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_drop_result(&self, result: i32) {
+        unsafe { sys::kwxFileDropTarget_SetDropResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_enter_result(&self, result: i32) {
+        unsafe { sys::kwxFileDropTarget_SetEnterResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_drag_over_result(&self, result: i32) {
+        unsafe { sys::kwxFileDropTarget_SetDragOverResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn get_drop_result(&self) -> i32 {
+        unsafe { sys::kwxFileDropTarget_GetDropResult(self.as_ptr()) as i32 }
+    }
+
+    pub fn set_on_drop_files_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxFileDropTarget_SetOnDropFilesWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_drop_files_result(&self, result: i32) {
+        unsafe { sys::kwxFileDropTarget_SetDropFilesResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn get_drop_files(&self) -> Option<ArrayString> {
+        let ptr = unsafe { sys::kwxFileDropTarget_GetDropFiles(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(ArrayString::from_raw(ptr))
+        }
     }
 
 }

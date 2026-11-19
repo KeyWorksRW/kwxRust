@@ -62,5 +62,29 @@ impl ArtProv {
         unsafe { sys::kwxArtProv_Release(self.as_ptr()) }
     }
 
+    pub fn push(&self) {
+        unsafe { sys::kwxArtProv_Push(self.as_ptr()) }
+    }
+
+    pub fn push_back(&self) {
+        unsafe { sys::kwxArtProv_PushBack(self.as_ptr()) }
+    }
+
+    pub fn set_on_create_bitmap_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxArtProv_SetOnCreateBitmapWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn get_requested_width(&self) -> i32 {
+        unsafe { sys::kwxArtProv_GetRequestedWidth(self.as_ptr()) as i32 }
+    }
+
+    pub fn get_requested_height(&self) -> i32 {
+        unsafe { sys::kwxArtProv_GetRequestedHeight(self.as_ptr()) as i32 }
+    }
+
+    pub fn set_create_bitmap_result(&self, bitmap: &impl WxBitmap) {
+        unsafe { sys::kwxArtProv_SetCreateBitmapResult(self.as_ptr(), bitmap.as_ptr()) }
+    }
+
 }
 

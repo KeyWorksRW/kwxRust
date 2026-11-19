@@ -4,16 +4,16 @@
 
 use std::os::raw::*;
 
-use crate::object::Object;
+use crate::control::Control;
 use crate::sys;
 use crate::traits::*;
 
 #[derive(Copy, Clone)]
-pub struct DataViewCtrl(pub(crate) Object);
+pub struct DataViewCtrl(pub(crate) Control);
 
 impl DataViewCtrl {
     pub(crate) const fn from_raw(ptr: *mut c_void) -> Self {
-        Self(Object::from_raw(ptr))
+        Self(Control::from_raw(ptr))
     }
 
     /// Wraps a raw pointer without taking ownership of the native object.
@@ -29,9 +29,9 @@ impl DataViewCtrl {
 }
 
 impl std::ops::Deref for DataViewCtrl {
-    type Target = Object;
+    type Target = Control;
 
-    fn deref(&self) -> &Object {
+    fn deref(&self) -> &Control {
         &self.0
     }
 }
@@ -42,9 +42,14 @@ impl WxObject for DataViewCtrl {
     }
 }
 
+impl WxControl for DataViewCtrl {}
+impl WxWindow for DataViewCtrl {}
+impl WxEvtHandler for DataViewCtrl {}
 impl WxDataViewCtrl for DataViewCtrl {}
+
 use crate::data_view_column::DataViewColumn;
 use crate::data_view_model::DataViewModel;
+use crate::header_ctrl::HeaderCtrl;
 use crate::support::WxStr;
 
 impl DataViewCtrl {
@@ -60,6 +65,10 @@ impl DataViewCtrl {
         unsafe { sys::wxDataViewCtrl_EnableDragSource(self.as_ptr(), format.as_ptr()) != 0 }
     }
 
+    pub fn enable_drop_target(&self, format: &impl WxDataFormat) -> bool {
+        unsafe { sys::wxDataViewCtrl_EnableDropTarget(self.as_ptr(), format.as_ptr()) != 0 }
+    }
+
     pub fn set_background_colour(&self, colour: &impl WxColour) -> bool {
         unsafe { sys::wxDataViewCtrl_SetBackgroundColour(self.as_ptr(), colour.as_ptr()) != 0 }
     }
@@ -68,8 +77,34 @@ impl DataViewCtrl {
         unsafe { sys::wxDataViewCtrl_SetFocus(self.as_ptr()) }
     }
 
-    pub fn set_foreground_colour(&self, colour: &impl WxColour) -> bool {
-        unsafe { sys::wxDataViewCtrl_SetForegroundColour(self.as_ptr(), colour.as_ptr()) != 0 }
+    pub fn set_foreground_colour(&self, colour: &impl WxColour) -> i32 {
+        unsafe { sys::wxDataViewCtrl_SetForegroundColour(self.as_ptr(), colour.as_ptr()) as i32 }
+    }
+
+    pub fn get_sorting_column_count(&self) -> i32 {
+        unsafe { sys::wxDataViewCtrl_GetSortingColumnCount(self.as_ptr()) as i32 }
+    }
+
+    pub fn get_sorting_column_at(&self, pos: i32) -> Option<DataViewColumn> {
+        let ptr = unsafe { sys::wxDataViewCtrl_GetSortingColumnAt(self.as_ptr(), pos as c_int) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(DataViewColumn::from_raw(ptr))
+        }
+    }
+
+    pub fn generic_get_header(&self) -> Option<HeaderCtrl> {
+        let ptr = unsafe { sys::wxDataViewCtrl_GenericGetHeader(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(HeaderCtrl::from_raw(ptr))
+        }
+    }
+
+    pub fn hit_test_column_position(&self, x: i32, y: i32, item: &impl WxDataViewItem) -> i32 {
+        unsafe { sys::wxDataViewCtrl_HitTestColumnPosition(self.as_ptr(), x as c_int, y as c_int, item.as_ptr()) as i32 }
     }
 
     pub fn new(parent: &impl WxWindow, x: i32, y: i32, width: i32, height: i32) -> Self {

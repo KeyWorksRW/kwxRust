@@ -221,12 +221,20 @@ impl TextEntry {
         unsafe { sys::wxTextEntry_AutoComplete(self_.as_ptr(), count as c_int, items) != 0 }
     }
 
+    pub fn auto_complete_strings(&self, self_: &impl WxTextEntry, items: &impl WxArrayString) -> bool {
+        unsafe { sys::wxTextEntry_AutoCompleteStrings(self_.as_ptr(), items.as_ptr()) != 0 }
+    }
+
     pub fn auto_complete_file_names(&self, self_: &impl WxTextEntry) -> bool {
         unsafe { sys::wxTextEntry_AutoCompleteFileNames(self_.as_ptr()) != 0 }
     }
 
     pub fn auto_complete_directories(&self, self_: &impl WxTextEntry) -> bool {
         unsafe { sys::wxTextEntry_AutoCompleteDirectories(self_.as_ptr()) != 0 }
+    }
+
+    pub fn auto_complete_completer(&self, self_: &impl WxTextEntry, completer: &impl WxTextCompleterSimple) -> bool {
+        unsafe { sys::wxTextEntry_AutoCompleteCompleter(self_.as_ptr(), completer.as_ptr()) != 0 }
     }
 
 }

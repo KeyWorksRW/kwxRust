@@ -77,5 +77,9 @@ impl FileDataObject {
         unsafe { sys::FileDataObject_GetFilenames(self.as_ptr(), list, capacity as c_int) as i32 }
     }
 
+    pub fn get_filenames_array(&self, filenames: &impl WxArrayString) {
+        unsafe { sys::wxFileDataObject_GetFilenamesArray(self.as_ptr(), filenames.as_ptr()) }
+    }
+
 }
 

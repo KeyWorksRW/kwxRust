@@ -72,36 +72,92 @@ impl WizardPageSimple {
         }
     }
 
-    pub fn get_next(&self) -> Option<WizardPageSimple> {
+    pub fn get_next(&self) -> Option<WizardPage> {
         let ptr = unsafe { sys::wxWizardPageSimple_GetNext(self.as_ptr()) };
         if ptr.is_null() {
             None
         } else {
-            Some(WizardPageSimple::from_raw(ptr))
+            Some(WizardPage::from_raw(ptr))
         }
     }
 
-    pub fn get_prev(&self) -> Option<WizardPageSimple> {
+    pub fn get_prev(&self) -> Option<WizardPage> {
         let ptr = unsafe { sys::wxWizardPageSimple_GetPrev(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(WizardPage::from_raw(ptr))
+        }
+    }
+
+    pub fn set_next(&self, next: &impl WxWizardPage) {
+        unsafe { sys::wxWizardPageSimple_SetNext(self.as_ptr(), next.as_ptr()) }
+    }
+
+    pub fn set_prev(&self, prev: &impl WxWizardPage) {
+        unsafe { sys::wxWizardPageSimple_SetPrev(self.as_ptr(), prev.as_ptr()) }
+    }
+
+    pub fn chain(&self, next: &impl WxWizardPageSimple) -> Option<WizardPageSimple> {
+        let ptr = unsafe { sys::wxWizardPageSimple_Chain(self.as_ptr(), next.as_ptr()) };
         if ptr.is_null() {
             None
         } else {
             Some(WizardPageSimple::from_raw(ptr))
         }
-    }
-
-    pub fn set_next(&self, next: &impl WxWizardPageSimple) {
-        unsafe { sys::wxWizardPageSimple_SetNext(self.as_ptr(), next.as_ptr()) }
-    }
-
-    pub fn set_prev(&self, prev: &impl WxWizardPageSimple) {
-        unsafe { sys::wxWizardPageSimple_SetPrev(self.as_ptr(), prev.as_ptr()) }
     }
 
     pub fn create_with_bundle(parent: &impl WxWizard, prev: &impl WxWizardPage, next: &impl WxWizardPage, bitmap: &impl WxBitmapBundle) -> Self {
         let ptr = unsafe { sys::wxWizardPageSimple_CreateWithBundle(parent.as_ptr(), prev.as_ptr(), next.as_ptr(), bitmap.as_ptr()) };
         assert!(!ptr.is_null(), "wxWizardPageSimple_CreateWithBundle returned null");
         Self::from_raw(ptr)
+    }
+
+    /// Alternative constructor wrapping `kwxWizardPageSimple_Create`; takes every
+    /// declared parameter.  `new`/`new_full` wrap the wxWidgets-own constructor.
+    pub fn new_with_state(p_object: *mut c_void, parent: &impl WxWizard, prev: &impl WxWizardPage, next: &impl WxWizardPage, bitmap: &impl WxBitmapBundle) -> Self {
+        let ptr = unsafe { sys::kwxWizardPageSimple_Create(p_object, parent.as_ptr(), prev.as_ptr(), next.as_ptr(), bitmap.as_ptr()) };
+        assert!(!ptr.is_null(), "kwxWizardPageSimple_Create returned null");
+        Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::kwxWizardPageSimple_Delete(self.as_ptr()) }
+    }
+
+    pub fn set_on_get_next(&self, p_function: *mut c_void) {
+        unsafe { sys::kwxWizardPageSimple_SetOnGetNext(self.as_ptr(), p_function) }
+    }
+
+    pub fn set_on_get_prev(&self, p_function: *mut c_void) {
+        unsafe { sys::kwxWizardPageSimple_SetOnGetPrev(self.as_ptr(), p_function) }
+    }
+
+    pub fn set_on_transfer_data_from_window(&self, p_function: *mut c_void) {
+        unsafe { sys::kwxWizardPageSimple_SetOnTransferDataFromWindow(self.as_ptr(), p_function) }
+    }
+
+    pub fn set_on_transfer_data_to_window(&self, p_function: *mut c_void) {
+        unsafe { sys::kwxWizardPageSimple_SetOnTransferDataToWindow(self.as_ptr(), p_function) }
+    }
+
+    pub fn set_on_get_next_out(&self, p_function: *mut c_void) {
+        unsafe { sys::kwxWizardPageSimple_SetOnGetNextOut(self.as_ptr(), p_function) }
+    }
+
+    pub fn set_on_get_prev_out(&self, p_function: *mut c_void) {
+        unsafe { sys::kwxWizardPageSimple_SetOnGetPrevOut(self.as_ptr(), p_function) }
+    }
+
+    pub fn set_on_transfer_data_from_window_out(&self, p_function: *mut c_void) {
+        unsafe { sys::kwxWizardPageSimple_SetOnTransferDataFromWindowOut(self.as_ptr(), p_function) }
+    }
+
+    pub fn set_on_transfer_data_to_window_out(&self, p_function: *mut c_void) {
+        unsafe { sys::kwxWizardPageSimple_SetOnTransferDataToWindowOut(self.as_ptr(), p_function) }
     }
 
 }

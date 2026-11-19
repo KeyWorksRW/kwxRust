@@ -58,12 +58,12 @@ impl ArchiveEntry {
         }
     }
 
-    pub fn get_size(&self) -> i32 {
-        unsafe { sys::wxArchiveEntry_GetSize(self.as_ptr()) as i32 }
+    pub fn get_size(&self) -> i64 {
+        unsafe { sys::wxArchiveEntry_GetSize(self.as_ptr()) as i64 }
     }
 
-    pub fn get_offset(&self) -> i32 {
-        unsafe { sys::wxArchiveEntry_GetOffset(self.as_ptr()) as i32 }
+    pub fn get_offset(&self) -> i64 {
+        unsafe { sys::wxArchiveEntry_GetOffset(self.as_ptr()) as i64 }
     }
 
     pub fn is_dir(&self) -> bool {
@@ -106,8 +106,8 @@ impl ArchiveEntry {
         unsafe { sys::wxArchiveEntry_SetDateTime(self.as_ptr(), dt.as_ptr()) }
     }
 
-    pub fn set_size(&self, size: i32) {
-        unsafe { sys::wxArchiveEntry_SetSize(self.as_ptr(), size as c_int) }
+    pub fn set_size(&self, size: i64) {
+        unsafe { sys::wxArchiveEntry_SetSize(self.as_ptr(), size) }
     }
 
     pub fn set_is_dir(&self, is_dir: bool) {

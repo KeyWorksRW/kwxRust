@@ -102,6 +102,10 @@ impl ListCtrl {
         unsafe { sys::wxListCtrl_SetItemPtrData(self.as_ptr(), item as c_long, data as usize) != 0 }
     }
 
+    pub fn get_item_ptr_data(&self, item: i32) -> usize {
+        unsafe { sys::wxListCtrl_GetItemPtrData(self.as_ptr(), item as c_long) as usize }
+    }
+
     pub fn get_item_text_colour(&self, item: i32) -> Option<Colour> {
         let ptr = unsafe { sys::wxListCtrl_GetItemTextColour(self.as_ptr(), item as c_long) };
         if ptr.is_null() {

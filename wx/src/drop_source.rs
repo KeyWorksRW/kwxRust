@@ -56,6 +56,12 @@ impl DropSource {
         Self::from_raw(ptr)
     }
 
+    pub fn create_default(data: &impl WxDataObject, win: &impl WxWindow) -> Self {
+        let ptr = unsafe { sys::DropSource_CreateDefault(data.as_ptr(), win.as_ptr()) };
+        assert!(!ptr.is_null(), "DropSource_CreateDefault returned null");
+        Self::from_raw(ptr)
+    }
+
     pub fn do_drag_drop(&self, flags: i32) -> i32 {
         unsafe { sys::wxDropSource_DoDragDrop(self.as_ptr(), flags as c_int) as i32 }
     }

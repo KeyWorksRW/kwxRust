@@ -44,6 +44,7 @@ impl WxObject for Locale {
 
 impl WxLocale for Locale {}
 use crate::support::WxStr;
+use crate::support::take_cstring;
 use crate::support::take_string;
 
 impl Locale {
@@ -160,7 +161,7 @@ impl Locale {
     pub fn get_string(&self, sz_orig_string: impl AsRef<str>, sz_domain: impl AsRef<str>) -> String {
         let sz_orig_string_wx = WxStr::new(sz_orig_string.as_ref());
         let sz_domain_wx = WxStr::new(sz_domain.as_ref());
-        take_string(unsafe { sys::wxLocale_GetString(self.as_ptr(), sz_orig_string_wx.as_ptr(), sz_domain_wx.as_ptr()) })
+        take_cstring(unsafe { sys::wxLocale_GetString(self.as_ptr(), sz_orig_string_wx.as_ptr(), sz_domain_wx.as_ptr()) })
     }
 
     pub fn is_loaded(&self, sz_domain: impl AsRef<str>) -> bool {

@@ -60,6 +60,13 @@ impl Caret {
         Self::from_raw(ptr)
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxCaret_Delete(self.as_ptr()) }
+    }
+
     pub fn get_blink_time() -> i32 {
         unsafe { sys::wxCaret_GetBlinkTime() as i32 }
     }

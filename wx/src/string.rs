@@ -87,5 +87,17 @@ impl String {
         unsafe { sys::wxString_Length(self.as_ptr()) as usize }
     }
 
+    pub fn to_long(&self, value: *mut i64) -> bool {
+        unsafe { sys::wxString_ToLong(self.as_ptr(), value as *mut c_long) != 0 }
+    }
+
+    pub fn to_long_long(&self, value: *mut i64) -> bool {
+        unsafe { sys::wxString_ToLongLong(self.as_ptr(), value as *mut i64) != 0 }
+    }
+
+    pub fn to_double(&self, value: *mut f64) -> bool {
+        unsafe { sys::wxString_ToDouble(self.as_ptr(), value as *mut c_double) != 0 }
+    }
+
 }
 

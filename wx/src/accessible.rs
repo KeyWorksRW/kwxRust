@@ -152,5 +152,121 @@ impl Accessible {
         unsafe { sys::wxAccessible_SetOnGetFocus(self.as_ptr(), p_function) }
     }
 
+    pub fn set_on_get_selections(&self, p_function: *mut c_void) {
+        unsafe { sys::wxAccessible_SetOnGetSelections(self.as_ptr(), p_function) }
+    }
+
+    pub fn set_on_hit_test_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxAccessible_SetOnHitTestWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_get_location_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxAccessible_SetOnGetLocationWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_navigate_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxAccessible_SetOnNavigateWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_get_name_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxAccessible_SetOnGetNameWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_get_child_count_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxAccessible_SetOnGetChildCountWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_get_child_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxAccessible_SetOnGetChildWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_get_parent_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxAccessible_SetOnGetParentWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_do_default_action_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxAccessible_SetOnDoDefaultActionWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_get_default_action_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxAccessible_SetOnGetDefaultActionWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_get_description_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxAccessible_SetOnGetDescriptionWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_get_help_text_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxAccessible_SetOnGetHelpTextWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_get_keyboard_shortcut_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxAccessible_SetOnGetKeyboardShortcutWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_get_role_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxAccessible_SetOnGetRoleWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_get_state_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxAccessible_SetOnGetStateWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_get_value_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxAccessible_SetOnGetValueWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_select_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxAccessible_SetOnSelectWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_get_focus_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxAccessible_SetOnGetFocusWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_get_selections_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxAccessible_SetOnGetSelectionsWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_hook_result(&self, result: i32) {
+        unsafe { sys::wxAccessible_SetHookResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_hit_test_result(&self, child_id: i32, child_object: *mut c_void) {
+        unsafe { sys::wxAccessible_SetHitTestResult(self.as_ptr(), child_id as c_int, child_object) }
+    }
+
+    pub fn set_get_location_result(&self, x: i32, y: i32, width: i32, height: i32) {
+        unsafe { sys::wxAccessible_SetGetLocationResult(self.as_ptr(), x as c_int, y as c_int, width as c_int, height as c_int) }
+    }
+
+    pub fn set_navigate_result(&self, to_id: i32, to_object: *mut c_void) {
+        unsafe { sys::wxAccessible_SetNavigateResult(self.as_ptr(), to_id as c_int, to_object) }
+    }
+
+    pub fn set_get_child_count_result(&self, child_count: i32) {
+        unsafe { sys::wxAccessible_SetGetChildCountResult(self.as_ptr(), child_count as c_int) }
+    }
+
+    pub fn set_get_child_result(&self, child: *mut c_void) {
+        unsafe { sys::wxAccessible_SetGetChildResult(self.as_ptr(), child) }
+    }
+
+    pub fn set_get_parent_result(&self, parent: *mut c_void) {
+        unsafe { sys::wxAccessible_SetGetParentResult(self.as_ptr(), parent) }
+    }
+
+    pub fn set_get_role_result(&self, role: i32) {
+        unsafe { sys::wxAccessible_SetGetRoleResult(self.as_ptr(), role as c_int) }
+    }
+
+    pub fn set_get_state_result(&self, state: i32) {
+        unsafe { sys::wxAccessible_SetGetStateResult(self.as_ptr(), state as c_int) }
+    }
+
+    pub fn set_get_focus_result(&self, child_id: i32, child: *mut c_void) {
+        unsafe { sys::wxAccessible_SetGetFocusResult(self.as_ptr(), child_id as c_int, child) }
+    }
+
 }
 

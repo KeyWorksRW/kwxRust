@@ -111,6 +111,10 @@ impl NumValidator {
         unsafe { sys::wxNumValidator_SetMinDouble(self.as_ptr(), min_value as c_double) }
     }
 
+    pub fn set_precision(&self, precision: i32) {
+        unsafe { sys::wxNumValidator_SetPrecision(self.as_ptr(), precision as c_int) }
+    }
+
     pub fn set_range(&self, min_value: i32, max_value: i32) {
         unsafe { sys::wxNumValidator_SetRange(self.as_ptr(), min_value as c_long, max_value as c_long) }
     }

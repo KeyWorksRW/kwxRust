@@ -232,6 +232,10 @@ impl Window {
         unsafe { sys::wxWindow_ClientToWindowSize(self.as_ptr(), width as *mut c_int, height as *mut c_int) }
     }
 
+    pub fn set_size_wh(&self, size: Size) {
+        unsafe { sys::wxWindow_SetSizeWH(self.as_ptr(), size.width as c_int, size.height as c_int) }
+    }
+
     pub fn window_to_client_size(&self, width: *mut i32, height: *mut i32) {
         unsafe { sys::wxWindow_WindowToClientSize(self.as_ptr(), width as *mut c_int, height as *mut c_int) }
     }
@@ -510,6 +514,33 @@ impl Window {
 
     pub fn to_dip(&self, value: i32) -> i32 {
         unsafe { sys::wxWindow_ToDIP(self.as_ptr(), value as c_int) as i32 }
+    }
+
+    pub fn from_dip_size(&self, size: Size) -> Option<crate::size::Size> {
+        let ptr = unsafe { sys::wxWindow_FromDIPSize(self.as_ptr(), size.width as c_int, size.height as c_int) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(crate::size::Size::from_raw(ptr))
+        }
+    }
+
+    pub fn from_dip_size_for_window(size: Size, window: &impl WxWindow) -> Option<crate::size::Size> {
+        let ptr = unsafe { sys::wxWindow_FromDIPSizeForWindow(size.width as c_int, size.height as c_int, window.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(crate::size::Size::from_raw(ptr))
+        }
+    }
+
+    pub fn from_dip_size_default(size: Size) -> Option<crate::size::Size> {
+        let ptr = unsafe { sys::wxWindow_FromDIPSizeDefault(size.width as c_int, size.height as c_int) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(crate::size::Size::from_raw(ptr))
+        }
     }
 
     pub fn has_capture(&self) -> bool {
@@ -832,6 +863,12 @@ impl Window {
     pub fn new_full(parent: &impl WxWindow, id: i32, rect: Rect, style: i32) -> Self {
         let ptr = unsafe { sys::wxWindow_Create(parent.as_ptr(), id as c_int, rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int, style as c_int) };
         assert!(!ptr.is_null(), "wxWindow_Create returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn create_with_background_style(parent: &impl WxWindow, id: i32, rect: Rect, style: i32, background_style: i32) -> Self {
+        let ptr = unsafe { sys::wxWindow_CreateWithBackgroundStyle(parent.as_ptr(), id as c_int, rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int, style as c_int, background_style as c_int) };
+        assert!(!ptr.is_null(), "wxWindow_CreateWithBackgroundStyle returned null");
         Self::from_raw(ptr)
     }
 
@@ -1259,6 +1296,10 @@ impl Window {
 
     pub fn set_cursor(&self, cursor: &impl WxCursor) -> i32 {
         unsafe { sys::wxWindow_SetCursor(self.as_ptr(), cursor.as_ptr()) as i32 }
+    }
+
+    pub fn set_cursor_bundle(&self, bundle: &impl WxCursorBundle) {
+        unsafe { sys::wxWindow_SetCursorBundle(self.as_ptr(), bundle.as_ptr()) }
     }
 
     pub fn set_drop_target(&self, drop_target: &impl WxDropTarget) {

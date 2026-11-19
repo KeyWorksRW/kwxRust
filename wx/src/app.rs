@@ -161,6 +161,26 @@ impl App {
         unsafe { sys::wxApp_SetOnCreateTraits(self.as_ptr(), p_function) }
     }
 
+    pub fn set_on_on_fatal_exception(&self, p_function: *mut c_void) {
+        unsafe { sys::wxApp_SetOnOnFatalException(self.as_ptr(), p_function) }
+    }
+
+    pub fn set_on_on_unhandled_exception(&self, p_function: *mut c_void) {
+        unsafe { sys::wxApp_SetOnOnUnhandledException(self.as_ptr(), p_function) }
+    }
+
+    pub fn set_on_store_current_exception(&self, p_function: *mut c_void) {
+        unsafe { sys::wxApp_SetOnStoreCurrentException(self.as_ptr(), p_function) }
+    }
+
+    pub fn set_on_on_exception_in_main_loop(&self, p_function: *mut c_void) {
+        unsafe { sys::wxApp_SetOnOnExceptionInMainLoop(self.as_ptr(), p_function) }
+    }
+
+    pub fn set_on_rethrow_stored_exception(&self, p_function: *mut c_void) {
+        unsafe { sys::wxApp_SetOnRethrowStoredException(self.as_ptr(), p_function) }
+    }
+
     pub fn new(p_object: *mut c_void) -> Self {
         let ptr = unsafe { sys::kwxApp_Create(p_object) };
         assert!(!ptr.is_null(), "kwxApp_Create returned null");

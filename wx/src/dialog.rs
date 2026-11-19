@@ -200,5 +200,22 @@ impl Dialog {
         }
     }
 
+    /// Alternative constructor wrapping `kwxDialog_Create`; takes every
+    /// declared parameter.  `new`/`new_full` wrap the wxWidgets-own constructor.
+    pub fn new_with_state(p_object: *mut c_void, parent: &impl WxWindow, id: i32, title: impl AsRef<str>, rect: Rect, style: i32) -> Self {
+        let title_wx = WxStr::new(title.as_ref());
+        let ptr = unsafe { sys::kwxDialog_Create(p_object, parent.as_ptr(), id as c_int, title_wx.as_ptr(), rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int, style as c_long) };
+        assert!(!ptr.is_null(), "kwxDialog_Create returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn set_on_transfer_data_from_window(&self, p_function: *mut c_void) {
+        unsafe { sys::kwxDialog_SetOnTransferDataFromWindow(self.as_ptr(), p_function) }
+    }
+
+    pub fn set_on_transfer_data_to_window(&self, p_function: *mut c_void) {
+        unsafe { sys::kwxDialog_SetOnTransferDataToWindow(self.as_ptr(), p_function) }
+    }
+
 }
 

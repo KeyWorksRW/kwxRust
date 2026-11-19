@@ -78,8 +78,8 @@ impl ListEvent {
         unsafe { sys::wxListEvent_GetColumn(self.as_ptr()) as i32 }
     }
 
-    pub fn get_data(&self) -> i32 {
-        unsafe { sys::wxListEvent_GetData(self.as_ptr()) as i32 }
+    pub fn get_data(&self) -> usize {
+        unsafe { sys::wxListEvent_GetData(self.as_ptr()) as usize }
     }
 
     pub fn get_image(&self) -> i32 {

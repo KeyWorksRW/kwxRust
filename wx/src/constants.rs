@@ -3,6 +3,7 @@
 use std::os::raw::c_void;
 
 use crate::sys;
+use crate::support::take_string;
 
 #[inline]
 pub fn CP_DEFAULT_STYLE() -> i32 {
@@ -760,288 +761,433 @@ pub fn APPLY() -> i32 {
 }
 
 #[inline]
-pub fn ART_ADD_BOOKMARK() -> *mut c_void {
-    unsafe { sys::expwxART_ADD_BOOKMARK() }
+pub fn ART_ADD_BOOKMARK() -> String {
+    take_string(unsafe { sys::expwxART_ADD_BOOKMARK() })
 }
 
 #[inline]
-pub fn ART_BUTTON() -> *mut c_void {
-    unsafe { sys::expwxART_BUTTON() }
+pub fn ART_BUTTON() -> String {
+    take_string(unsafe { sys::expwxART_BUTTON() })
 }
 
 #[inline]
-pub fn ART_CDROM() -> *mut c_void {
-    unsafe { sys::expwxART_CDROM() }
+pub fn ART_CDROM() -> String {
+    take_string(unsafe { sys::expwxART_CDROM() })
 }
 
 #[inline]
-pub fn ART_CMN_DIALOG() -> *mut c_void {
-    unsafe { sys::expwxART_CMN_DIALOG() }
+pub fn ART_CLOSE() -> String {
+    take_string(unsafe { sys::expwxART_CLOSE() })
 }
 
 #[inline]
-pub fn ART_COPY() -> *mut c_void {
-    unsafe { sys::expwxART_COPY() }
+pub fn ART_CMN_DIALOG() -> String {
+    take_string(unsafe { sys::expwxART_CMN_DIALOG() })
 }
 
 #[inline]
-pub fn ART_CROSS_MARK() -> *mut c_void {
-    unsafe { sys::expwxART_CROSS_MARK() }
+pub fn ART_COPY() -> String {
+    take_string(unsafe { sys::expwxART_COPY() })
 }
 
 #[inline]
-pub fn ART_CUT() -> *mut c_void {
-    unsafe { sys::expwxART_CUT() }
+pub fn ART_CROSS_MARK() -> String {
+    take_string(unsafe { sys::expwxART_CROSS_MARK() })
 }
 
 #[inline]
-pub fn ART_DELETE() -> *mut c_void {
-    unsafe { sys::expwxART_DELETE() }
+pub fn ART_CUT() -> String {
+    take_string(unsafe { sys::expwxART_CUT() })
 }
 
 #[inline]
-pub fn ART_DEL_BOOKMARK() -> *mut c_void {
-    unsafe { sys::expwxART_DEL_BOOKMARK() }
+pub fn ART_DELETE() -> String {
+    take_string(unsafe { sys::expwxART_DELETE() })
 }
 
 #[inline]
-pub fn ART_ERROR() -> *mut c_void {
-    unsafe { sys::expwxART_ERROR() }
+pub fn ART_DEL_BOOKMARK() -> String {
+    take_string(unsafe { sys::expwxART_DEL_BOOKMARK() })
 }
 
 #[inline]
-pub fn ART_EXECUTABLE_FILE() -> *mut c_void {
-    unsafe { sys::expwxART_EXECUTABLE_FILE() }
+pub fn ART_EDIT() -> String {
+    take_string(unsafe { sys::expwxART_EDIT() })
 }
 
 #[inline]
-pub fn ART_FILE_OPEN() -> *mut c_void {
-    unsafe { sys::expwxART_FILE_OPEN() }
+pub fn ART_ERROR() -> String {
+    take_string(unsafe { sys::expwxART_ERROR() })
 }
 
 #[inline]
-pub fn ART_FILE_SAVE() -> *mut c_void {
-    unsafe { sys::expwxART_FILE_SAVE() }
+pub fn ART_EXECUTABLE_FILE() -> String {
+    take_string(unsafe { sys::expwxART_EXECUTABLE_FILE() })
 }
 
 #[inline]
-pub fn ART_FILE_SAVE_AS() -> *mut c_void {
-    unsafe { sys::expwxART_FILE_SAVE_AS() }
+pub fn ART_FILE_OPEN() -> String {
+    take_string(unsafe { sys::expwxART_FILE_OPEN() })
 }
 
 #[inline]
-pub fn ART_FIND() -> *mut c_void {
-    unsafe { sys::expwxART_FIND() }
+pub fn ART_FILE_SAVE() -> String {
+    take_string(unsafe { sys::expwxART_FILE_SAVE() })
 }
 
 #[inline]
-pub fn ART_FIND_AND_REPLACE() -> *mut c_void {
-    unsafe { sys::expwxART_FIND_AND_REPLACE() }
+pub fn ART_FILE_SAVE_AS() -> String {
+    take_string(unsafe { sys::expwxART_FILE_SAVE_AS() })
 }
 
 #[inline]
-pub fn ART_FLOPPY() -> *mut c_void {
-    unsafe { sys::expwxART_FLOPPY() }
+pub fn ART_FIND() -> String {
+    take_string(unsafe { sys::expwxART_FIND() })
 }
 
 #[inline]
-pub fn ART_FOLDER() -> *mut c_void {
-    unsafe { sys::expwxART_FOLDER() }
+pub fn ART_FIND_AND_REPLACE() -> String {
+    take_string(unsafe { sys::expwxART_FIND_AND_REPLACE() })
 }
 
 #[inline]
-pub fn ART_FOLDER_OPEN() -> *mut c_void {
-    unsafe { sys::expwxART_FOLDER_OPEN() }
+pub fn ART_FLOPPY() -> String {
+    take_string(unsafe { sys::expwxART_FLOPPY() })
 }
 
 #[inline]
-pub fn ART_FRAME_ICON() -> *mut c_void {
-    unsafe { sys::expwxART_FRAME_ICON() }
+pub fn ART_FOLDER() -> String {
+    take_string(unsafe { sys::expwxART_FOLDER() })
 }
 
 #[inline]
-pub fn ART_FULL_SCREEN() -> *mut c_void {
-    unsafe { sys::expwxART_FULL_SCREEN() }
+pub fn ART_FOLDER_OPEN() -> String {
+    take_string(unsafe { sys::expwxART_FOLDER_OPEN() })
 }
 
 #[inline]
-pub fn ART_GO_BACK() -> *mut c_void {
-    unsafe { sys::expwxART_GO_BACK() }
+pub fn ART_FRAME_ICON() -> String {
+    take_string(unsafe { sys::expwxART_FRAME_ICON() })
 }
 
 #[inline]
-pub fn ART_GO_DIR_UP() -> *mut c_void {
-    unsafe { sys::expwxART_GO_DIR_UP() }
+pub fn ART_FULL_SCREEN() -> String {
+    take_string(unsafe { sys::expwxART_FULL_SCREEN() })
 }
 
 #[inline]
-pub fn ART_GO_DOWN() -> *mut c_void {
-    unsafe { sys::expwxART_GO_DOWN() }
+pub fn ART_GOTO_FIRST() -> String {
+    take_string(unsafe { sys::expwxART_GOTO_FIRST() })
 }
 
 #[inline]
-pub fn ART_GO_FORWARD() -> *mut c_void {
-    unsafe { sys::expwxART_GO_FORWARD() }
+pub fn ART_GOTO_LAST() -> String {
+    take_string(unsafe { sys::expwxART_GOTO_LAST() })
 }
 
 #[inline]
-pub fn ART_GO_HOME() -> *mut c_void {
-    unsafe { sys::expwxART_GO_HOME() }
+pub fn ART_GO_BACK() -> String {
+    take_string(unsafe { sys::expwxART_GO_BACK() })
 }
 
 #[inline]
-pub fn ART_GO_TO_PARENT() -> *mut c_void {
-    unsafe { sys::expwxART_GO_TO_PARENT() }
+pub fn ART_GO_DIR_UP() -> String {
+    take_string(unsafe { sys::expwxART_GO_DIR_UP() })
 }
 
 #[inline]
-pub fn ART_GO_UP() -> *mut c_void {
-    unsafe { sys::expwxART_GO_UP() }
+pub fn ART_GO_DOWN() -> String {
+    take_string(unsafe { sys::expwxART_GO_DOWN() })
 }
 
 #[inline]
-pub fn ART_HARDDISK() -> *mut c_void {
-    unsafe { sys::expwxART_HARDDISK() }
+pub fn ART_GO_FORWARD() -> String {
+    take_string(unsafe { sys::expwxART_GO_FORWARD() })
 }
 
 #[inline]
-pub fn ART_HELP() -> *mut c_void {
-    unsafe { sys::expwxART_HELP() }
+pub fn ART_GO_HOME() -> String {
+    take_string(unsafe { sys::expwxART_GO_HOME() })
 }
 
 #[inline]
-pub fn ART_HELP_BOOK() -> *mut c_void {
-    unsafe { sys::expwxART_HELP_BOOK() }
+pub fn ART_GO_TO_PARENT() -> String {
+    take_string(unsafe { sys::expwxART_GO_TO_PARENT() })
 }
 
 #[inline]
-pub fn ART_HELP_BROWSER() -> *mut c_void {
-    unsafe { sys::expwxART_HELP_BROWSER() }
+pub fn ART_GO_UP() -> String {
+    take_string(unsafe { sys::expwxART_GO_UP() })
 }
 
 #[inline]
-pub fn ART_HELP_FOLDER() -> *mut c_void {
-    unsafe { sys::expwxART_HELP_FOLDER() }
+pub fn ART_HARDDISK() -> String {
+    take_string(unsafe { sys::expwxART_HARDDISK() })
 }
 
 #[inline]
-pub fn ART_HELP_PAGE() -> *mut c_void {
-    unsafe { sys::expwxART_HELP_PAGE() }
+pub fn ART_HELP() -> String {
+    take_string(unsafe { sys::expwxART_HELP() })
 }
 
 #[inline]
-pub fn ART_HELP_SETTINGS() -> *mut c_void {
-    unsafe { sys::expwxART_HELP_SETTINGS() }
+pub fn ART_HELP_BOOK() -> String {
+    take_string(unsafe { sys::expwxART_HELP_BOOK() })
 }
 
 #[inline]
-pub fn ART_HELP_SIDE_PANEL() -> *mut c_void {
-    unsafe { sys::expwxART_HELP_SIDE_PANEL() }
+pub fn ART_HELP_BROWSER() -> String {
+    take_string(unsafe { sys::expwxART_HELP_BROWSER() })
 }
 
 #[inline]
-pub fn ART_INFORMATION() -> *mut c_void {
-    unsafe { sys::expwxART_INFORMATION() }
+pub fn ART_HELP_FOLDER() -> String {
+    take_string(unsafe { sys::expwxART_HELP_FOLDER() })
 }
 
 #[inline]
-pub fn ART_LIST_VIEW() -> *mut c_void {
-    unsafe { sys::expwxART_LIST_VIEW() }
+pub fn ART_HELP_PAGE() -> String {
+    take_string(unsafe { sys::expwxART_HELP_PAGE() })
 }
 
 #[inline]
-pub fn ART_MENU() -> *mut c_void {
-    unsafe { sys::expwxART_MENU() }
+pub fn ART_HELP_SETTINGS() -> String {
+    take_string(unsafe { sys::expwxART_HELP_SETTINGS() })
 }
 
 #[inline]
-pub fn ART_MESSAGE_BOX() -> *mut c_void {
-    unsafe { sys::expwxART_MESSAGE_BOX() }
+pub fn ART_HELP_SIDE_PANEL() -> String {
+    take_string(unsafe { sys::expwxART_HELP_SIDE_PANEL() })
 }
 
 #[inline]
-pub fn ART_MISSING_IMAGE() -> *mut c_void {
-    unsafe { sys::expwxART_MISSING_IMAGE() }
+pub fn ART_INFORMATION() -> String {
+    take_string(unsafe { sys::expwxART_INFORMATION() })
 }
 
 #[inline]
-pub fn ART_NEW() -> *mut c_void {
-    unsafe { sys::expwxART_NEW() }
+pub fn ART_LIST() -> String {
+    take_string(unsafe { sys::expwxART_LIST() })
 }
 
 #[inline]
-pub fn ART_NEW_DIR() -> *mut c_void {
-    unsafe { sys::expwxART_NEW_DIR() }
+pub fn ART_LIST_VIEW() -> String {
+    take_string(unsafe { sys::expwxART_LIST_VIEW() })
 }
 
 #[inline]
-pub fn ART_NORMAL_FILE() -> *mut c_void {
-    unsafe { sys::expwxART_NORMAL_FILE() }
+pub fn ART_MENU() -> String {
+    take_string(unsafe { sys::expwxART_MENU() })
 }
 
 #[inline]
-pub fn ART_OTHER() -> *mut c_void {
-    unsafe { sys::expwxART_OTHER() }
+pub fn ART_MESSAGE_BOX() -> String {
+    take_string(unsafe { sys::expwxART_MESSAGE_BOX() })
 }
 
 #[inline]
-pub fn ART_PASTE() -> *mut c_void {
-    unsafe { sys::expwxART_PASTE() }
+pub fn ART_MINUS() -> String {
+    take_string(unsafe { sys::expwxART_MINUS() })
 }
 
 #[inline]
-pub fn ART_PRINT() -> *mut c_void {
-    unsafe { sys::expwxART_PRINT() }
+pub fn ART_MISSING_IMAGE() -> String {
+    take_string(unsafe { sys::expwxART_MISSING_IMAGE() })
 }
 
 #[inline]
-pub fn ART_QUESTION() -> *mut c_void {
-    unsafe { sys::expwxART_QUESTION() }
+pub fn ART_NEW() -> String {
+    take_string(unsafe { sys::expwxART_NEW() })
 }
 
 #[inline]
-pub fn ART_QUIT() -> *mut c_void {
-    unsafe { sys::expwxART_QUIT() }
+pub fn ART_NEW_DIR() -> String {
+    take_string(unsafe { sys::expwxART_NEW_DIR() })
 }
 
 #[inline]
-pub fn ART_REDO() -> *mut c_void {
-    unsafe { sys::expwxART_REDO() }
+pub fn ART_NORMAL_FILE() -> String {
+    take_string(unsafe { sys::expwxART_NORMAL_FILE() })
 }
 
 #[inline]
-pub fn ART_REMOVABLE() -> *mut c_void {
-    unsafe { sys::expwxART_REMOVABLE() }
+pub fn ART_OTHER() -> String {
+    take_string(unsafe { sys::expwxART_OTHER() })
 }
 
 #[inline]
-pub fn ART_REPORT_VIEW() -> *mut c_void {
-    unsafe { sys::expwxART_REPORT_VIEW() }
+pub fn ART_PASTE() -> String {
+    take_string(unsafe { sys::expwxART_PASTE() })
 }
 
 #[inline]
-pub fn ART_TICK_MARK() -> *mut c_void {
-    unsafe { sys::expwxART_TICK_MARK() }
+pub fn ART_PLUS() -> String {
+    take_string(unsafe { sys::expwxART_PLUS() })
 }
 
 #[inline]
-pub fn ART_TIP() -> *mut c_void {
-    unsafe { sys::expwxART_TIP() }
+pub fn ART_PRINT() -> String {
+    take_string(unsafe { sys::expwxART_PRINT() })
 }
 
 #[inline]
-pub fn ART_TOOLBAR() -> *mut c_void {
-    unsafe { sys::expwxART_TOOLBAR() }
+pub fn ART_QUESTION() -> String {
+    take_string(unsafe { sys::expwxART_QUESTION() })
 }
 
 #[inline]
-pub fn ART_UNDO() -> *mut c_void {
-    unsafe { sys::expwxART_UNDO() }
+pub fn ART_QUIT() -> String {
+    take_string(unsafe { sys::expwxART_QUIT() })
 }
 
 #[inline]
-pub fn ART_WARNING() -> *mut c_void {
-    unsafe { sys::expwxART_WARNING() }
+pub fn ART_REDO() -> String {
+    take_string(unsafe { sys::expwxART_REDO() })
+}
+
+#[inline]
+pub fn ART_REFRESH() -> String {
+    take_string(unsafe { sys::expwxART_REFRESH() })
+}
+
+#[inline]
+pub fn ART_REMOVABLE() -> String {
+    take_string(unsafe { sys::expwxART_REMOVABLE() })
+}
+
+#[inline]
+pub fn ART_REPORT_VIEW() -> String {
+    take_string(unsafe { sys::expwxART_REPORT_VIEW() })
+}
+
+#[inline]
+pub fn ART_STOP() -> String {
+    take_string(unsafe { sys::expwxART_STOP() })
+}
+
+#[inline]
+pub fn ART_TICK_MARK() -> String {
+    take_string(unsafe { sys::expwxART_TICK_MARK() })
+}
+
+#[inline]
+pub fn ART_TIP() -> String {
+    take_string(unsafe { sys::expwxART_TIP() })
+}
+
+#[inline]
+pub fn ART_TOOLBAR() -> String {
+    take_string(unsafe { sys::expwxART_TOOLBAR() })
+}
+
+#[inline]
+pub fn ART_UNDO() -> String {
+    take_string(unsafe { sys::expwxART_UNDO() })
+}
+
+#[inline]
+pub fn ART_WARNING() -> String {
+    take_string(unsafe { sys::expwxART_WARNING() })
+}
+
+#[inline]
+pub fn ART_WX_LOGO() -> String {
+    take_string(unsafe { sys::expwxART_WX_LOGO() })
+}
+
+#[inline]
+pub fn AUI_BUTTON_CLOSE() -> i32 {
+    unsafe { sys::expwxAUI_BUTTON_CLOSE() as i32 }
+}
+
+#[inline]
+pub fn AUI_BUTTON_CUSTOM1() -> i32 {
+    unsafe { sys::expwxAUI_BUTTON_CUSTOM1() as i32 }
+}
+
+#[inline]
+pub fn AUI_BUTTON_CUSTOM2() -> i32 {
+    unsafe { sys::expwxAUI_BUTTON_CUSTOM2() as i32 }
+}
+
+#[inline]
+pub fn AUI_BUTTON_CUSTOM3() -> i32 {
+    unsafe { sys::expwxAUI_BUTTON_CUSTOM3() as i32 }
+}
+
+#[inline]
+pub fn AUI_BUTTON_DOWN() -> i32 {
+    unsafe { sys::expwxAUI_BUTTON_DOWN() as i32 }
+}
+
+#[inline]
+pub fn AUI_BUTTON_LEFT() -> i32 {
+    unsafe { sys::expwxAUI_BUTTON_LEFT() as i32 }
+}
+
+#[inline]
+pub fn AUI_BUTTON_MAXIMIZE_RESTORE() -> i32 {
+    unsafe { sys::expwxAUI_BUTTON_MAXIMIZE_RESTORE() as i32 }
+}
+
+#[inline]
+pub fn AUI_BUTTON_MINIMIZE() -> i32 {
+    unsafe { sys::expwxAUI_BUTTON_MINIMIZE() as i32 }
+}
+
+#[inline]
+pub fn AUI_BUTTON_OPTIONS() -> i32 {
+    unsafe { sys::expwxAUI_BUTTON_OPTIONS() as i32 }
+}
+
+#[inline]
+pub fn AUI_BUTTON_PIN() -> i32 {
+    unsafe { sys::expwxAUI_BUTTON_PIN() as i32 }
+}
+
+#[inline]
+pub fn AUI_BUTTON_RIGHT() -> i32 {
+    unsafe { sys::expwxAUI_BUTTON_RIGHT() as i32 }
+}
+
+#[inline]
+pub fn AUI_BUTTON_STATE_CHECKED() -> i32 {
+    unsafe { sys::expwxAUI_BUTTON_STATE_CHECKED() as i32 }
+}
+
+#[inline]
+pub fn AUI_BUTTON_STATE_DISABLED() -> i32 {
+    unsafe { sys::expwxAUI_BUTTON_STATE_DISABLED() as i32 }
+}
+
+#[inline]
+pub fn AUI_BUTTON_STATE_HIDDEN() -> i32 {
+    unsafe { sys::expwxAUI_BUTTON_STATE_HIDDEN() as i32 }
+}
+
+#[inline]
+pub fn AUI_BUTTON_STATE_HOVER() -> i32 {
+    unsafe { sys::expwxAUI_BUTTON_STATE_HOVER() as i32 }
+}
+
+#[inline]
+pub fn AUI_BUTTON_STATE_NORMAL() -> i32 {
+    unsafe { sys::expwxAUI_BUTTON_STATE_NORMAL() as i32 }
+}
+
+#[inline]
+pub fn AUI_BUTTON_STATE_PRESSED() -> i32 {
+    unsafe { sys::expwxAUI_BUTTON_STATE_PRESSED() as i32 }
+}
+
+#[inline]
+pub fn AUI_BUTTON_UP() -> i32 {
+    unsafe { sys::expwxAUI_BUTTON_UP() as i32 }
+}
+
+#[inline]
+pub fn AUI_BUTTON_WINDOWLIST() -> i32 {
+    unsafe { sys::expwxAUI_BUTTON_WINDOWLIST() as i32 }
 }
 
 #[inline]
@@ -1115,6 +1261,41 @@ pub fn AUI_DOCKART_SASH_SIZE() -> i32 {
 }
 
 #[inline]
+pub fn AUI_DOCK_BOTTOM() -> i32 {
+    unsafe { sys::expwxAUI_DOCK_BOTTOM() as i32 }
+}
+
+#[inline]
+pub fn AUI_DOCK_CENTER() -> i32 {
+    unsafe { sys::expwxAUI_DOCK_CENTER() as i32 }
+}
+
+#[inline]
+pub fn AUI_DOCK_CENTRE() -> i32 {
+    unsafe { sys::expwxAUI_DOCK_CENTRE() as i32 }
+}
+
+#[inline]
+pub fn AUI_DOCK_LEFT() -> i32 {
+    unsafe { sys::expwxAUI_DOCK_LEFT() as i32 }
+}
+
+#[inline]
+pub fn AUI_DOCK_NONE() -> i32 {
+    unsafe { sys::expwxAUI_DOCK_NONE() as i32 }
+}
+
+#[inline]
+pub fn AUI_DOCK_RIGHT() -> i32 {
+    unsafe { sys::expwxAUI_DOCK_RIGHT() as i32 }
+}
+
+#[inline]
+pub fn AUI_DOCK_TOP() -> i32 {
+    unsafe { sys::expwxAUI_DOCK_TOP() as i32 }
+}
+
+#[inline]
 pub fn AUI_GRADIENT_HORIZONTAL() -> i32 {
     unsafe { sys::expwxAUI_GRADIENT_HORIZONTAL() as i32 }
 }
@@ -1130,6 +1311,21 @@ pub fn AUI_GRADIENT_VERTICAL() -> i32 {
 }
 
 #[inline]
+pub fn AUI_INSERT_DOCK() -> i32 {
+    unsafe { sys::expwxAUI_INSERT_DOCK() as i32 }
+}
+
+#[inline]
+pub fn AUI_INSERT_PANE() -> i32 {
+    unsafe { sys::expwxAUI_INSERT_PANE() as i32 }
+}
+
+#[inline]
+pub fn AUI_INSERT_ROW() -> i32 {
+    unsafe { sys::expwxAUI_INSERT_ROW() as i32 }
+}
+
+#[inline]
 pub fn AUI_MGR_ALLOW_ACTIVE_PANE() -> i32 {
     unsafe { sys::expwxAUI_MGR_ALLOW_ACTIVE_PANE() as i32 }
 }
@@ -1140,6 +1336,11 @@ pub fn AUI_MGR_ALLOW_FLOATING() -> i32 {
 }
 
 #[inline]
+pub fn AUI_MGR_DEFAULT() -> i32 {
+    unsafe { sys::expwxAUI_MGR_DEFAULT() as i32 }
+}
+
+#[inline]
 pub fn AUI_MGR_HINT_FADE() -> i32 {
     unsafe { sys::expwxAUI_MGR_HINT_FADE() as i32 }
 }
@@ -1147,6 +1348,11 @@ pub fn AUI_MGR_HINT_FADE() -> i32 {
 #[inline]
 pub fn AUI_MGR_LIVE_RESIZE() -> i32 {
     unsafe { sys::expwxAUI_MGR_LIVE_RESIZE() as i32 }
+}
+
+#[inline]
+pub fn AUI_MGR_NO_VENETIAN_BLINDS_FADE() -> i32 {
+    unsafe { sys::expwxAUI_MGR_NO_VENETIAN_BLINDS_FADE() as i32 }
 }
 
 #[inline]
@@ -1215,6 +1421,11 @@ pub fn AUI_NB_DEFAULT_STYLE() -> i32 {
 }
 
 #[inline]
+pub fn AUI_NB_MIDDLE_CLICK_CLOSE() -> i32 {
+    unsafe { sys::expwxAUI_NB_MIDDLE_CLICK_CLOSE() as i32 }
+}
+
+#[inline]
 pub fn AUI_NB_MULTILINE() -> i32 {
     unsafe { sys::expwxAUI_NB_MULTILINE() as i32 }
 }
@@ -1265,8 +1476,28 @@ pub fn AUI_NB_WINDOWLIST_BUTTON() -> i32 {
 }
 
 #[inline]
+pub fn AUI_TAB_LOCKED() -> i32 {
+    unsafe { sys::expwxAUI_TAB_LOCKED() as i32 }
+}
+
+#[inline]
+pub fn AUI_TAB_NORMAL() -> i32 {
+    unsafe { sys::expwxAUI_TAB_NORMAL() as i32 }
+}
+
+#[inline]
+pub fn AUI_TAB_PINNED() -> i32 {
+    unsafe { sys::expwxAUI_TAB_PINNED() as i32 }
+}
+
+#[inline]
 pub fn AUI_TB_DEFAULT_STYLE() -> i32 {
     unsafe { sys::expwxAUI_TB_DEFAULT_STYLE() as i32 }
+}
+
+#[inline]
+pub fn AUI_TB_GRIPPER() -> i32 {
+    unsafe { sys::expwxAUI_TB_GRIPPER() as i32 }
 }
 
 #[inline]
@@ -1275,13 +1506,33 @@ pub fn AUI_TB_HORIZONTAL() -> i32 {
 }
 
 #[inline]
+pub fn AUI_TB_HORZ_LAYOUT() -> i32 {
+    unsafe { sys::expwxAUI_TB_HORZ_LAYOUT() as i32 }
+}
+
+#[inline]
 pub fn AUI_TB_HORZ_TEXT() -> i32 {
     unsafe { sys::expwxAUI_TB_HORZ_TEXT() as i32 }
 }
 
 #[inline]
+pub fn AUI_TB_NO_AUTORESIZE() -> i32 {
+    unsafe { sys::expwxAUI_TB_NO_AUTORESIZE() as i32 }
+}
+
+#[inline]
+pub fn AUI_TB_NO_TOOLTIPS() -> i32 {
+    unsafe { sys::expwxAUI_TB_NO_TOOLTIPS() as i32 }
+}
+
+#[inline]
 pub fn AUI_TB_OVERFLOW() -> i32 {
     unsafe { sys::expwxAUI_TB_OVERFLOW() as i32 }
+}
+
+#[inline]
+pub fn AUI_TB_PLAIN_BACKGROUND() -> i32 {
+    unsafe { sys::expwxAUI_TB_PLAIN_BACKGROUND() as i32 }
 }
 
 #[inline]
@@ -1292,6 +1543,36 @@ pub fn AUI_TB_TEXT() -> i32 {
 #[inline]
 pub fn AUI_TB_VERTICAL() -> i32 {
     unsafe { sys::expwxAUI_TB_VERTICAL() as i32 }
+}
+
+#[inline]
+pub fn App_AppearanceResult_CannotChange() -> i32 {
+    unsafe { sys::expwxApp_AppearanceResult_CannotChange() as i32 }
+}
+
+#[inline]
+pub fn App_AppearanceResult_Failure() -> i32 {
+    unsafe { sys::expwxApp_AppearanceResult_Failure() as i32 }
+}
+
+#[inline]
+pub fn App_AppearanceResult_Ok() -> i32 {
+    unsafe { sys::expwxApp_AppearanceResult_Ok() as i32 }
+}
+
+#[inline]
+pub fn App_Appearance_Dark() -> i32 {
+    unsafe { sys::expwxApp_Appearance_Dark() as i32 }
+}
+
+#[inline]
+pub fn App_Appearance_Light() -> i32 {
+    unsafe { sys::expwxApp_Appearance_Light() as i32 }
+}
+
+#[inline]
+pub fn App_Appearance_System() -> i32 {
+    unsafe { sys::expwxApp_Appearance_System() as i32 }
 }
 
 #[inline]
@@ -1337,6 +1618,11 @@ pub fn BG_STYLE_ERASE() -> i32 {
 #[inline]
 pub fn BG_STYLE_PAINT() -> i32 {
     unsafe { sys::expwxBG_STYLE_PAINT() as i32 }
+}
+
+#[inline]
+pub fn BG_STYLE_SYSTEM() -> i32 {
+    unsafe { sys::expwxBG_STYLE_SYSTEM() as i32 }
 }
 
 #[inline]
@@ -1655,6 +1941,11 @@ pub fn BMP_8BPP_RED() -> i32 {
 }
 
 #[inline]
+pub fn BORDER() -> i32 {
+    unsafe { sys::expwxBORDER() as i32 }
+}
+
+#[inline]
 pub fn BORDER_DEFAULT() -> i32 {
     unsafe { sys::expwxBORDER_DEFAULT() as i32 }
 }
@@ -1777,6 +2068,56 @@ pub fn BRUSHSTYLE_TRANSPARENT() -> i32 {
 #[inline]
 pub fn BRUSHSTYLE_VERTICAL_HATCH() -> i32 {
     unsafe { sys::expwxBRUSHSTYLE_VERTICAL_HATCH() as i32 }
+}
+
+#[inline]
+pub fn BRUSH_STOCK_BLACK() -> i32 {
+    unsafe { sys::expwxBRUSH_STOCK_BLACK() as i32 }
+}
+
+#[inline]
+pub fn BRUSH_STOCK_BLUE() -> i32 {
+    unsafe { sys::expwxBRUSH_STOCK_BLUE() as i32 }
+}
+
+#[inline]
+pub fn BRUSH_STOCK_CYAN() -> i32 {
+    unsafe { sys::expwxBRUSH_STOCK_CYAN() as i32 }
+}
+
+#[inline]
+pub fn BRUSH_STOCK_GREEN() -> i32 {
+    unsafe { sys::expwxBRUSH_STOCK_GREEN() as i32 }
+}
+
+#[inline]
+pub fn BRUSH_STOCK_GREY() -> i32 {
+    unsafe { sys::expwxBRUSH_STOCK_GREY() as i32 }
+}
+
+#[inline]
+pub fn BRUSH_STOCK_LIGHT_GREY() -> i32 {
+    unsafe { sys::expwxBRUSH_STOCK_LIGHT_GREY() as i32 }
+}
+
+#[inline]
+pub fn BRUSH_STOCK_MEDIUM_GREY() -> i32 {
+    unsafe { sys::expwxBRUSH_STOCK_MEDIUM_GREY() as i32 }
+}
+
+#[inline]
+pub fn BRUSH_STOCK_RED() -> i32 {
+    unsafe { sys::expwxBRUSH_STOCK_RED() as i32 }
+}
+
+#[inline]
+pub fn BRUSH_STOCK_TRANSPARENT() -> i32 {
+    unsafe { sys::expwxBRUSH_STOCK_TRANSPARENT() as i32 }
+}
+
+#[inline]
+pub fn BRUSH_STOCK_WHITE() -> i32 {
+    unsafe { sys::expwxBRUSH_STOCK_WHITE() as i32 }
 }
 
 #[inline]
@@ -2125,6 +2466,41 @@ pub fn COLOURED() -> i32 {
 }
 
 #[inline]
+pub fn COLOUR_STOCK_BLACK() -> i32 {
+    unsafe { sys::expwxCOLOUR_STOCK_BLACK() as i32 }
+}
+
+#[inline]
+pub fn COLOUR_STOCK_BLUE() -> i32 {
+    unsafe { sys::expwxCOLOUR_STOCK_BLUE() as i32 }
+}
+
+#[inline]
+pub fn COLOUR_STOCK_CYAN() -> i32 {
+    unsafe { sys::expwxCOLOUR_STOCK_CYAN() as i32 }
+}
+
+#[inline]
+pub fn COLOUR_STOCK_GREEN() -> i32 {
+    unsafe { sys::expwxCOLOUR_STOCK_GREEN() as i32 }
+}
+
+#[inline]
+pub fn COLOUR_STOCK_LIGHT_GREY() -> i32 {
+    unsafe { sys::expwxCOLOUR_STOCK_LIGHT_GREY() as i32 }
+}
+
+#[inline]
+pub fn COLOUR_STOCK_RED() -> i32 {
+    unsafe { sys::expwxCOLOUR_STOCK_RED() as i32 }
+}
+
+#[inline]
+pub fn COLOUR_STOCK_WHITE() -> i32 {
+    unsafe { sys::expwxCOLOUR_STOCK_WHITE() as i32 }
+}
+
+#[inline]
 pub fn COL_DEFAULT_FLAGS() -> i32 {
     unsafe { sys::expwxCOL_DEFAULT_FLAGS() as i32 }
 }
@@ -2460,6 +2836,16 @@ pub fn ColourData_NUM_CUSTOM() -> i32 {
 }
 
 #[inline]
+pub fn ColourDatabase_CSS() -> i32 {
+    unsafe { sys::expwxColourDatabase_CSS() as i32 }
+}
+
+#[inline]
+pub fn ColourDatabase_Traditional() -> i32 {
+    unsafe { sys::expwxColourDatabase_Traditional() as i32 }
+}
+
+#[inline]
 pub fn DATAVIEW_CELL_ACTIVATABLE() -> i32 {
     unsafe { sys::expwxDATAVIEW_CELL_ACTIVATABLE() as i32 }
 }
@@ -2522,6 +2908,11 @@ pub fn DEFAULT_DIALOG_STYLE() -> i32 {
 #[inline]
 pub fn DEFAULT_FRAME_STYLE() -> i32 {
     unsafe { sys::expwxDEFAULT_FRAME_STYLE() as i32 }
+}
+
+#[inline]
+pub fn DEFAULT_TEMPLATE_FLAGS() -> i32 {
+    unsafe { sys::expwxDEFAULT_TEMPLATE_FLAGS() as i32 }
 }
 
 #[inline]
@@ -2730,6 +3121,11 @@ pub fn DIR_STOP() -> i32 {
 }
 
 #[inline]
+pub fn DOC_NEW() -> i32 {
+    unsafe { sys::expwxDOC_NEW() as i32 }
+}
+
+#[inline]
 pub fn DOC_SILENT() -> i32 {
     unsafe { sys::expwxDOC_SILENT() as i32 }
 }
@@ -2782,6 +3178,46 @@ pub fn DUPLEX_SIMPLEX() -> i32 {
 #[inline]
 pub fn DUPLEX_VERTICAL() -> i32 {
     unsafe { sys::expwxDUPLEX_VERTICAL() as i32 }
+}
+
+#[inline]
+pub fn DVR_DEFAULT_ALIGNMENT() -> i32 {
+    unsafe { sys::expwxDVR_DEFAULT_ALIGNMENT() as i32 }
+}
+
+#[inline]
+pub fn DV_HORIZ_RULES() -> i32 {
+    unsafe { sys::expwxDV_HORIZ_RULES() as i32 }
+}
+
+#[inline]
+pub fn DV_MULTIPLE() -> i32 {
+    unsafe { sys::expwxDV_MULTIPLE() as i32 }
+}
+
+#[inline]
+pub fn DV_NO_HEADER() -> i32 {
+    unsafe { sys::expwxDV_NO_HEADER() as i32 }
+}
+
+#[inline]
+pub fn DV_ROW_LINES() -> i32 {
+    unsafe { sys::expwxDV_ROW_LINES() as i32 }
+}
+
+#[inline]
+pub fn DV_SINGLE() -> i32 {
+    unsafe { sys::expwxDV_SINGLE() as i32 }
+}
+
+#[inline]
+pub fn DV_VARIABLE_LINE_HEIGHT() -> i32 {
+    unsafe { sys::expwxDV_VARIABLE_LINE_HEIGHT() as i32 }
+}
+
+#[inline]
+pub fn DV_VERT_RULES() -> i32 {
+    unsafe { sys::expwxDV_VERT_RULES() as i32 }
 }
 
 #[inline]
@@ -2925,13 +3361,23 @@ pub fn DateTime_Wed() -> i32 {
 }
 
 #[inline]
+pub fn DebugReport_Context_Current() -> i32 {
+    unsafe { sys::expwxDebugReport_Context_Current() as i32 }
+}
+
+#[inline]
+pub fn DebugReport_Context_Exception() -> i32 {
+    unsafe { sys::expwxDebugReport_Context_Exception() as i32 }
+}
+
+#[inline]
 pub fn DefaultCoord() -> i32 {
     unsafe { sys::expwxDefaultCoord() as i32 }
 }
 
 #[inline]
-pub fn DirDialogDefaultFolderStr() -> *mut c_void {
-    unsafe { sys::expwxDirDialogDefaultFolderStr() }
+pub fn DirDialogDefaultFolderStr() -> String {
+    take_string(unsafe { sys::expwxDirDialogDefaultFolderStr() })
 }
 
 #[inline]
@@ -2997,6 +3443,31 @@ pub fn ELLIPSIZE_NONE() -> i32 {
 #[inline]
 pub fn ELLIPSIZE_START() -> i32 {
     unsafe { sys::expwxELLIPSIZE_START() as i32 }
+}
+
+#[inline]
+pub fn EL_ALLOW_DELETE() -> i32 {
+    unsafe { sys::expwxEL_ALLOW_DELETE() as i32 }
+}
+
+#[inline]
+pub fn EL_ALLOW_EDIT() -> i32 {
+    unsafe { sys::expwxEL_ALLOW_EDIT() as i32 }
+}
+
+#[inline]
+pub fn EL_ALLOW_NEW() -> i32 {
+    unsafe { sys::expwxEL_ALLOW_NEW() as i32 }
+}
+
+#[inline]
+pub fn EL_DEFAULT_STYLE() -> i32 {
+    unsafe { sys::expwxEL_DEFAULT_STYLE() as i32 }
+}
+
+#[inline]
+pub fn EL_NO_REORDER() -> i32 {
+    unsafe { sys::expwxEL_NO_REORDER() as i32 }
 }
 
 #[inline]
@@ -3655,6 +4126,26 @@ pub fn FONTWEIGHT_THIN() -> i32 {
 }
 
 #[inline]
+pub fn FONT_STOCK_ITALIC() -> i32 {
+    unsafe { sys::expwxFONT_STOCK_ITALIC() as i32 }
+}
+
+#[inline]
+pub fn FONT_STOCK_NORMAL() -> i32 {
+    unsafe { sys::expwxFONT_STOCK_NORMAL() as i32 }
+}
+
+#[inline]
+pub fn FONT_STOCK_SMALL() -> i32 {
+    unsafe { sys::expwxFONT_STOCK_SMALL() as i32 }
+}
+
+#[inline]
+pub fn FONT_STOCK_SWISS() -> i32 {
+    unsafe { sys::expwxFONT_STOCK_SWISS() as i32 }
+}
+
+#[inline]
 pub fn FORWARD() -> i32 {
     unsafe { sys::expwxFORWARD() as i32 }
 }
@@ -3810,8 +4301,8 @@ pub fn FULL_REPAINT_ON_RESIZE() -> i32 {
 }
 
 #[inline]
-pub fn FileSelectorDefaultWildcardStr() -> *mut c_void {
-    unsafe { sys::expwxFileSelectorDefaultWildcardStr() }
+pub fn FileSelectorDefaultWildcardStr() -> String {
+    take_string(unsafe { sys::expwxFileSelectorDefaultWildcardStr() })
 }
 
 #[inline]
@@ -4147,6 +4638,11 @@ pub fn ICON_AUTH_NEEDED() -> i32 {
 #[inline]
 pub fn ICON_ERROR() -> i32 {
     unsafe { sys::expwxICON_ERROR() as i32 }
+}
+
+#[inline]
+pub fn ICON_HAND() -> i32 {
+    unsafe { sys::expwxICON_HAND() as i32 }
 }
 
 #[inline]
@@ -6165,6 +6661,11 @@ pub fn LB_EXTENDED() -> i32 {
 }
 
 #[inline]
+pub fn LB_HSCROLL() -> i32 {
+    unsafe { sys::expwxLB_HSCROLL() as i32 }
+}
+
+#[inline]
 pub fn LB_MULTIPLE() -> i32 {
     unsafe { sys::expwxLB_MULTIPLE() as i32 }
 }
@@ -6725,6 +7226,11 @@ pub fn NOT_FOUND() -> i32 {
 }
 
 #[inline]
+pub fn NO_BORDER() -> i32 {
+    unsafe { sys::expwxNO_BORDER() as i32 }
+}
+
+#[inline]
 pub fn NO_DEFAULT() -> i32 {
     unsafe { sys::expwxNO_DEFAULT() as i32 }
 }
@@ -6747,6 +7253,11 @@ pub fn NUM_VAL_NO_TRAILING_ZEROES() -> i32 {
 #[inline]
 pub fn NUM_VAL_SIGN_PLUS() -> i32 {
     unsafe { sys::expwxNUM_VAL_SIGN_PLUS() as i32 }
+}
+
+#[inline]
+pub fn NUM_VAL_SIGN_SPACE() -> i32 {
+    unsafe { sys::expwxNUM_VAL_SIGN_SPACE() as i32 }
 }
 
 #[inline]
@@ -6842,6 +7353,11 @@ pub fn ODCB_PAINTING_CONTROL() -> i32 {
 #[inline]
 pub fn ODCB_PAINTING_SELECTED() -> i32 {
     unsafe { sys::expwxODCB_PAINTING_SELECTED() as i32 }
+}
+
+#[inline]
+pub fn ODCB_STD_CONTROL_PAINT() -> i32 {
+    unsafe { sys::expwxODCB_STD_CONTROL_PAINT() as i32 }
 }
 
 #[inline]
@@ -7400,58 +7916,108 @@ pub fn PENSTYLE_VERTICAL_HATCH() -> i32 {
 }
 
 #[inline]
-pub fn PG_ARRAY_DELIMITER() -> *mut c_void {
-    unsafe { sys::expwxPG_ARRAY_DELIMITER() }
+pub fn PEN_STOCK_BLACK() -> i32 {
+    unsafe { sys::expwxPEN_STOCK_BLACK() as i32 }
 }
 
 #[inline]
-pub fn PG_ATTR_AUTOCOMPLETE() -> *mut c_void {
-    unsafe { sys::expwxPG_ATTR_AUTOCOMPLETE() }
+pub fn PEN_STOCK_BLACK_DASHED() -> i32 {
+    unsafe { sys::expwxPEN_STOCK_BLACK_DASHED() as i32 }
 }
 
 #[inline]
-pub fn PG_ATTR_DEFAULT_VALUE() -> *mut c_void {
-    unsafe { sys::expwxPG_ATTR_DEFAULT_VALUE() }
+pub fn PEN_STOCK_CYAN() -> i32 {
+    unsafe { sys::expwxPEN_STOCK_CYAN() as i32 }
 }
 
 #[inline]
-pub fn PG_ATTR_HINT() -> *mut c_void {
-    unsafe { sys::expwxPG_ATTR_HINT() }
+pub fn PEN_STOCK_GREEN() -> i32 {
+    unsafe { sys::expwxPEN_STOCK_GREEN() as i32 }
 }
 
 #[inline]
-pub fn PG_ATTR_MAX() -> *mut c_void {
-    unsafe { sys::expwxPG_ATTR_MAX() }
+pub fn PEN_STOCK_GREY() -> i32 {
+    unsafe { sys::expwxPEN_STOCK_GREY() as i32 }
 }
 
 #[inline]
-pub fn PG_ATTR_MIN() -> *mut c_void {
-    unsafe { sys::expwxPG_ATTR_MIN() }
+pub fn PEN_STOCK_LIGHT_GREY() -> i32 {
+    unsafe { sys::expwxPEN_STOCK_LIGHT_GREY() as i32 }
 }
 
 #[inline]
-pub fn PG_ATTR_MULTICHOICE_USERSTRINGMODE() -> *mut c_void {
-    unsafe { sys::expwxPG_ATTR_MULTICHOICE_USERSTRINGMODE() }
+pub fn PEN_STOCK_MEDIUM_GREY() -> i32 {
+    unsafe { sys::expwxPEN_STOCK_MEDIUM_GREY() as i32 }
 }
 
 #[inline]
-pub fn PG_ATTR_SPINCTRL_MOTION() -> *mut c_void {
-    unsafe { sys::expwxPG_ATTR_SPINCTRL_MOTION() }
+pub fn PEN_STOCK_RED() -> i32 {
+    unsafe { sys::expwxPEN_STOCK_RED() as i32 }
 }
 
 #[inline]
-pub fn PG_ATTR_SPINCTRL_STEP() -> *mut c_void {
-    unsafe { sys::expwxPG_ATTR_SPINCTRL_STEP() }
+pub fn PEN_STOCK_TRANSPARENT() -> i32 {
+    unsafe { sys::expwxPEN_STOCK_TRANSPARENT() as i32 }
 }
 
 #[inline]
-pub fn PG_ATTR_SPINCTRL_WRAP() -> *mut c_void {
-    unsafe { sys::expwxPG_ATTR_SPINCTRL_WRAP() }
+pub fn PEN_STOCK_WHITE() -> i32 {
+    unsafe { sys::expwxPEN_STOCK_WHITE() as i32 }
 }
 
 #[inline]
-pub fn PG_ATTR_UNITS() -> *mut c_void {
-    unsafe { sys::expwxPG_ATTR_UNITS() }
+pub fn PG_ARRAY_DELIMITER() -> String {
+    take_string(unsafe { sys::expwxPG_ARRAY_DELIMITER() })
+}
+
+#[inline]
+pub fn PG_ATTR_AUTOCOMPLETE() -> String {
+    take_string(unsafe { sys::expwxPG_ATTR_AUTOCOMPLETE() })
+}
+
+#[inline]
+pub fn PG_ATTR_DEFAULT_VALUE() -> String {
+    take_string(unsafe { sys::expwxPG_ATTR_DEFAULT_VALUE() })
+}
+
+#[inline]
+pub fn PG_ATTR_HINT() -> String {
+    take_string(unsafe { sys::expwxPG_ATTR_HINT() })
+}
+
+#[inline]
+pub fn PG_ATTR_MAX() -> String {
+    take_string(unsafe { sys::expwxPG_ATTR_MAX() })
+}
+
+#[inline]
+pub fn PG_ATTR_MIN() -> String {
+    take_string(unsafe { sys::expwxPG_ATTR_MIN() })
+}
+
+#[inline]
+pub fn PG_ATTR_MULTICHOICE_USERSTRINGMODE() -> String {
+    take_string(unsafe { sys::expwxPG_ATTR_MULTICHOICE_USERSTRINGMODE() })
+}
+
+#[inline]
+pub fn PG_ATTR_SPINCTRL_MOTION() -> String {
+    take_string(unsafe { sys::expwxPG_ATTR_SPINCTRL_MOTION() })
+}
+
+#[inline]
+pub fn PG_ATTR_SPINCTRL_STEP() -> String {
+    take_string(unsafe { sys::expwxPG_ATTR_SPINCTRL_STEP() })
+}
+
+#[inline]
+pub fn PG_ATTR_SPINCTRL_WRAP() -> String {
+    take_string(unsafe { sys::expwxPG_ATTR_SPINCTRL_WRAP() })
+}
+
+#[inline]
+pub fn PG_ATTR_UNITS() -> String {
+    take_string(unsafe { sys::expwxPG_ATTR_UNITS() })
 }
 
 #[inline]
@@ -7465,33 +8031,33 @@ pub fn PG_BOLD_MODIFIED() -> i32 {
 }
 
 #[inline]
-pub fn PG_BOOL_USE_CHECKBOX() -> *mut c_void {
-    unsafe { sys::expwxPG_BOOL_USE_CHECKBOX() }
+pub fn PG_BOOL_USE_CHECKBOX() -> String {
+    take_string(unsafe { sys::expwxPG_BOOL_USE_CHECKBOX() })
 }
 
 #[inline]
-pub fn PG_BOOL_USE_DOUBLE_CLICK_CYCLING() -> *mut c_void {
-    unsafe { sys::expwxPG_BOOL_USE_DOUBLE_CLICK_CYCLING() }
+pub fn PG_BOOL_USE_DOUBLE_CLICK_CYCLING() -> String {
+    take_string(unsafe { sys::expwxPG_BOOL_USE_DOUBLE_CLICK_CYCLING() })
 }
 
 #[inline]
-pub fn PG_COLOUR_ALLOW_CUSTOM() -> *mut c_void {
-    unsafe { sys::expwxPG_COLOUR_ALLOW_CUSTOM() }
+pub fn PG_COLOUR_ALLOW_CUSTOM() -> String {
+    take_string(unsafe { sys::expwxPG_COLOUR_ALLOW_CUSTOM() })
 }
 
 #[inline]
-pub fn PG_COLOUR_HAS_ALPHA() -> *mut c_void {
-    unsafe { sys::expwxPG_COLOUR_HAS_ALPHA() }
+pub fn PG_COLOUR_HAS_ALPHA() -> String {
+    take_string(unsafe { sys::expwxPG_COLOUR_HAS_ALPHA() })
 }
 
 #[inline]
-pub fn PG_DATE_FORMAT() -> *mut c_void {
-    unsafe { sys::expwxPG_DATE_FORMAT() }
+pub fn PG_DATE_FORMAT() -> String {
+    take_string(unsafe { sys::expwxPG_DATE_FORMAT() })
 }
 
 #[inline]
-pub fn PG_DATE_PICKER_STYLE() -> *mut c_void {
-    unsafe { sys::expwxPG_DATE_PICKER_STYLE() }
+pub fn PG_DATE_PICKER_STYLE() -> String {
+    take_string(unsafe { sys::expwxPG_DATE_PICKER_STYLE() })
 }
 
 #[inline]
@@ -7500,8 +8066,8 @@ pub fn PG_DESCRIPTION() -> i32 {
 }
 
 #[inline]
-pub fn PG_DIALOG_TITLE() -> *mut c_void {
-    unsafe { sys::expwxPG_DIALOG_TITLE() }
+pub fn PG_DIALOG_TITLE() -> String {
+    take_string(unsafe { sys::expwxPG_DIALOG_TITLE() })
 }
 
 #[inline]
@@ -7570,33 +8136,33 @@ pub fn PG_EX_WRITEONLY_BUILTIN_ATTRIBUTES() -> i32 {
 }
 
 #[inline]
-pub fn PG_FILE_DIALOG_STYLE() -> *mut c_void {
-    unsafe { sys::expwxPG_FILE_DIALOG_STYLE() }
+pub fn PG_FILE_DIALOG_STYLE() -> String {
+    take_string(unsafe { sys::expwxPG_FILE_DIALOG_STYLE() })
 }
 
 #[inline]
-pub fn PG_FILE_INITIAL_PATH() -> *mut c_void {
-    unsafe { sys::expwxPG_FILE_INITIAL_PATH() }
+pub fn PG_FILE_INITIAL_PATH() -> String {
+    take_string(unsafe { sys::expwxPG_FILE_INITIAL_PATH() })
 }
 
 #[inline]
-pub fn PG_FILE_SHOW_FULL_PATH() -> *mut c_void {
-    unsafe { sys::expwxPG_FILE_SHOW_FULL_PATH() }
+pub fn PG_FILE_SHOW_FULL_PATH() -> String {
+    take_string(unsafe { sys::expwxPG_FILE_SHOW_FULL_PATH() })
 }
 
 #[inline]
-pub fn PG_FILE_SHOW_RELATIVE_PATH() -> *mut c_void {
-    unsafe { sys::expwxPG_FILE_SHOW_RELATIVE_PATH() }
+pub fn PG_FILE_SHOW_RELATIVE_PATH() -> String {
+    take_string(unsafe { sys::expwxPG_FILE_SHOW_RELATIVE_PATH() })
 }
 
 #[inline]
-pub fn PG_FILE_WILDCARD() -> *mut c_void {
-    unsafe { sys::expwxPG_FILE_WILDCARD() }
+pub fn PG_FILE_WILDCARD() -> String {
+    take_string(unsafe { sys::expwxPG_FILE_WILDCARD() })
 }
 
 #[inline]
-pub fn PG_FLOAT_PRECISION() -> *mut c_void {
-    unsafe { sys::expwxPG_FLOAT_PRECISION() }
+pub fn PG_FLOAT_PRECISION() -> String {
+    take_string(unsafe { sys::expwxPG_FLOAT_PRECISION() })
 }
 
 #[inline]
@@ -7630,8 +8196,8 @@ pub fn PG_ITERATE_VISIBLE() -> i32 {
 }
 
 #[inline]
-pub fn PG_LABEL() -> *mut c_void {
-    unsafe { sys::expwxPG_LABEL() }
+pub fn PG_LABEL() -> String {
+    take_string(unsafe { sys::expwxPG_LABEL() })
 }
 
 #[inline]
@@ -7660,8 +8226,8 @@ pub fn PG_STATIC_SPLITTER() -> i32 {
 }
 
 #[inline]
-pub fn PG_STRING_PASSWORD() -> *mut c_void {
-    unsafe { sys::expwxPG_STRING_PASSWORD() }
+pub fn PG_STRING_PASSWORD() -> String {
+    take_string(unsafe { sys::expwxPG_STRING_PASSWORD() })
 }
 
 #[inline]
@@ -7675,13 +8241,13 @@ pub fn PG_TOOLTIPS() -> i32 {
 }
 
 #[inline]
-pub fn PG_UINT_BASE() -> *mut c_void {
-    unsafe { sys::expwxPG_UINT_BASE() }
+pub fn PG_UINT_BASE() -> String {
+    take_string(unsafe { sys::expwxPG_UINT_BASE() })
 }
 
 #[inline]
-pub fn PG_UINT_PREFIX() -> *mut c_void {
-    unsafe { sys::expwxPG_UINT_PREFIX() }
+pub fn PG_UINT_PREFIX() -> String {
+    take_string(unsafe { sys::expwxPG_UINT_PREFIX() })
 }
 
 #[inline]
@@ -7917,6 +8483,11 @@ pub fn PROPSHEET_SHRINKTOFIT() -> i32 {
 #[inline]
 pub fn PROPSHEET_TOOLBOOK() -> i32 {
     unsafe { sys::expwxPROPSHEET_TOOLBOOK() as i32 }
+}
+
+#[inline]
+pub fn RAISED_BORDER() -> i32 {
+    unsafe { sys::expwxRAISED_BORDER() as i32 }
 }
 
 #[inline]
@@ -8645,6 +9216,11 @@ pub fn ROLE_SYSTEM_WINDOW() -> i32 {
 }
 
 #[inline]
+pub fn RichTextFormattingDialog_Option_AllowPixelFontSize() -> i32 {
+    unsafe { sys::expwxRichTextFormattingDialog_Option_AllowPixelFontSize() as i32 }
+}
+
+#[inline]
 pub fn SASH_BOTTOM() -> i32 {
     unsafe { sys::expwxSASH_BOTTOM() as i32 }
 }
@@ -8885,6 +9461,11 @@ pub fn SIGTRAP() -> i32 {
 }
 
 #[inline]
+pub fn SIMPLE_BORDER() -> i32 {
+    unsafe { sys::expwxSIMPLE_BORDER() as i32 }
+}
+
+#[inline]
 pub fn SIZE_ALLOW_MINUS_ONE() -> i32 {
     unsafe { sys::expwxSIZE_ALLOW_MINUS_ONE() as i32 }
 }
@@ -8930,6 +9511,11 @@ pub fn SL_BOTTOM() -> i32 {
 }
 
 #[inline]
+pub fn SL_HORIZONTAL() -> i32 {
+    unsafe { sys::expwxSL_HORIZONTAL() as i32 }
+}
+
+#[inline]
 pub fn SL_INVERSE() -> i32 {
     unsafe { sys::expwxSL_INVERSE() as i32 }
 }
@@ -8967,6 +9553,11 @@ pub fn SL_TOP() -> i32 {
 #[inline]
 pub fn SL_VALUE_LABEL() -> i32 {
     unsafe { sys::expwxSL_VALUE_LABEL() as i32 }
+}
+
+#[inline]
+pub fn SL_VERTICAL() -> i32 {
+    unsafe { sys::expwxSL_VERTICAL() as i32 }
 }
 
 #[inline]
@@ -9135,6 +9726,11 @@ pub fn SP_BORDER() -> i32 {
 }
 
 #[inline]
+pub fn SP_HORIZONTAL() -> i32 {
+    unsafe { sys::expwxSP_HORIZONTAL() as i32 }
+}
+
+#[inline]
 pub fn SP_LIVE_UPDATE() -> i32 {
     unsafe { sys::expwxSP_LIVE_UPDATE() as i32 }
 }
@@ -9155,6 +9751,11 @@ pub fn SP_PERMIT_UNSPLIT() -> i32 {
 }
 
 #[inline]
+pub fn SP_VERTICAL() -> i32 {
+    unsafe { sys::expwxSP_VERTICAL() as i32 }
+}
+
+#[inline]
 pub fn SP_WRAP() -> i32 {
     unsafe { sys::expwxSP_WRAP() as i32 }
 }
@@ -9167,6 +9768,11 @@ pub fn SRC_INVERT() -> i32 {
 #[inline]
 pub fn STANDARD_CURSOR() -> *mut c_void {
     unsafe { sys::expwxSTANDARD_CURSOR() }
+}
+
+#[inline]
+pub fn STATIC_BORDER() -> i32 {
+    unsafe { sys::expwxSTATIC_BORDER() as i32 }
 }
 
 #[inline]
@@ -9267,6 +9873,11 @@ pub fn ST_SIZEGRIP() -> i32 {
 #[inline]
 pub fn ST_WRAP() -> i32 {
     unsafe { sys::expwxST_WRAP() as i32 }
+}
+
+#[inline]
+pub fn SUNKEN_BORDER() -> i32 {
+    unsafe { sys::expwxSUNKEN_BORDER() as i32 }
 }
 
 #[inline]
@@ -9770,6 +10381,26 @@ pub fn S_DIR_DEFAULT() -> i32 {
 }
 
 #[inline]
+pub fn StaticBitmapBase_Scale_AspectFill() -> i32 {
+    unsafe { sys::expwxStaticBitmapBase_Scale_AspectFill() as i32 }
+}
+
+#[inline]
+pub fn StaticBitmapBase_Scale_AspectFit() -> i32 {
+    unsafe { sys::expwxStaticBitmapBase_Scale_AspectFit() as i32 }
+}
+
+#[inline]
+pub fn StaticBitmapBase_Scale_Fill() -> i32 {
+    unsafe { sys::expwxStaticBitmapBase_Scale_Fill() as i32 }
+}
+
+#[inline]
+pub fn StaticBitmapBase_Scale_None() -> i32 {
+    unsafe { sys::expwxStaticBitmapBase_Scale_None() as i32 }
+}
+
+#[inline]
 pub fn Strip_Accel() -> i32 {
     unsafe { sys::expwxStrip_Accel() as i32 }
 }
@@ -9832,6 +10463,16 @@ pub fn Style_SignSpace() -> i32 {
 #[inline]
 pub fn Style_WithThousandsSep() -> i32 {
     unsafe { sys::expwxStyle_WithThousandsSep() as i32 }
+}
+
+#[inline]
+pub fn SysMetric_CursorSize() -> i32 {
+    unsafe { sys::expwxSysMetric_CursorSize() as i32 }
+}
+
+#[inline]
+pub fn SysMetric_Other() -> i32 {
+    unsafe { sys::expwxSysMetric_Other() as i32 }
 }
 
 #[inline]
@@ -9982,6 +10623,16 @@ pub fn TC_OWNERDRAW() -> i32 {
 #[inline]
 pub fn TC_RIGHTJUSTIFY() -> i32 {
     unsafe { sys::expwxTC_RIGHTJUSTIFY() as i32 }
+}
+
+#[inline]
+pub fn TEMPLATE_INVISIBLE() -> i32 {
+    unsafe { sys::expwxTEMPLATE_INVISIBLE() as i32 }
+}
+
+#[inline]
+pub fn TEMPLATE_VISIBLE() -> i32 {
+    unsafe { sys::expwxTEMPLATE_VISIBLE() as i32 }
 }
 
 #[inline]
@@ -10675,6 +11326,11 @@ pub fn TOUCH_RAW_EVENTS() -> i32 {
 }
 
 #[inline]
+pub fn TRACE_OleCalls() -> String {
+    take_string(unsafe { sys::expwxTRACE_OleCalls() })
+}
+
+#[inline]
 pub fn TRANSPARENT() -> i32 {
     unsafe { sys::expwxTRANSPARENT() as i32 }
 }
@@ -10875,8 +11531,8 @@ pub fn USER_ATTENTION_ERROR() -> i32 {
 }
 
 #[inline]
-pub fn VERSION_NUM_DOT_STRING() -> *mut c_void {
-    unsafe { sys::expwxVERSION_NUM_DOT_STRING() }
+pub fn VERSION_NUM_DOT_STRING() -> String {
+    take_string(unsafe { sys::expwxVERSION_NUM_DOT_STRING() })
 }
 
 #[inline]

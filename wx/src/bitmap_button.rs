@@ -64,6 +64,12 @@ impl BitmapButton {
         Self::from_raw(ptr)
     }
 
+    pub fn create_with_bundle(parent: &impl WxWindow, id: i32, bitmap: &impl WxBitmapBundle, rect: Rect, style: i32) -> Self {
+        let ptr = unsafe { sys::wxBitmapButton_CreateWithBundle(parent.as_ptr(), id as c_int, bitmap.as_ptr(), rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int, style as c_int) };
+        assert!(!ptr.is_null(), "wxBitmapButton_CreateWithBundle returned null");
+        Self::from_raw(ptr)
+    }
+
     pub fn get_bitmap_disabled(&self, ref_: &impl WxBitmap) {
         unsafe { sys::wxBitmapButton_GetBitmapDisabled(self.as_ptr(), ref_.as_ptr()) }
     }
@@ -102,6 +108,22 @@ impl BitmapButton {
 
     pub fn set_bitmap_selected(&self, sel: &impl WxBitmap) {
         unsafe { sys::wxBitmapButton_SetBitmapSelected(self.as_ptr(), sel.as_ptr()) }
+    }
+
+    pub fn set_bitmap_disabled_bundle(&self, disabled: &impl WxBitmapBundle) {
+        unsafe { sys::wxBitmapButton_SetBitmapDisabledBundle(self.as_ptr(), disabled.as_ptr()) }
+    }
+
+    pub fn set_bitmap_focus_bundle(&self, focus: &impl WxBitmapBundle) {
+        unsafe { sys::wxBitmapButton_SetBitmapFocusBundle(self.as_ptr(), focus.as_ptr()) }
+    }
+
+    pub fn set_bitmap_label_bundle(&self, bitmap: &impl WxBitmapBundle) {
+        unsafe { sys::wxBitmapButton_SetBitmapLabelBundle(self.as_ptr(), bitmap.as_ptr()) }
+    }
+
+    pub fn set_bitmap_selected_bundle(&self, sel: &impl WxBitmapBundle) {
+        unsafe { sys::wxBitmapButton_SetBitmapSelectedBundle(self.as_ptr(), sel.as_ptr()) }
     }
 
     pub fn set_margins(&self, point: Point) {

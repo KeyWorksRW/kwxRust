@@ -169,5 +169,21 @@ impl ScrolledWindow {
         unsafe { sys::wxScrolledWindow_GetViewStartPixels(self.as_ptr(), x as *mut c_int, y as *mut c_int) }
     }
 
+    pub fn enable_auto_scroll_inside(&self, inside_width: i32) {
+        unsafe { sys::wxScrolledWindow_EnableAutoScrollInside(self.as_ptr(), inside_width as c_int) }
+    }
+
+    pub fn disable_auto_scroll_outside(&self) {
+        unsafe { sys::wxScrolledWindow_DisableAutoScrollOutside(self.as_ptr()) }
+    }
+
+    pub fn enable_autoscroll_without_capture(&self) {
+        unsafe { sys::wxScrolledWindow_EnableAutoscrollWithoutCapture(self.as_ptr()) }
+    }
+
+    pub fn disable_autoscroll_without_capture(&self) {
+        unsafe { sys::wxScrolledWindow_DisableAutoscrollWithoutCapture(self.as_ptr()) }
+    }
+
 }
 

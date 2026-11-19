@@ -4,16 +4,16 @@
 
 use std::os::raw::*;
 
-use crate::dc::DC;
+use crate::memory_dc::MemoryDC;
 use crate::sys;
 use crate::traits::*;
 
 #[derive(Copy, Clone)]
-pub struct BufferedDC(pub(crate) DC);
+pub struct BufferedDC(pub(crate) MemoryDC);
 
 impl BufferedDC {
     pub(crate) const fn from_raw(ptr: *mut c_void) -> Self {
-        Self(DC::from_raw(ptr))
+        Self(MemoryDC::from_raw(ptr))
     }
 
     /// Wraps a raw pointer without taking ownership of the native object.
@@ -29,9 +29,9 @@ impl BufferedDC {
 }
 
 impl std::ops::Deref for BufferedDC {
-    type Target = DC;
+    type Target = MemoryDC;
 
-    fn deref(&self) -> &DC {
+    fn deref(&self) -> &MemoryDC {
         &self.0
     }
 }
@@ -42,6 +42,7 @@ impl WxObject for BufferedDC {
     }
 }
 
+impl WxMemoryDC for BufferedDC {}
 impl WxDC for BufferedDC {}
 impl WxBufferedDC for BufferedDC {}
 

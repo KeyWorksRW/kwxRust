@@ -102,6 +102,13 @@ impl Icon {
         Self::from_raw(ptr)
     }
 
+    pub fn create_from_xpm_string(xpm: impl AsRef<str>) -> Self {
+        let xpm_c = std::ffi::CString::new(xpm.as_ref()).unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
+        let ptr = unsafe { sys::wxIcon_CreateFromXPMString(xpm_c.as_ptr()) };
+        assert!(!ptr.is_null(), "wxIcon_CreateFromXPMString returned null");
+        Self::from_raw(ptr)
+    }
+
     pub fn get_depth(&self) -> i32 {
         unsafe { sys::wxIcon_GetDepth(self.as_ptr()) as i32 }
     }

@@ -156,5 +156,29 @@ impl Wizard {
         unsafe { sys::wxWizard_GetBitmapPlacement(self.as_ptr()) as i32 }
     }
 
+    pub fn is_running(&self) -> bool {
+        unsafe { sys::wxWizard_IsRunning(self.as_ptr()) != 0 }
+    }
+
+    pub fn set_bitmap_background_colour(&self, colour: &impl WxColour) {
+        unsafe { sys::wxWizard_SetBitmapBackgroundColour(self.as_ptr(), colour.as_ptr()) }
+    }
+
+    pub fn get_bitmap_background_colour(&self, ref_: &impl WxColour) {
+        unsafe { sys::wxWizard_GetBitmapBackgroundColour(self.as_ptr(), ref_.as_ptr()) }
+    }
+
+    pub fn set_minimum_bitmap_width(&self, width: i32) {
+        unsafe { sys::wxWizard_SetMinimumBitmapWidth(self.as_ptr(), width as c_int) }
+    }
+
+    pub fn get_minimum_bitmap_width(&self) -> i32 {
+        unsafe { sys::wxWizard_GetMinimumBitmapWidth(self.as_ptr()) as i32 }
+    }
+
+    pub fn tile_bitmap(rect: Rect, dc: &impl WxDC, bitmap: &impl WxBitmap) -> bool {
+        unsafe { sys::wxWizard_TileBitmap(rect.x as c_int, rect.y as c_int, rect.width as c_int, rect.height as c_int, dc.as_ptr(), bitmap.as_ptr()) != 0 }
+    }
+
 }
 

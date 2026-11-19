@@ -68,6 +68,13 @@ impl AuiToolBarItem {
         Self::from_raw(ptr)
     }
 
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxAuiToolBarItem_Delete(self.as_ptr()) }
+    }
+
     pub fn copy(&self, source: &impl WxAuiToolBarItem) -> Option<AuiToolBarItem> {
         let ptr = unsafe { sys::wxAuiToolBarItem_Copy(self.as_ptr(), source.as_ptr()) };
         if ptr.is_null() {

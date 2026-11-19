@@ -46,8 +46,6 @@ impl WxValidator for GenericValidator {}
 impl WxEvtHandler for GenericValidator {}
 impl WxGenericValidator for GenericValidator {}
 
-use crate::support::WxStr;
-
 impl GenericValidator {
     pub fn create_int(value: *mut c_void) -> Self {
         let ptr = unsafe { sys::wxGenericValidator_CreateInt(value) };
@@ -61,10 +59,51 @@ impl GenericValidator {
         Self::from_raw(ptr)
     }
 
-    pub fn create_string(value: impl AsRef<str>) -> Self {
-        let value_wx = WxStr::new(value.as_ref());
-        let ptr = unsafe { sys::wxGenericValidator_CreateString(value_wx.as_ptr()) };
+    pub fn create_string(value: *mut c_void) -> Self {
+        let ptr = unsafe { sys::wxGenericValidator_CreateString(value) };
         assert!(!ptr.is_null(), "wxGenericValidator_CreateString returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn create_array_int(value: *mut c_void) -> Self {
+        let ptr = unsafe { sys::wxGenericValidator_CreateArrayInt(value) };
+        assert!(!ptr.is_null(), "wxGenericValidator_CreateArrayInt returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn create_date_time(value: *mut c_void) -> Self {
+        let ptr = unsafe { sys::wxGenericValidator_CreateDateTime(value) };
+        assert!(!ptr.is_null(), "wxGenericValidator_CreateDateTime returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn create_file_name(value: *mut c_void) -> Self {
+        let ptr = unsafe { sys::wxGenericValidator_CreateFileName(value) };
+        assert!(!ptr.is_null(), "wxGenericValidator_CreateFileName returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn create_float(value: *mut c_void) -> Self {
+        let ptr = unsafe { sys::wxGenericValidator_CreateFloat(value) };
+        assert!(!ptr.is_null(), "wxGenericValidator_CreateFloat returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn create_double(value: *mut c_void) -> Self {
+        let ptr = unsafe { sys::wxGenericValidator_CreateDouble(value) };
+        assert!(!ptr.is_null(), "wxGenericValidator_CreateDouble returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn create_colour(value: *mut c_void) -> Self {
+        let ptr = unsafe { sys::wxGenericValidator_CreateColour(value) };
+        assert!(!ptr.is_null(), "wxGenericValidator_CreateColour returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn create_check_box_state(value: *mut c_void) -> Self {
+        let ptr = unsafe { sys::wxGenericValidator_CreateCheckBoxState(value) };
+        assert!(!ptr.is_null(), "wxGenericValidator_CreateCheckBoxState returned null");
         Self::from_raw(ptr)
     }
 

@@ -50,12 +50,27 @@ impl SystemAppearance {
         unsafe { sys::wxSystemAppearance_IsDark(self.as_ptr()) != 0 }
     }
 
+    pub fn is_system_dark(&self) -> bool {
+        unsafe { sys::wxSystemAppearance_IsSystemDark(self.as_ptr()) != 0 }
+    }
+
+    pub fn are_apps_dark(&self) -> bool {
+        unsafe { sys::wxSystemAppearance_AreAppsDark(self.as_ptr()) != 0 }
+    }
+
     pub fn is_using_dark_background(&self) -> bool {
         unsafe { sys::wxSystemAppearance_IsUsingDarkBackground(self.as_ptr()) != 0 }
     }
 
     pub fn get_name(&self) -> String {
         take_string(unsafe { sys::wxSystemAppearance_GetName(self.as_ptr()) })
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxSystemAppearance_Delete(self.as_ptr()) }
     }
 
 }

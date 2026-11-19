@@ -1,9 +1,0 @@
-[package]
-name = "preferences"
-version = "0.1.0"
-edition = "2021"
-description = "Port of the wxWidgets preferences sample (src/preferences/preferences.cpp)"
-publish = false
-
-[dependencies]
-kwxffi-sys = { path = "../../wx" }

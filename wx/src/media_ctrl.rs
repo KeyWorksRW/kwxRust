@@ -100,8 +100,8 @@ impl MediaCtrl {
         unsafe { sys::wxMediaCtrl_GetVolume(self.as_ptr()) as f64 }
     }
 
-    pub fn length(&self) -> i32 {
-        unsafe { sys::wxMediaCtrl_Length(self.as_ptr()) as i32 }
+    pub fn length(&self) -> i64 {
+        unsafe { sys::wxMediaCtrl_Length(self.as_ptr()) as i64 }
     }
 
     pub fn load(&self, file_name: impl AsRef<str>) -> bool {
@@ -128,8 +128,8 @@ impl MediaCtrl {
         unsafe { sys::wxMediaCtrl_Play(self.as_ptr()) != 0 }
     }
 
-    pub fn seek(&self, offset_where: i32, mode: i32) -> i32 {
-        unsafe { sys::wxMediaCtrl_Seek(self.as_ptr(), offset_where as c_int, mode as c_int) as i32 }
+    pub fn seek(&self, offset_where: i64, mode: i32) -> i64 {
+        unsafe { sys::wxMediaCtrl_Seek(self.as_ptr(), offset_where, mode as c_int) as i64 }
     }
 
     pub fn set_playback_rate(&self, d_rate: f64) -> bool {
@@ -148,8 +148,8 @@ impl MediaCtrl {
         unsafe { sys::wxMediaCtrl_Stop(self.as_ptr()) != 0 }
     }
 
-    pub fn tell(&self) -> i32 {
-        unsafe { sys::wxMediaCtrl_Tell(self.as_ptr()) as i32 }
+    pub fn tell(&self) -> i64 {
+        unsafe { sys::wxMediaCtrl_Tell(self.as_ptr()) as i64 }
     }
 
 }

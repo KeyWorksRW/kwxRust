@@ -111,6 +111,33 @@ impl GraphicsContext {
         }
     }
 
+    pub fn create_pen_from_info(&self, info: &impl WxGraphicsPenInfo) -> Option<GraphicsPen> {
+        let ptr = unsafe { sys::wxGraphicsContext_CreatePenFromInfo(self.as_ptr(), info.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(GraphicsPen::from_raw(ptr))
+        }
+    }
+
+    pub fn create_linear_gradient_brush_from_stops(&self, x1: f64, y1: f64, x2: f64, y2: f64, stops: &impl WxGraphicsGradientStops, matrix: &impl WxGraphicsMatrix) -> Option<GraphicsBrush> {
+        let ptr = unsafe { sys::wxGraphicsContext_CreateLinearGradientBrushFromStops(self.as_ptr(), x1 as c_double, y1 as c_double, x2 as c_double, y2 as c_double, stops.as_ptr(), matrix.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(GraphicsBrush::from_raw(ptr))
+        }
+    }
+
+    pub fn create_radial_gradient_brush_from_stops(&self, start_x: f64, start_y: f64, end_x: f64, end_y: f64, radius: f64, stops: &impl WxGraphicsGradientStops, matrix: &impl WxGraphicsMatrix) -> Option<GraphicsBrush> {
+        let ptr = unsafe { sys::wxGraphicsContext_CreateRadialGradientBrushFromStops(self.as_ptr(), start_x as c_double, start_y as c_double, end_x as c_double, end_y as c_double, radius as c_double, stops.as_ptr(), matrix.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(GraphicsBrush::from_raw(ptr))
+        }
+    }
+
     pub fn create_radial_gradient_brush(&self, start_x: f64, start_y: f64, end_x: f64, end_y: f64, radius: f64, o_color: &impl WxColour, c_color: &impl WxColour, matrix: &impl WxGraphicsMatrix) -> Option<GraphicsBrush> {
         let ptr = unsafe { sys::wxGraphicsContext_CreateRadialGradientBrush(self.as_ptr(), start_x as c_double, start_y as c_double, end_x as c_double, end_y as c_double, radius as c_double, o_color.as_ptr(), c_color.as_ptr(), matrix.as_ptr()) };
         if ptr.is_null() {
@@ -236,6 +263,10 @@ impl GraphicsContext {
 
     pub fn draw_bitmap(&self, bmp: &impl WxBitmap, x: f64, y: f64, width: f64, height: f64) {
         unsafe { sys::wxGraphicsContext_DrawBitmap(self.as_ptr(), bmp.as_ptr(), x as c_double, y as c_double, width as c_double, height as c_double) }
+    }
+
+    pub fn draw_graphics_bitmap(&self, bmp: &impl WxGraphicsBitmap, x: f64, y: f64, width: f64, height: f64) {
+        unsafe { sys::wxGraphicsContext_DrawGraphicsBitmap(self.as_ptr(), bmp.as_ptr(), x as c_double, y as c_double, width as c_double, height as c_double) }
     }
 
     pub fn draw_ellipse(&self, x: f64, y: f64, width: f64, height: f64) {

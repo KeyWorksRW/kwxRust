@@ -8,7 +8,10 @@ bin/
 build-shared/
 
 # Rust
-tests/quick/target/
+tests/
+samples/
+kwxSamples/
+
 /target/
 **/*.rs.bk
 Cargo.lock
@@ -28,3 +31,6 @@ Cargo.lock
 Thumbs.db
 
 tests/quick_prob/
+tests/
+target_audit/
+samples/
