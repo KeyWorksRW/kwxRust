@@ -1,9 +1,0 @@
-[package]
-name = "menu"
-version = "0.1.0"
-edition = "2021"
-description = "Port of the wxWidgets menu sample (src/menu/menu.cpp)"
-publish = false
-
-[dependencies]
-kwxffi-sys = { path = "../../wx" }

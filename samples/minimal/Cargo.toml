@@ -1,9 +1,0 @@
-[package]
-name = "minimal"
-version = "0.1.0"
-edition = "2021"
-description = "Port of the wxWidgets minimal sample (src/minimal/minimal.cpp)"
-publish = false
-
-[dependencies]
-kwxffi-sys = { path = "../../wx" }

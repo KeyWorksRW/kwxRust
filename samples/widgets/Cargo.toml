@@ -1,9 +1,0 @@
-[package]
-name = "widgets"
-version = "0.1.0"
-edition = "2021"
-description = "Port of the wxWidgets widgets sample (src/widgets/widgets.cpp)"
-publish = false
-
-[dependencies]
-kwxffi-sys = { path = "../../wx" }
