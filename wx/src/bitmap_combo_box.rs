@@ -286,12 +286,20 @@ impl BitmapComboBox {
         unsafe { sys::wxTextEntry_AutoComplete(self.as_ptr(), count as c_int, items) != 0 }
     }
 
+    pub fn auto_complete_strings(&self, items: &impl WxArrayString) -> bool {
+        unsafe { sys::wxTextEntry_AutoCompleteStrings(self.as_ptr(), items.as_ptr()) != 0 }
+    }
+
     pub fn auto_complete_file_names(&self) -> bool {
         unsafe { sys::wxTextEntry_AutoCompleteFileNames(self.as_ptr()) != 0 }
     }
 
     pub fn auto_complete_directories(&self) -> bool {
         unsafe { sys::wxTextEntry_AutoCompleteDirectories(self.as_ptr()) != 0 }
+    }
+
+    pub fn auto_complete_completer(&self, completer: &impl WxTextCompleterSimple) -> bool {
+        unsafe { sys::wxTextEntry_AutoCompleteCompleter(self.as_ptr(), completer.as_ptr()) != 0 }
     }
 
     pub fn append_string(&self, item: impl AsRef<str>) {

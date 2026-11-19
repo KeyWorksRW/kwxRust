@@ -79,6 +79,11 @@ impl Object {
         unsafe { sys::wxObject_IsScrolledWindow(self.as_ptr()) != 0 }
     }
 
+    pub fn is_of_class(&self, class_name: impl AsRef<str>) -> bool {
+        let class_name_c = std::ffi::CString::new(class_name.as_ref()).unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
+        unsafe { sys::wxObject_IsOfClass(self.as_ptr(), class_name_c.as_ptr()) != 0 }
+    }
+
     pub fn set_client_closure(&self, closure: &impl WxClosure) {
         unsafe { sys::wxObject_SetClientClosure(self.as_ptr(), closure.as_ptr()) }
     }

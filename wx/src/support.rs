@@ -45,12 +45,65 @@ pub fn take_string(ptr: *mut c_void) -> String {
         }
         return String::new();
     }
-    let mut buffer = vec![0u8; len as usize];
+    // wxString_GetString() writes len bytes plus a terminating NUL, so the
+    // buffer is one byte larger than the reported byte count.
+    let mut buffer = vec![0u8; len as usize + 1];
     unsafe {
         sys::wxString_GetString(ptr, buffer.as_mut_ptr() as *mut c_char);
         sys::wxString_Delete(ptr);
     }
-    String::from_utf8_lossy(&buffer).into_owned()
+    String::from_utf8_lossy(&buffer[..len as usize]).into_owned()
+}
+
+/// Copies a strdup'ed UTF-8 C string returned by the FFI into a Rust String and frees
+/// it with the library allocator.
+pub fn take_cstring(ptr: *mut c_void) -> String {
+    if ptr.is_null() {
+        return String::new();
+    }
+    let text = unsafe {
+        std::ffi::CStr::from_ptr(ptr as *const std::ffi::c_char)
+            .to_string_lossy()
+            .into_owned()
+    };
+    unsafe {
+        sys::wxCFree(ptr);
+    }
+    text
+}
+
+/// Copies a borrowed UTF-8 C string returned by the FFI into a Rust String WITHOUT
+/// freeing it. The buffer is owned by another object, or is one of the call's own
+/// arguments, so it must never be passed to wxCFree.
+pub fn borrow_cstring(ptr: *mut c_void) -> String {
+    if ptr.is_null() {
+        return String::new();
+    }
+    unsafe {
+        std::ffi::CStr::from_ptr(ptr as *const std::ffi::c_char)
+            .to_string_lossy()
+            .into_owned()
+    }
+}
+
+/// Copies a borrowed wxString into a Rust String WITHOUT taking ownership.
+/// Use this for the `const wxString*` a callback receives as an argument: the
+/// callee owns that string, so it must never be passed to wxString_Delete.
+pub fn borrow_string(ptr: *mut c_void) -> String {
+    if ptr.is_null() {
+        return String::new();
+    }
+    let len = unsafe { sys::wxString_GetString(ptr, std::ptr::null_mut()) };
+    if len <= 0 {
+        return String::new();
+    }
+    // wxString_GetString() writes len bytes plus a terminating NUL, so the
+    // buffer is one byte larger than the reported byte count.
+    let mut buffer = vec![0u8; len as usize + 1];
+    unsafe {
+        sys::wxString_GetString(ptr, buffer.as_mut_ptr() as *mut c_char);
+    }
+    String::from_utf8_lossy(&buffer[..len as usize]).into_owned()
 }
 
 #[derive(Copy, Clone, Default)]

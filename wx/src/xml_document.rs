@@ -49,6 +49,24 @@ use crate::support::take_string;
 use crate::xml_node::XmlNode;
 
 impl XmlDocument {
+    pub fn load_file(&self, filename: impl AsRef<str>, flags: i32) -> bool {
+        let filename_wx = WxStr::new(filename.as_ref());
+        unsafe { sys::wxXmlDocument_LoadFile(self.as_ptr(), filename_wx.as_ptr(), flags as c_int) != 0 }
+    }
+
+    pub fn load_stream(&self, stream: &impl WxInputStream, flags: i32) -> bool {
+        unsafe { sys::wxXmlDocument_LoadStream(self.as_ptr(), stream.as_ptr(), flags as c_int) != 0 }
+    }
+
+    pub fn save_file(&self, filename: impl AsRef<str>, indentstep: i32) -> bool {
+        let filename_wx = WxStr::new(filename.as_ref());
+        unsafe { sys::wxXmlDocument_SaveFile(self.as_ptr(), filename_wx.as_ptr(), indentstep as c_int) != 0 }
+    }
+
+    pub fn save_stream(&self, stream: &impl WxOutputStream, indentstep: i32) -> bool {
+        unsafe { sys::wxXmlDocument_SaveStream(self.as_ptr(), stream.as_ptr(), indentstep as c_int) != 0 }
+    }
+
     pub fn new() -> Self {
         let ptr = unsafe { sys::wxXmlDocument_Create() };
         assert!(!ptr.is_null(), "wxXmlDocument_Create returned null");

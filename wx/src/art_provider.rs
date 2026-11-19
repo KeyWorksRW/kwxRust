@@ -50,6 +50,7 @@ use crate::icon::Icon;
 use crate::icon_bundle::IconBundle;
 use crate::support::Size;
 use crate::support::WxStr;
+use crate::support::take_cstring;
 
 impl ArtProvider {
     pub fn get_bitmap(id: impl AsRef<str>, client: impl AsRef<str>, size: Size) -> Option<Bitmap> {
@@ -80,6 +81,21 @@ impl ArtProvider {
         } else {
             Some(BitmapBundle::from_raw(ptr))
         }
+    }
+
+    pub fn get_bitmap_bundle_default(id: impl AsRef<str>) -> Option<BitmapBundle> {
+        let id_wx = WxStr::new(id.as_ref());
+        let ptr = unsafe { sys::wxArtProvider_GetBitmapBundleDefault(id_wx.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(BitmapBundle::from_raw(ptr))
+        }
+    }
+
+    pub fn make_client_id(id: impl AsRef<str>) -> String {
+        let id_c = std::ffi::CString::new(id.as_ref()).unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
+        take_cstring(unsafe { sys::wxArtProvider_MakeClientId(id_c.as_ptr()) })
     }
 
     pub fn get_icon(id: impl AsRef<str>, client: impl AsRef<str>, size: Size) -> Option<Icon> {

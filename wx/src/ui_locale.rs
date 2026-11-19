@@ -44,6 +44,7 @@ impl WxObject for UILocale {
 
 impl WxUILocale for UILocale {}
 use crate::support::WxStr;
+use crate::support::take_cstring;
 use crate::support::take_string;
 
 impl UILocale {
@@ -164,7 +165,7 @@ impl UILocale {
     }
 
     pub fn get_info(index: i32, category: i32) -> String {
-        take_string(unsafe { sys::wxUILocale_GetInfo(index as c_int, category as c_int) })
+        take_cstring(unsafe { sys::wxUILocale_GetInfo(index as c_int, category as c_int) })
     }
 
     pub fn is_set() -> bool {

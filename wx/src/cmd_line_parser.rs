@@ -131,6 +131,10 @@ impl CmdLineParser {
         unsafe { sys::wxCmdLineParser_ParseStringArgs(self.as_ptr(), command_line_wx.as_ptr()) as i32 }
     }
 
+    pub fn parse_argv(&self, argc: i32, argv: *mut c_void) -> i32 {
+        unsafe { sys::wxCmdLineParser_ParseArgv(self.as_ptr(), argc as c_int, argv) as i32 }
+    }
+
     pub fn found(&self, name: impl AsRef<str>) -> bool {
         let name_wx = WxStr::new(name.as_ref());
         unsafe { sys::wxCmdLineParser_Found(self.as_ptr(), name_wx.as_ptr()) != 0 }

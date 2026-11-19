@@ -61,9 +61,9 @@ impl ArchiveOutputStream {
         unsafe { sys::wxArchiveOutputStream_PutNextEntry(self.as_ptr(), entry.as_ptr()) != 0 }
     }
 
-    pub fn put_next_entry_date(&self, entry_name: impl AsRef<str>, dt: &impl WxDateTime, size: i32) -> bool {
+    pub fn put_next_entry_date(&self, entry_name: impl AsRef<str>, dt: &impl WxDateTime, size: i64) -> bool {
         let entry_name_wx = WxStr::new(entry_name.as_ref());
-        unsafe { sys::wxArchiveOutputStream_PutNextEntryDate(self.as_ptr(), entry_name_wx.as_ptr(), dt.as_ptr(), size as c_int) != 0 }
+        unsafe { sys::wxArchiveOutputStream_PutNextEntryDate(self.as_ptr(), entry_name_wx.as_ptr(), dt.as_ptr(), size) != 0 }
     }
 
     pub fn put_next_dir_entry_date(&self, entry_name: impl AsRef<str>, dt: &impl WxDateTime) -> bool {

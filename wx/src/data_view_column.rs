@@ -43,3 +43,145 @@ impl WxObject for DataViewColumn {
 }
 
 impl WxDataViewColumn for DataViewColumn {}
+use crate::bitmap_bundle::BitmapBundle;
+use crate::data_view_renderer::DataViewRenderer;
+use crate::support::WxStr;
+use crate::support::take_string;
+
+impl DataViewColumn {
+    pub fn create_with_renderer(title: impl AsRef<str>, renderer: &impl WxDataViewRenderer, model_column: u32, width: i32, align: i32, flags: i32) -> Self {
+        let title_wx = WxStr::new(title.as_ref());
+        let ptr = unsafe { sys::wxDataViewColumn_CreateWithRenderer(title_wx.as_ptr(), renderer.as_ptr(), model_column as c_uint, width as c_int, align as c_int, flags as c_int) };
+        assert!(!ptr.is_null(), "wxDataViewColumn_CreateWithRenderer returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn get_title(&self) -> String {
+        take_string(unsafe { sys::wxDataViewColumn_GetTitle(self.as_ptr()) })
+    }
+
+    pub fn set_title(&self, title: impl AsRef<str>) {
+        let title_wx = WxStr::new(title.as_ref());
+        unsafe { sys::wxDataViewColumn_SetTitle(self.as_ptr(), title_wx.as_ptr()) }
+    }
+
+    pub fn get_bitmap_bundle(&self) -> Option<BitmapBundle> {
+        let ptr = unsafe { sys::wxDataViewColumn_GetBitmapBundle(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(BitmapBundle::from_raw(ptr))
+        }
+    }
+
+    pub fn set_bitmap(&self, bitmap: &impl WxBitmapBundle) {
+        unsafe { sys::wxDataViewColumn_SetBitmap(self.as_ptr(), bitmap.as_ptr()) }
+    }
+
+    pub fn get_width(&self) -> i32 {
+        unsafe { sys::wxDataViewColumn_GetWidth(self.as_ptr()) as i32 }
+    }
+
+    pub fn set_width(&self, width: i32) {
+        unsafe { sys::wxDataViewColumn_SetWidth(self.as_ptr(), width as c_int) }
+    }
+
+    pub fn get_min_width(&self) -> i32 {
+        unsafe { sys::wxDataViewColumn_GetMinWidth(self.as_ptr()) as i32 }
+    }
+
+    pub fn set_min_width(&self, min_width: i32) {
+        unsafe { sys::wxDataViewColumn_SetMinWidth(self.as_ptr(), min_width as c_int) }
+    }
+
+    pub fn get_alignment(&self) -> i32 {
+        unsafe { sys::wxDataViewColumn_GetAlignment(self.as_ptr()) as i32 }
+    }
+
+    pub fn set_alignment(&self, alignment: i32) {
+        unsafe { sys::wxDataViewColumn_SetAlignment(self.as_ptr(), alignment as c_int) }
+    }
+
+    pub fn get_flags(&self) -> i32 {
+        unsafe { sys::wxDataViewColumn_GetFlags(self.as_ptr()) as i32 }
+    }
+
+    pub fn set_flags(&self, flags: i32) {
+        unsafe { sys::wxDataViewColumn_SetFlags(self.as_ptr(), flags as c_int) }
+    }
+
+    pub fn set_flag(&self, flag: i32) {
+        unsafe { sys::wxDataViewColumn_SetFlag(self.as_ptr(), flag as c_int) }
+    }
+
+    pub fn change_flag(&self, flag: i32, set: bool) {
+        unsafe { sys::wxDataViewColumn_ChangeFlag(self.as_ptr(), flag as c_int, set as c_int) }
+    }
+
+    pub fn is_resizeable(&self) -> bool {
+        unsafe { sys::wxDataViewColumn_IsResizeable(self.as_ptr()) != 0 }
+    }
+
+    pub fn set_resizeable(&self, resizeable: bool) {
+        unsafe { sys::wxDataViewColumn_SetResizeable(self.as_ptr(), resizeable as c_int) }
+    }
+
+    pub fn is_sortable(&self) -> bool {
+        unsafe { sys::wxDataViewColumn_IsSortable(self.as_ptr()) != 0 }
+    }
+
+    pub fn set_sortable(&self, sortable: bool) {
+        unsafe { sys::wxDataViewColumn_SetSortable(self.as_ptr(), sortable as c_int) }
+    }
+
+    pub fn is_reorderable(&self) -> bool {
+        unsafe { sys::wxDataViewColumn_IsReorderable(self.as_ptr()) != 0 }
+    }
+
+    pub fn set_reorderable(&self, reorderable: bool) {
+        unsafe { sys::wxDataViewColumn_SetReorderable(self.as_ptr(), reorderable as c_int) }
+    }
+
+    pub fn is_hidden(&self) -> bool {
+        unsafe { sys::wxDataViewColumn_IsHidden(self.as_ptr()) != 0 }
+    }
+
+    pub fn set_hidden(&self, hidden: bool) {
+        unsafe { sys::wxDataViewColumn_SetHidden(self.as_ptr(), hidden as c_int) }
+    }
+
+    pub fn is_shown(&self) -> bool {
+        unsafe { sys::wxDataViewColumn_IsShown(self.as_ptr()) != 0 }
+    }
+
+    pub fn is_sort_key(&self) -> bool {
+        unsafe { sys::wxDataViewColumn_IsSortKey(self.as_ptr()) != 0 }
+    }
+
+    pub fn set_sort_order(&self, ascending: bool) {
+        unsafe { sys::wxDataViewColumn_SetSortOrder(self.as_ptr(), ascending as c_int) }
+    }
+
+    pub fn is_sort_order_ascending(&self) -> bool {
+        unsafe { sys::wxDataViewColumn_IsSortOrderAscending(self.as_ptr()) != 0 }
+    }
+
+    pub fn unset_as_sort_key(&self) {
+        unsafe { sys::wxDataViewColumn_UnsetAsSortKey(self.as_ptr()) }
+    }
+
+    pub fn get_model_column(&self) -> u32 {
+        unsafe { sys::wxDataViewColumn_GetModelColumn(self.as_ptr()) as u32 }
+    }
+
+    pub fn get_renderer(&self) -> Option<DataViewRenderer> {
+        let ptr = unsafe { sys::wxDataViewColumn_GetRenderer(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(DataViewRenderer::from_raw(ptr))
+        }
+    }
+
+}
+

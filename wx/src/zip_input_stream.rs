@@ -96,8 +96,8 @@ impl ZipInputStream {
         unsafe { sys::wxZipInputStream_GetTotalEntries(self.as_ptr()) as i32 }
     }
 
-    pub fn get_length(&self) -> i32 {
-        unsafe { sys::wxZipInputStream_GetLength(self.as_ptr()) as i32 }
+    pub fn get_length(&self) -> i64 {
+        unsafe { sys::wxZipInputStream_GetLength(self.as_ptr()) as i64 }
     }
 
 }

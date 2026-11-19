@@ -72,6 +72,12 @@ impl GCDC {
         Self::from_raw(ptr)
     }
 
+    pub fn create_default() -> Self {
+        let ptr = unsafe { sys::wxGCDC_CreateDefault() };
+        assert!(!ptr.is_null(), "wxGCDC_CreateDefault returned null");
+        Self::from_raw(ptr)
+    }
+
     /// Deletes the native object.  Call this only when this handle owns it, i.e.
     /// for a value returned by a factory and not handed to wxWidgets; a
     /// wx-owned window or child is destroyed by wx.

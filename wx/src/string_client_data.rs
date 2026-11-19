@@ -84,5 +84,14 @@ impl StringClientData {
         unsafe { sys::wxStringClientData_SetData(self.as_ptr(), data_wx.as_ptr()) }
     }
 
+    pub fn from_client_data(data: &impl WxClientData) -> Option<StringClientData> {
+        let ptr = unsafe { sys::wxStringClientData_FromClientData(data.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(StringClientData::from_raw(ptr))
+        }
+    }
+
 }
 

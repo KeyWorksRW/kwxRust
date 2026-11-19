@@ -98,6 +98,26 @@ impl RichTextDrawingHandler {
         unsafe { sys::kwxRichTextDrawingHandler_SetOnGetVirtualText(self.as_ptr(), p_function) }
     }
 
+    pub fn set_on_has_virtual_attributes_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxRichTextDrawingHandler_SetOnHasVirtualAttributesWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_get_virtual_attributes_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxRichTextDrawingHandler_SetOnGetVirtualAttributesWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_get_virtual_subobject_attributes_count_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxRichTextDrawingHandler_SetOnGetVirtualSubobjectAttributesCountWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_has_virtual_text_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxRichTextDrawingHandler_SetOnHasVirtualTextWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_get_virtual_text_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxRichTextDrawingHandler_SetOnGetVirtualTextWithData(self.as_ptr(), p_function, data) }
+    }
+
     pub fn set_virtual_text_result(&self, text: impl AsRef<str>) {
         let text_wx = WxStr::new(text.as_ref());
         unsafe { sys::kwxRichTextDrawingHandler_SetVirtualTextResult(self.as_ptr(), text_wx.as_ptr()) }

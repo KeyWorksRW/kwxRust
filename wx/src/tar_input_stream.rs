@@ -87,8 +87,8 @@ impl TarInputStream {
         unsafe { sys::wxTarInputStream_CloseEntry(self.as_ptr()) != 0 }
     }
 
-    pub fn get_length(&self) -> i32 {
-        unsafe { sys::wxTarInputStream_GetLength(self.as_ptr()) as i32 }
+    pub fn get_length(&self) -> i64 {
+        unsafe { sys::wxTarInputStream_GetLength(self.as_ptr()) as i64 }
     }
 
     pub fn get_max_extended_header_size() -> i32 {

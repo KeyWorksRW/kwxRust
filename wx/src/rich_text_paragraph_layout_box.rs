@@ -48,6 +48,7 @@ impl WxRichTextParagraphLayoutBox for RichTextParagraphLayoutBox {}
 
 use crate::rich_text_buffer::RichTextBuffer;
 use crate::rich_text_ctrl::RichTextCtrl;
+use crate::rich_text_object::RichTextObject;
 use crate::rich_text_style_sheet::RichTextStyleSheet;
 use crate::support::WxStr;
 use crate::support::take_string;
@@ -65,8 +66,13 @@ impl RichTextParagraphLayoutBox {
         Self::from_raw(ptr)
     }
 
-    pub fn get_leaf_object_at_position(&self, position: i32) -> *mut c_void {
-        unsafe { sys::wxRichTextParagraphLayoutBox_GetLeafObjectAtPosition(self.as_ptr(), position as c_long) }
+    pub fn get_leaf_object_at_position(&self, position: i32) -> Option<RichTextObject> {
+        let ptr = unsafe { sys::wxRichTextParagraphLayoutBox_GetLeafObjectAtPosition(self.as_ptr(), position as c_long) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(RichTextObject::from_raw(ptr))
+        }
     }
 
     /// Deletes the native object.  Call this only when this handle owns it, i.e.

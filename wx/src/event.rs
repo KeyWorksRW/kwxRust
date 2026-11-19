@@ -111,6 +111,14 @@ impl Event {
         unsafe { sys::wxEvent_Skip(self.as_ptr(), skip as c_int) }
     }
 
+    pub fn stop_propagation(&self) -> i32 {
+        unsafe { sys::wxEvent_StopPropagation(self.as_ptr()) as i32 }
+    }
+
+    pub fn resume_propagation(&self, propagation_level: i32) {
+        unsafe { sys::wxEvent_ResumePropagation(self.as_ptr(), propagation_level as c_int) }
+    }
+
     pub fn set_on_clone(&self, p_function: *mut c_void) {
         unsafe { sys::wxEvent_SetOnClone(self.as_ptr(), p_function) }
     }

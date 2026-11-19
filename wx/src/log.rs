@@ -104,8 +104,13 @@ impl Log {
         unsafe { sys::wxLog_FlushActive(self.as_ptr()) }
     }
 
-    pub fn get_active_target() -> *mut c_void {
-        unsafe { sys::wxLog_GetActiveTarget() }
+    pub fn get_active_target() -> Option<Log> {
+        let ptr = unsafe { sys::wxLog_GetActiveTarget() };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(Log::from_raw(ptr))
+        }
     }
 
     pub fn set_active_target(p_logger: &impl WxLog) -> Option<Log> {

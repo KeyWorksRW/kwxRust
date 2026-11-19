@@ -47,8 +47,8 @@ impl WxStreamBase for FilterOutputStream {}
 impl WxFilterOutputStream for FilterOutputStream {}
 
 impl FilterOutputStream {
-    pub fn get_length(&self) -> i32 {
-        unsafe { sys::wxFilterOutputStream_GetLength(self.as_ptr()) as i32 }
+    pub fn get_length(&self) -> i64 {
+        unsafe { sys::wxFilterOutputStream_GetLength(self.as_ptr()) as i64 }
     }
 
     pub fn get_filter_output_stream(&self) -> Option<OutputStream> {

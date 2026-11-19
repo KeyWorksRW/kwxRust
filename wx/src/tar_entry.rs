@@ -104,12 +104,12 @@ impl TarEntry {
         unsafe { sys::wxTarEntry_GetGroupId(self.as_ptr()) as i32 }
     }
 
-    pub fn get_size(&self) -> i32 {
-        unsafe { sys::wxTarEntry_GetSize(self.as_ptr()) as i32 }
+    pub fn get_size(&self) -> i64 {
+        unsafe { sys::wxTarEntry_GetSize(self.as_ptr()) as i64 }
     }
 
-    pub fn get_offset(&self) -> i32 {
-        unsafe { sys::wxTarEntry_GetOffset(self.as_ptr()) as i32 }
+    pub fn get_offset(&self) -> i64 {
+        unsafe { sys::wxTarEntry_GetOffset(self.as_ptr()) as i64 }
     }
 
     pub fn get_type_flag(&self) -> i32 {
@@ -161,8 +161,8 @@ impl TarEntry {
         unsafe { sys::wxTarEntry_SetMode(self.as_ptr(), mode as c_int) }
     }
 
-    pub fn set_size(&self, size: i32) {
-        unsafe { sys::wxTarEntry_SetSize(self.as_ptr(), size as c_int) }
+    pub fn set_size(&self, size: i64) {
+        unsafe { sys::wxTarEntry_SetSize(self.as_ptr(), size) }
     }
 
     pub fn set_type_flag(&self, type_flag: i32) {

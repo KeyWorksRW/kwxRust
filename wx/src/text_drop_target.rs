@@ -45,6 +45,8 @@ impl WxObject for TextDropTarget {
 impl WxDropTarget for TextDropTarget {}
 impl WxTextDropTarget for TextDropTarget {}
 
+use crate::support::take_string;
+
 impl TextDropTarget {
     pub fn new(p_object: *mut c_void, p_function: *mut c_void) -> Self {
         let ptr = unsafe { sys::kwxTextDropTarget_Create(p_object, p_function) };
@@ -83,6 +85,58 @@ impl TextDropTarget {
 
     pub fn set_on_leave(&self, p_function: *mut c_void) {
         unsafe { sys::kwxTextDropTarget_SetOnLeave(self.as_ptr(), p_function) }
+    }
+
+    pub fn set_on_data_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxTextDropTarget_SetOnDataWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_drop_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxTextDropTarget_SetOnDropWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_enter_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxTextDropTarget_SetOnEnterWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_drag_over_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxTextDropTarget_SetOnDragOverWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_leave_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxTextDropTarget_SetOnLeaveWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_data_result(&self, result: i32) {
+        unsafe { sys::kwxTextDropTarget_SetDataResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_drop_result(&self, result: i32) {
+        unsafe { sys::kwxTextDropTarget_SetDropResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_enter_result(&self, result: i32) {
+        unsafe { sys::kwxTextDropTarget_SetEnterResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_drag_over_result(&self, result: i32) {
+        unsafe { sys::kwxTextDropTarget_SetDragOverResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn get_drop_result(&self) -> i32 {
+        unsafe { sys::kwxTextDropTarget_GetDropResult(self.as_ptr()) as i32 }
+    }
+
+    pub fn set_on_drop_text_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxTextDropTarget_SetOnDropTextWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_drop_text_result(&self, result: i32) {
+        unsafe { sys::kwxTextDropTarget_SetDropTextResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn get_drop_text(&self) -> String {
+        take_string(unsafe { sys::kwxTextDropTarget_GetDropText(self.as_ptr()) })
     }
 
 }

@@ -208,6 +208,13 @@ impl Bitmap {
         Self::from_raw(ptr)
     }
 
+    pub fn create_from_xpm_string(xpm: impl AsRef<str>) -> Self {
+        let xpm_c = std::ffi::CString::new(xpm.as_ref()).unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
+        let ptr = unsafe { sys::wxBitmap_CreateFromXPMString(xpm_c.as_ptr()) };
+        assert!(!ptr.is_null(), "wxBitmap_CreateFromXPMString returned null");
+        Self::from_raw(ptr)
+    }
+
     pub fn create_load(name: impl AsRef<str>, type_: i32) -> Self {
         let name_wx = WxStr::new(name.as_ref());
         let ptr = unsafe { sys::wxBitmap_CreateLoad(name_wx.as_ptr(), type_ as c_int) };

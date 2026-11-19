@@ -47,6 +47,7 @@ impl WxWindow for RichTextCtrl {}
 impl WxEvtHandler for RichTextCtrl {}
 impl WxRichTextCtrl for RichTextCtrl {}
 
+use crate::command_processor::CommandProcessor;
 use crate::menu::Menu;
 use crate::rich_text_box::RichTextBox;
 use crate::rich_text_buffer::RichTextBuffer;
@@ -79,8 +80,13 @@ impl RichTextCtrl {
         unsafe { sys::wxRichTextCtrl_EndSuppressUndo(self.as_ptr()) != 0 }
     }
 
-    pub fn get_command_processor(&self) -> *mut c_void {
-        unsafe { sys::wxRichTextCtrl_GetCommandProcessor(self.as_ptr()) }
+    pub fn get_command_processor(&self) -> Option<CommandProcessor> {
+        let ptr = unsafe { sys::wxRichTextCtrl_GetCommandProcessor(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(CommandProcessor::from_raw(ptr))
+        }
     }
 
     pub fn write_field(&self, field_type: impl AsRef<str>, properties: &impl WxRichTextProperties, text_attr: &impl WxRichTextAttr) -> Option<RichTextField> {
@@ -543,6 +549,14 @@ impl RichTextCtrl {
         unsafe { sys::wxRichTextCtrl_GetAdjustedCaretPosition(self.as_ptr(), caret_position as c_long) as i64 }
     }
 
+    pub fn get_caret_position(&self) -> i64 {
+        unsafe { sys::wxRichTextCtrl_GetCaretPosition(self.as_ptr()) as i64 }
+    }
+
+    pub fn set_margins(&self, left: i32, top: i32) -> bool {
+        unsafe { sys::wxRichTextCtrl_SetMargins(self.as_ptr(), left as c_int, top as c_int) != 0 }
+    }
+
     pub fn find_next_word_position(&self, direction: i32) -> i64 {
         unsafe { sys::wxRichTextCtrl_FindNextWordPosition(self.as_ptr(), direction as c_int) as i64 }
     }
@@ -746,7 +760,7 @@ impl RichTextCtrl {
         unsafe { sys::wxRichTextCtrl_SetStyle(self.as_ptr(), start as c_long, end as c_long, style.as_ptr()) != 0 }
     }
 
-    pub fn get_style(&self, position: i32, style: &impl WxTextAttr) -> bool {
+    pub fn get_style(&self, position: i32, style: &impl WxRichTextAttr) -> bool {
         unsafe { sys::wxRichTextCtrl_GetStyle(self.as_ptr(), position as c_long, style.as_ptr()) != 0 }
     }
 
@@ -971,12 +985,52 @@ impl RichTextCtrl {
         unsafe { sys::kwxRichTextCtrl_SetOnCanInsertContent(self.as_ptr(), p_function) }
     }
 
+    pub fn set_on_prepare_content_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxRichTextCtrl_SetOnPrepareContentWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_can_delete_range_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxRichTextCtrl_SetOnCanDeleteRangeWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_can_insert_content_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::kwxRichTextCtrl_SetOnCanInsertContentWithData(self.as_ptr(), p_function, data) }
+    }
+
     pub fn set_can_delete_range_result(&self, result: bool) {
         unsafe { sys::kwxRichTextCtrl_SetCanDeleteRangeResult(self.as_ptr(), result as c_int) }
     }
 
     pub fn set_can_insert_content_result(&self, result: bool) {
         unsafe { sys::kwxRichTextCtrl_SetCanInsertContentResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_callback_object(&self, object: *mut c_void) {
+        unsafe { sys::kwxRichTextCtrl_SetCallbackObject(self.as_ptr(), object) }
+    }
+
+    pub fn get_callback_object(&self) -> *mut c_void {
+        unsafe { sys::kwxRichTextCtrl_GetCallbackObject(self.as_ptr()) }
+    }
+
+    pub fn set_lock_id(&self, id: i32) {
+        unsafe { sys::kwxRichTextCtrl_SetLockId(self.as_ptr(), id as c_long) }
+    }
+
+    pub fn get_lock_id(&self) -> i64 {
+        unsafe { sys::kwxRichTextCtrl_GetLockId(self.as_ptr()) as i64 }
+    }
+
+    pub fn begin_lock(&self) {
+        unsafe { sys::kwxRichTextCtrl_BeginLock(self.as_ptr()) }
+    }
+
+    pub fn end_lock(&self) {
+        unsafe { sys::kwxRichTextCtrl_EndLock(self.as_ptr()) }
+    }
+
+    pub fn is_locked(&self) -> bool {
+        unsafe { sys::kwxRichTextCtrl_IsLocked(self.as_ptr()) != 0 }
     }
 
     pub fn convert_to_upper_case(&self) {
@@ -1017,10 +1071,6 @@ impl RichTextCtrl {
         take_string(unsafe { sys::wxTextEntry_GetHint(self.as_ptr()) })
     }
 
-    pub fn set_margins(&self, left: i32, top: i32) -> bool {
-        unsafe { sys::wxTextEntry_SetMargins(self.as_ptr(), left as c_int, top as c_int) != 0 }
-    }
-
     pub fn get_margins(&self, left: *mut i32, top: *mut i32) {
         unsafe { sys::wxTextEntry_GetMargins(self.as_ptr(), left as *mut c_int, top as *mut c_int) }
     }
@@ -1029,12 +1079,20 @@ impl RichTextCtrl {
         unsafe { sys::wxTextEntry_AutoComplete(self.as_ptr(), count as c_int, items) != 0 }
     }
 
+    pub fn auto_complete_strings(&self, items: &impl WxArrayString) -> bool {
+        unsafe { sys::wxTextEntry_AutoCompleteStrings(self.as_ptr(), items.as_ptr()) != 0 }
+    }
+
     pub fn auto_complete_file_names(&self) -> bool {
         unsafe { sys::wxTextEntry_AutoCompleteFileNames(self.as_ptr()) != 0 }
     }
 
     pub fn auto_complete_directories(&self) -> bool {
         unsafe { sys::wxTextEntry_AutoCompleteDirectories(self.as_ptr()) != 0 }
+    }
+
+    pub fn auto_complete_completer(&self, completer: &impl WxTextCompleterSimple) -> bool {
+        unsafe { sys::wxTextEntry_AutoCompleteCompleter(self.as_ptr(), completer.as_ptr()) != 0 }
     }
 
 }

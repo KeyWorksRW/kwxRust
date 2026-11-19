@@ -67,6 +67,24 @@ impl GraphicsRenderer {
         }
     }
 
+    pub fn create_context_from_memory(&self, dc: &impl WxMemoryDC) -> Option<GraphicsContext> {
+        let ptr = unsafe { sys::wxGraphicsRenderer_CreateContextFromMemory(self.as_ptr(), dc.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(GraphicsContext::from_raw(ptr))
+        }
+    }
+
+    pub fn create_context_from_unknown_dc(&self, dc: &impl WxDC) -> Option<GraphicsContext> {
+        let ptr = unsafe { sys::wxGraphicsRenderer_CreateContextFromUnknownDC(self.as_ptr(), dc.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(GraphicsContext::from_raw(ptr))
+        }
+    }
+
     pub fn create_context_from_native_context(&self, context: *mut c_void) -> Option<GraphicsContext> {
         let ptr = unsafe { sys::wxGraphicsRenderer_CreateContextFromNativeContext(self.as_ptr(), context) };
         if ptr.is_null() {
@@ -99,6 +117,15 @@ impl GraphicsRenderer {
     /// wx-owned window or child is destroyed by wx.
     pub fn delete(&self) {
         unsafe { sys::wxGraphicsRenderer_Delete(self.as_ptr()) }
+    }
+
+    pub fn get_cairo_renderer(&self) -> Option<GraphicsRenderer> {
+        let ptr = unsafe { sys::wxGraphicsRenderer_GetCairoRenderer(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(GraphicsRenderer::from_raw(ptr))
+        }
     }
 
     pub fn get_default_renderer(&self) -> Option<GraphicsRenderer> {

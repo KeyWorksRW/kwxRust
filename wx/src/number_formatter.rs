@@ -44,6 +44,7 @@ impl WxObject for NumberFormatter {
 
 impl WxNumberFormatter for NumberFormatter {}
 use crate::support::WxStr;
+use crate::support::take_cstring;
 use crate::support::take_string;
 
 impl NumberFormatter {
@@ -81,19 +82,19 @@ impl NumberFormatter {
     }
 
     pub fn get_decimal_separator() -> String {
-        take_string(unsafe { sys::wxNumberFormatter_GetDecimalSeparator() })
+        take_cstring(unsafe { sys::wxNumberFormatter_GetDecimalSeparator() })
     }
 
     pub fn get_thousands_separator() -> String {
-        take_string(unsafe { sys::wxNumberFormatter_GetThousandsSeparator() })
+        take_cstring(unsafe { sys::wxNumberFormatter_GetThousandsSeparator() })
     }
 
     pub fn to_string_double(value: f64, precision: i32, style: i32) -> String {
-        take_string(unsafe { sys::wxNumberFormatter_ToStringDouble(value as c_double, precision as c_int, style as c_int) })
+        take_cstring(unsafe { sys::wxNumberFormatter_ToStringDouble(value as c_double, precision as c_int, style as c_int) })
     }
 
-    pub fn to_string_long_long(value: i32, style: i32) -> String {
-        take_string(unsafe { sys::wxNumberFormatter_ToStringLongLong(value as c_int, style as c_int) })
+    pub fn to_string_long_long(value: i64, style: i32) -> String {
+        take_cstring(unsafe { sys::wxNumberFormatter_ToStringLongLong(value, style as c_int) })
     }
 
 }

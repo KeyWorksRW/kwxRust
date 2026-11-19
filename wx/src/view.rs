@@ -65,6 +65,22 @@ impl View {
         unsafe { sys::wxView_SetOnOnUpdate(self.as_ptr(), p_function) }
     }
 
+    pub fn set_on_on_create_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxView_SetOnOnCreateWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_create_result(&self, result: bool) {
+        unsafe { sys::wxView_SetOnCreateResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_on_on_close_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxView_SetOnOnCloseWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_close_result(&self, result: bool) {
+        unsafe { sys::wxView_SetOnCloseResult(self.as_ptr(), result as c_int) }
+    }
+
     pub fn activate(&self, activate: bool) {
         unsafe { sys::wxView_Activate(self.as_ptr(), activate as c_int) }
     }
@@ -87,12 +103,20 @@ impl View {
         }
     }
 
-    pub fn set_document(&self, doc: *mut c_void) {
-        unsafe { sys::wxView_SetDocument(self.as_ptr(), doc) }
+    pub fn set_document(&self, doc: &impl WxDocument) {
+        unsafe { sys::wxView_SetDocument(self.as_ptr(), doc.as_ptr()) }
     }
 
     pub fn set_frame(&self, frame: *mut c_void) {
         unsafe { sys::wxView_SetFrame(self.as_ptr(), frame) }
+    }
+
+    pub fn close(&self, delete_window: bool) -> bool {
+        unsafe { sys::wxView_Close(self.as_ptr(), delete_window as c_int) != 0 }
+    }
+
+    pub fn close_default(&self) -> bool {
+        unsafe { sys::wxView_CloseDefault(self.as_ptr()) != 0 }
     }
 
     pub fn new(p_object: *mut c_void) -> Self {
@@ -112,6 +136,10 @@ impl View {
     /// wx-owned window or child is destroyed by wx.
     pub fn delete(&self) {
         unsafe { sys::kwxView_Delete(self.as_ptr()) }
+    }
+
+    pub fn on_close_base(&self, delete_window: bool) -> bool {
+        unsafe { sys::kwxView_OnCloseBase(self.as_ptr(), delete_window as c_int) != 0 }
     }
 
 }

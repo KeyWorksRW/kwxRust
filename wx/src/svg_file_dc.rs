@@ -47,6 +47,7 @@ impl WxSVGFileDC for SVGFileDC {}
 
 use crate::support::Size;
 use crate::support::WxStr;
+use crate::support::take_string;
 
 impl SVGFileDC {
     pub fn new(file_name: impl AsRef<str>) -> Self {
@@ -63,8 +64,34 @@ impl SVGFileDC {
         Self::from_raw(ptr)
     }
 
+    pub fn begin_accessible_group(&self, attributes: &impl WxSVGAttributes, title: impl AsRef<str>, desc: impl AsRef<str>) {
+        let title_wx = WxStr::new(title.as_ref());
+        let desc_wx = WxStr::new(desc.as_ref());
+        unsafe { sys::wxSVGFileDC_BeginAccessibleGroup(self.as_ptr(), attributes.as_ptr(), title_wx.as_ptr(), desc_wx.as_ptr()) }
+    }
+
     pub fn end_accessible_group(&self) {
         unsafe { sys::wxSVGFileDC_EndAccessibleGroup(self.as_ptr()) }
+    }
+
+    pub fn begin_layer(&self, opacity: f64) {
+        unsafe { sys::wxSVGFileDC_BeginLayer(self.as_ptr(), opacity as c_double) }
+    }
+
+    pub fn end_layer(&self) {
+        unsafe { sys::wxSVGFileDC_EndLayer(self.as_ptr()) }
+    }
+
+    pub fn save(&self) -> bool {
+        unsafe { sys::wxSVGFileDC_Save(self.as_ptr()) != 0 }
+    }
+
+    pub fn get_svg_document(&self) -> String {
+        take_string(unsafe { sys::wxSVGFileDC_GetSVGDocument(self.as_ptr()) })
+    }
+
+    pub fn set_shape_rendering_mode(&self, mode: i32) {
+        unsafe { sys::wxSVGFileDC_SetShapeRenderingMode(self.as_ptr(), mode as c_int) }
     }
 
     pub fn set_bitmap_handler(&self, handler: *mut c_void) {
@@ -82,6 +109,52 @@ impl SVGFileDC {
         let file_name_wx = WxStr::new(file_name.as_ref());
         let ptr = unsafe { sys::wxSVGFileDC_CreateWithSizeAndResolution(file_name_wx.as_ptr(), size.width as c_int, size.height as c_int, a_dpi as c_float) };
         assert!(!ptr.is_null(), "wxSVGFileDC_CreateWithSizeAndResolution returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn create_with_title(file_name: impl AsRef<str>, title: impl AsRef<str>) -> Self {
+        let file_name_wx = WxStr::new(file_name.as_ref());
+        let title_wx = WxStr::new(title.as_ref());
+        let ptr = unsafe { sys::wxSVGFileDC_CreateWithTitle(file_name_wx.as_ptr(), title_wx.as_ptr()) };
+        assert!(!ptr.is_null(), "wxSVGFileDC_CreateWithTitle returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn create_with_size_and_title(file_name: impl AsRef<str>, size: Size, title: impl AsRef<str>) -> Self {
+        let file_name_wx = WxStr::new(file_name.as_ref());
+        let title_wx = WxStr::new(title.as_ref());
+        let ptr = unsafe { sys::wxSVGFileDC_CreateWithSizeAndTitle(file_name_wx.as_ptr(), size.width as c_int, size.height as c_int, title_wx.as_ptr()) };
+        assert!(!ptr.is_null(), "wxSVGFileDC_CreateWithSizeAndTitle returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn create_with_size_resolution_and_title(file_name: impl AsRef<str>, size: Size, a_dpi: f32, title: impl AsRef<str>) -> Self {
+        let file_name_wx = WxStr::new(file_name.as_ref());
+        let title_wx = WxStr::new(title.as_ref());
+        let ptr = unsafe { sys::wxSVGFileDC_CreateWithSizeResolutionAndTitle(file_name_wx.as_ptr(), size.width as c_int, size.height as c_int, a_dpi as c_float, title_wx.as_ptr()) };
+        assert!(!ptr.is_null(), "wxSVGFileDC_CreateWithSizeResolutionAndTitle returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn create_from_size(size: Size) -> Self {
+        let ptr = unsafe { sys::wxSVGFileDC_CreateFromSize(size.width as c_int, size.height as c_int) };
+        assert!(!ptr.is_null(), "wxSVGFileDC_CreateFromSize returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn create_from_size_with_file_and_title(size: Size, file_name: impl AsRef<str>, title: impl AsRef<str>) -> Self {
+        let file_name_wx = WxStr::new(file_name.as_ref());
+        let title_wx = WxStr::new(title.as_ref());
+        let ptr = unsafe { sys::wxSVGFileDC_CreateFromSizeWithFileAndTitle(size.width as c_int, size.height as c_int, file_name_wx.as_ptr(), title_wx.as_ptr()) };
+        assert!(!ptr.is_null(), "wxSVGFileDC_CreateFromSizeWithFileAndTitle returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn create_from_size_with_file_title_and_resolution(size: Size, file_name: impl AsRef<str>, title: impl AsRef<str>, a_dpi: f32) -> Self {
+        let file_name_wx = WxStr::new(file_name.as_ref());
+        let title_wx = WxStr::new(title.as_ref());
+        let ptr = unsafe { sys::wxSVGFileDC_CreateFromSizeWithFileTitleAndResolution(size.width as c_int, size.height as c_int, file_name_wx.as_ptr(), title_wx.as_ptr(), a_dpi as c_float) };
+        assert!(!ptr.is_null(), "wxSVGFileDC_CreateFromSizeWithFileTitleAndResolution returned null");
         Self::from_raw(ptr)
     }
 

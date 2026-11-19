@@ -45,3 +45,13 @@ impl WxObject for GraphicsBitmap {
 impl WxGraphicsObject for GraphicsBitmap {}
 impl WxGraphicsBitmap for GraphicsBitmap {}
 
+impl GraphicsBitmap {
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxGraphicsBitmap_Delete(self.as_ptr()) }
+    }
+
+}
+

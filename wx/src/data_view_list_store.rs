@@ -45,3 +45,123 @@ impl WxObject for DataViewListStore {
 impl WxDataViewModel for DataViewListStore {}
 impl WxDataViewListStore for DataViewListStore {}
 
+use crate::support::WxStr;
+
+impl DataViewListStore {
+    pub fn set_on_has_value_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxDataViewListStore_SetOnHasValueWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_is_enabled_by_row_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxDataViewListStore_SetOnIsEnabledByRowWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_get_attr_by_row_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxDataViewListStore_SetOnGetAttrByRowWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_has_value_result(&self, result: bool) {
+        unsafe { sys::wxDataViewListStore_SetHasValueResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_is_enabled_by_row_result(&self, result: bool) {
+        unsafe { sys::wxDataViewListStore_SetIsEnabledByRowResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_get_attr_by_row_result(&self, result: bool) {
+        unsafe { sys::wxDataViewListStore_SetGetAttrByRowResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_get_attr_by_row_attr(&self, attr: &impl WxDataViewItemAttr) {
+        unsafe { sys::wxDataViewListStore_SetGetAttrByRowAttr(self.as_ptr(), attr.as_ptr()) }
+    }
+
+    pub fn get_pending_row(&self) -> u32 {
+        unsafe { sys::wxDataViewListStore_GetPendingRow(self.as_ptr()) as u32 }
+    }
+
+    pub fn get_pending_column(&self) -> u32 {
+        unsafe { sys::wxDataViewListStore_GetPendingColumn(self.as_ptr()) as u32 }
+    }
+
+    pub fn prepend_column(&self, variant_type: impl AsRef<str>) {
+        let variant_type_wx = WxStr::new(variant_type.as_ref());
+        unsafe { sys::wxDataViewListStore_PrependColumn(self.as_ptr(), variant_type_wx.as_ptr()) }
+    }
+
+    pub fn append_column(&self, variant_type: impl AsRef<str>) {
+        let variant_type_wx = WxStr::new(variant_type.as_ref());
+        unsafe { sys::wxDataViewListStore_AppendColumn(self.as_ptr(), variant_type_wx.as_ptr()) }
+    }
+
+    pub fn insert_column(&self, pos: u32, variant_type: impl AsRef<str>) {
+        let variant_type_wx = WxStr::new(variant_type.as_ref());
+        unsafe { sys::wxDataViewListStore_InsertColumn(self.as_ptr(), pos as c_uint, variant_type_wx.as_ptr()) }
+    }
+
+    pub fn append_item(&self, values: *mut c_void, data: usize) {
+        unsafe { sys::wxDataViewListStore_AppendItem(self.as_ptr(), values, data as usize) }
+    }
+
+    pub fn prepend_item(&self, values: *mut c_void, data: usize) {
+        unsafe { sys::wxDataViewListStore_PrependItem(self.as_ptr(), values, data as usize) }
+    }
+
+    pub fn insert_item(&self, row: u32, values: *mut c_void, data: usize) {
+        unsafe { sys::wxDataViewListStore_InsertItem(self.as_ptr(), row as c_uint, values, data as usize) }
+    }
+
+    pub fn delete_item(&self, pos: u32) {
+        unsafe { sys::wxDataViewListStore_DeleteItem(self.as_ptr(), pos as c_uint) }
+    }
+
+    pub fn delete_all_items(&self) {
+        unsafe { sys::wxDataViewListStore_DeleteAllItems(self.as_ptr()) }
+    }
+
+    pub fn clear_columns(&self) {
+        unsafe { sys::wxDataViewListStore_ClearColumns(self.as_ptr()) }
+    }
+
+    pub fn get_item_count(&self) -> u32 {
+        unsafe { sys::wxDataViewListStore_GetItemCount(self.as_ptr()) as u32 }
+    }
+
+    pub fn set_item_data(&self, item: &impl WxDataViewItem, data: usize) {
+        unsafe { sys::wxDataViewListStore_SetItemData(self.as_ptr(), item.as_ptr(), data as usize) }
+    }
+
+    pub fn get_item_data(&self, item: &impl WxDataViewItem) -> usize {
+        unsafe { sys::wxDataViewListStore_GetItemData(self.as_ptr(), item.as_ptr()) as usize }
+    }
+
+    pub fn get_value_by_row(&self, value: &impl WxVariant, row: u32, col: u32) {
+        unsafe { sys::wxDataViewListStore_GetValueByRow(self.as_ptr(), value.as_ptr(), row as c_uint, col as c_uint) }
+    }
+
+    pub fn set_value_by_row(&self, value: &impl WxVariant, row: u32, col: u32) -> bool {
+        unsafe { sys::wxDataViewListStore_SetValueByRow(self.as_ptr(), value.as_ptr(), row as c_uint, col as c_uint) != 0 }
+    }
+
+    pub fn new(p_object: *mut c_void) -> Self {
+        let ptr = unsafe { sys::wxDataViewListStore_Create(p_object) };
+        assert!(!ptr.is_null(), "wxDataViewListStore_Create returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn new_full(p_object: *mut c_void) -> Self {
+        let ptr = unsafe { sys::wxDataViewListStore_Create(p_object) };
+        assert!(!ptr.is_null(), "wxDataViewListStore_Create returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn is_enabled_by_row(&self, row: u32, col: u32) -> bool {
+        unsafe { sys::wxDataViewListStore_IsEnabledByRow(self.as_ptr(), row as c_uint, col as c_uint) != 0 }
+    }
+
+    pub fn get_attr_by_row(&self, row: u32, col: u32, attr: &impl WxDataViewItemAttr) -> bool {
+        unsafe { sys::wxDataViewListStore_GetAttrByRow(self.as_ptr(), row as c_uint, col as c_uint, attr.as_ptr()) != 0 }
+    }
+
+}
+

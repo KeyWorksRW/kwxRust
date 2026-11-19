@@ -731,5 +731,14 @@ impl AuiPaneInfo {
         }
     }
 
+    pub fn icon_bundle(&self, bitmap: &impl WxBitmapBundle) -> Option<AuiPaneInfo> {
+        let ptr = unsafe { sys::wxAuiPaneInfo_IconBundle(self.as_ptr(), bitmap.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(AuiPaneInfo::from_raw(ptr))
+        }
+    }
+
 }
 

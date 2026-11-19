@@ -53,6 +53,10 @@ impl DragImage {
         unsafe { sys::wxDragImage_BeginDragFullScreen(self.as_ptr(), x_pos as c_int, y_pos as c_int, window.as_ptr(), full_screen as c_int, rect.as_ptr()) != 0 }
     }
 
+    pub fn begin_drag_full_screen_default(&self, x_pos: i32, y_pos: i32, window: &impl WxWindow, full_screen: bool) -> bool {
+        unsafe { sys::wxDragImage_BeginDragFullScreenDefault(self.as_ptr(), x_pos as c_int, y_pos as c_int, window.as_ptr(), full_screen as c_int) != 0 }
+    }
+
     pub fn new(image: &impl WxBitmap, x: i32, y: i32) -> Self {
         let ptr = unsafe { sys::wxDragImage_Create(image.as_ptr(), x as c_int, y as c_int) };
         assert!(!ptr.is_null(), "wxDragImage_Create returned null");
@@ -62,6 +66,12 @@ impl DragImage {
     pub fn new_full(image: &impl WxBitmap, x: i32, y: i32) -> Self {
         let ptr = unsafe { sys::wxDragImage_Create(image.as_ptr(), x as c_int, y as c_int) };
         assert!(!ptr.is_null(), "wxDragImage_Create returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn create_with_cursor(image: &impl WxBitmap, cursor: &impl WxCursor) -> Self {
+        let ptr = unsafe { sys::wxDragImage_CreateWithCursor(image.as_ptr(), cursor.as_ptr()) };
+        assert!(!ptr.is_null(), "wxDragImage_CreateWithCursor returned null");
         Self::from_raw(ptr)
     }
 

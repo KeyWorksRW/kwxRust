@@ -44,3 +44,102 @@ impl WxObject for DocTemplate {
 
 impl WxDocTemplate for DocTemplate {}
 
+use crate::doc_manager::DocManager;
+use crate::support::WxStr;
+use crate::support::take_string;
+
+impl DocTemplate {
+    pub fn get_description(&self) -> String {
+        take_string(unsafe { sys::wxDocTemplate_GetDescription(self.as_ptr()) })
+    }
+
+    pub fn get_file_filter(&self) -> String {
+        take_string(unsafe { sys::wxDocTemplate_GetFileFilter(self.as_ptr()) })
+    }
+
+    pub fn set_file_filter(&self, filter: impl AsRef<str>) {
+        let filter_wx = WxStr::new(filter.as_ref());
+        unsafe { sys::wxDocTemplate_SetFileFilter(self.as_ptr(), filter_wx.as_ptr()) }
+    }
+
+    pub fn get_default_extension(&self) -> String {
+        take_string(unsafe { sys::wxDocTemplate_GetDefaultExtension(self.as_ptr()) })
+    }
+
+    pub fn get_directory(&self) -> String {
+        take_string(unsafe { sys::wxDocTemplate_GetDirectory(self.as_ptr()) })
+    }
+
+    pub fn set_directory(&self, dir: impl AsRef<str>) {
+        let dir_wx = WxStr::new(dir.as_ref());
+        unsafe { sys::wxDocTemplate_SetDirectory(self.as_ptr(), dir_wx.as_ptr()) }
+    }
+
+    pub fn get_view_name(&self) -> String {
+        take_string(unsafe { sys::wxDocTemplate_GetViewName(self.as_ptr()) })
+    }
+
+    pub fn get_document_name(&self) -> String {
+        take_string(unsafe { sys::wxDocTemplate_GetDocumentName(self.as_ptr()) })
+    }
+
+    pub fn get_flags(&self) -> i64 {
+        unsafe { sys::wxDocTemplate_GetFlags(self.as_ptr()) as i64 }
+    }
+
+    pub fn get_document_manager(&self) -> Option<DocManager> {
+        let ptr = unsafe { sys::wxDocTemplate_GetDocumentManager(self.as_ptr()) };
+        if ptr.is_null() {
+            None
+        } else {
+            Some(DocManager::from_raw(ptr))
+        }
+    }
+
+    pub fn file_matches_template(&self, path: impl AsRef<str>) -> bool {
+        let path_wx = WxStr::new(path.as_ref());
+        unsafe { sys::wxDocTemplate_FileMatchesTemplate(self.as_ptr(), path_wx.as_ptr()) != 0 }
+    }
+
+    pub fn new(p_object: *mut c_void, manager: &impl WxDocManager, descr: impl AsRef<str>, filter: impl AsRef<str>, dir: impl AsRef<str>, ext: impl AsRef<str>, doc_type_name: impl AsRef<str>, view_type_name: impl AsRef<str>, flags: i32) -> Self {
+        let descr_wx = WxStr::new(descr.as_ref());
+        let filter_wx = WxStr::new(filter.as_ref());
+        let dir_wx = WxStr::new(dir.as_ref());
+        let ext_wx = WxStr::new(ext.as_ref());
+        let doc_type_name_wx = WxStr::new(doc_type_name.as_ref());
+        let view_type_name_wx = WxStr::new(view_type_name.as_ref());
+        let ptr = unsafe { sys::kwxDocTemplate_Create(p_object, manager.as_ptr(), descr_wx.as_ptr(), filter_wx.as_ptr(), dir_wx.as_ptr(), ext_wx.as_ptr(), doc_type_name_wx.as_ptr(), view_type_name_wx.as_ptr(), flags as c_long) };
+        assert!(!ptr.is_null(), "kwxDocTemplate_Create returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn new_full(p_object: *mut c_void, manager: &impl WxDocManager, descr: impl AsRef<str>, filter: impl AsRef<str>, dir: impl AsRef<str>, ext: impl AsRef<str>, doc_type_name: impl AsRef<str>, view_type_name: impl AsRef<str>, flags: i32) -> Self {
+        let descr_wx = WxStr::new(descr.as_ref());
+        let filter_wx = WxStr::new(filter.as_ref());
+        let dir_wx = WxStr::new(dir.as_ref());
+        let ext_wx = WxStr::new(ext.as_ref());
+        let doc_type_name_wx = WxStr::new(doc_type_name.as_ref());
+        let view_type_name_wx = WxStr::new(view_type_name.as_ref());
+        let ptr = unsafe { sys::kwxDocTemplate_Create(p_object, manager.as_ptr(), descr_wx.as_ptr(), filter_wx.as_ptr(), dir_wx.as_ptr(), ext_wx.as_ptr(), doc_type_name_wx.as_ptr(), view_type_name_wx.as_ptr(), flags as c_long) };
+        assert!(!ptr.is_null(), "kwxDocTemplate_Create returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn set_on_create_document(&self, p_function: *mut c_void) {
+        unsafe { sys::kwxDocTemplate_SetOnCreateDocument(self.as_ptr(), p_function) }
+    }
+
+    pub fn set_on_create_view(&self, p_function: *mut c_void) {
+        unsafe { sys::kwxDocTemplate_SetOnCreateView(self.as_ptr(), p_function) }
+    }
+
+    pub fn set_created_document(&self, doc: &impl WxDocument) {
+        unsafe { sys::kwxDocTemplate_SetCreatedDocument(self.as_ptr(), doc.as_ptr()) }
+    }
+
+    pub fn set_created_view(&self, view: &impl WxView) {
+        unsafe { sys::kwxDocTemplate_SetCreatedView(self.as_ptr(), view.as_ptr()) }
+    }
+
+}
+

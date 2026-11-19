@@ -7,6 +7,8 @@ use std::os::raw::*;
 use crate::sys;
 use crate::traits::*;
 use crate::support::WxStr;
+use crate::support::borrow_cstring;
+use crate::support::take_cstring;
 use crate::support::take_string;
 use crate::accelerator_entry::AcceleratorEntry;
 use crate::accelerator_table::AcceleratorTable;
@@ -202,7 +204,7 @@ pub fn kwxUtf8Buffer_Create(str: impl AsRef<str>) -> *mut c_void {
 
 #[inline]
 pub fn kwxUtf8Buffer_Data(buf: *mut c_void) -> String {
-    take_string(unsafe { sys::kwxUtf8Buffer_Data(buf) })
+    borrow_cstring(unsafe { sys::kwxUtf8Buffer_Data(buf) })
 }
 
 #[inline]
@@ -261,8 +263,8 @@ pub fn wxGetDataDir() -> String {
 }
 
 #[inline]
-pub fn wxGetFreeMemory() -> i32 {
-    unsafe { sys::wxGetFreeMemory() as i32 }
+pub fn wxGetFreeMemory() -> i64 {
+    unsafe { sys::wxGetFreeMemory() as i64 }
 }
 
 #[inline]
@@ -326,6 +328,12 @@ pub fn wxGetEnv(var: impl AsRef<str>, value: impl AsRef<str>) -> bool {
     let var_wx = WxStr::new(var.as_ref());
     let value_wx = WxStr::new(value.as_ref());
     unsafe { sys::wxGetEnv(var_wx.as_ptr(), value_wx.as_ptr()) != 0 }
+}
+
+#[inline]
+pub fn wxGetEnvValue(var: impl AsRef<str>) -> String {
+    let var_wx = WxStr::new(var.as_ref());
+    take_string(unsafe { sys::wxGetEnvValue(var_wx.as_ptr()) })
 }
 
 #[inline]
@@ -752,6 +760,13 @@ pub fn wxGetSingleChoiceIndex(message: impl AsRef<str>, caption: impl AsRef<str>
 }
 
 #[inline]
+pub fn wxGetSingleChoiceIndexArray(message: impl AsRef<str>, caption: impl AsRef<str>, choices: &impl WxArrayString, parent: &impl WxWindow) -> i32 {
+    let message_wx = WxStr::new(message.as_ref());
+    let caption_wx = WxStr::new(caption.as_ref());
+    unsafe { sys::wxGetSingleChoiceIndexArray(message_wx.as_ptr(), caption_wx.as_ptr(), choices.as_ptr(), parent.as_ptr()) as i32 }
+}
+
+#[inline]
 pub fn wxGetSingleChoiceIndexEx(message: impl AsRef<str>, caption: impl AsRef<str>, n: i32, choices: &impl WxArrayString, parent: &impl WxWindow, x: i32, y: i32, centre: bool, width: i32, height: i32, initial_selection: i32) -> i32 {
     let message_wx = WxStr::new(message.as_ref());
     let caption_wx = WxStr::new(caption.as_ref());
@@ -825,9 +840,14 @@ pub fn wxDegToRad(degrees: f64) -> f64 {
 }
 
 #[inline]
-pub fn wxFgets(buffer: impl AsRef<str>, size: i32, stream: *mut c_void) -> String {
-    let buffer_c = std::ffi::CString::new(buffer.as_ref()).unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
-    take_string(unsafe { sys::wxFgets(buffer_c.as_ptr(), size as c_int, stream) })
+pub fn wxFgets(buffer: *mut c_char, size: i32, stream: *mut c_void) -> String {
+    borrow_cstring(unsafe { sys::wxFgets(buffer, size as c_int, stream) })
+}
+
+#[inline]
+pub fn wxFputs(str: impl AsRef<str>, stream: *mut c_void) -> i32 {
+    let str_wx = WxStr::new(str.as_ref());
+    unsafe { sys::wxFputs(str_wx.as_ptr(), stream) as i32 }
 }
 
 #[inline]
@@ -938,11 +958,10 @@ pub fn wxGetPowerType() -> i32 {
 }
 
 #[inline]
-pub fn wxGetSelectedChoices(selections: *mut c_void, choices: impl AsRef<str>, count: i32, message: impl AsRef<str>, caption: impl AsRef<str>, parent: &impl WxWindow) -> i32 {
-    let choices_wx = WxStr::new(choices.as_ref());
+pub fn wxGetSelectedChoices(selections: *mut c_void, count: i32, choices: *mut c_void, message: impl AsRef<str>, caption: impl AsRef<str>, parent: &impl WxWindow) -> i32 {
     let message_wx = WxStr::new(message.as_ref());
     let caption_wx = WxStr::new(caption.as_ref());
-    unsafe { sys::wxGetSelectedChoices(selections, choices_wx.as_ptr(), count as c_int, message_wx.as_ptr(), caption_wx.as_ptr(), parent.as_ptr()) as i32 }
+    unsafe { sys::wxGetSelectedChoices(selections, count as c_int, choices, message_wx.as_ptr(), caption_wx.as_ptr(), parent.as_ptr()) as i32 }
 }
 
 #[inline]
@@ -953,19 +972,17 @@ pub fn wxGetSelectedChoicesEx(selections: *mut c_void, message: impl AsRef<str>,
 }
 
 #[inline]
-pub fn wxGetSingleChoice(message: impl AsRef<str>, caption: impl AsRef<str>, choices: impl AsRef<str>, count: i32, parent: &impl WxWindow) -> String {
+pub fn wxGetSingleChoice(message: impl AsRef<str>, caption: impl AsRef<str>, count: i32, choices: *mut c_void, parent: &impl WxWindow) -> String {
     let message_wx = WxStr::new(message.as_ref());
     let caption_wx = WxStr::new(caption.as_ref());
-    let choices_wx = WxStr::new(choices.as_ref());
-    take_string(unsafe { sys::wxGetSingleChoice(message_wx.as_ptr(), caption_wx.as_ptr(), choices_wx.as_ptr(), count as c_int, parent.as_ptr()) })
+    take_string(unsafe { sys::wxGetSingleChoice(message_wx.as_ptr(), caption_wx.as_ptr(), count as c_int, choices, parent.as_ptr()) })
 }
 
 #[inline]
-pub fn wxGetSingleChoiceData(message: impl AsRef<str>, caption: impl AsRef<str>, choices: impl AsRef<str>, count: i32, client_data: *mut c_void, parent: &impl WxWindow) -> *mut c_void {
+pub fn wxGetSingleChoiceData(message: impl AsRef<str>, caption: impl AsRef<str>, count: i32, choices: *mut c_void, client_data: *mut c_void, parent: &impl WxWindow) -> *mut c_void {
     let message_wx = WxStr::new(message.as_ref());
     let caption_wx = WxStr::new(caption.as_ref());
-    let choices_wx = WxStr::new(choices.as_ref());
-    unsafe { sys::wxGetSingleChoiceData(message_wx.as_ptr(), caption_wx.as_ptr(), choices_wx.as_ptr(), count as c_int, client_data, parent.as_ptr()) }
+    unsafe { sys::wxGetSingleChoiceData(message_wx.as_ptr(), caption_wx.as_ptr(), count as c_int, choices, client_data, parent.as_ptr()) }
 }
 
 #[inline]
@@ -1019,6 +1036,51 @@ pub fn wxIslower(character: i32) -> bool {
 #[inline]
 pub fn wxMakeFloatingPointValidator(value: *mut f64, style: i32) -> *mut c_void {
     unsafe { sys::wxMakeFloatingPointValidator(value as *mut c_double, style as c_int) }
+}
+
+#[inline]
+pub fn wxMakeFloatingPointValidatorWithPrecision(precision: i32, value: *mut f64, style: i32) -> *mut c_void {
+    unsafe { sys::wxMakeFloatingPointValidatorWithPrecision(precision as c_int, value as *mut c_double, style as c_int) }
+}
+
+#[inline]
+pub fn wxFloatingPointValidator_SetPrecision(validator: *mut c_void, precision: i32) {
+    unsafe { sys::wxFloatingPointValidator_SetPrecision(validator, precision as c_int) }
+}
+
+#[inline]
+pub fn wxFloatingPointValidator_SetFactor(validator: *mut c_void, factor: f64) {
+    unsafe { sys::wxFloatingPointValidator_SetFactor(validator, factor as c_double) }
+}
+
+#[inline]
+pub fn wxFloatingPointValidator_SetStyle(validator: *mut c_void, style: i32) {
+    unsafe { sys::wxFloatingPointValidator_SetStyle(validator, style as c_int) }
+}
+
+#[inline]
+pub fn wxFloatingPointValidator_SetMin(validator: *mut c_void, min: f64) {
+    unsafe { sys::wxFloatingPointValidator_SetMin(validator, min as c_double) }
+}
+
+#[inline]
+pub fn wxFloatingPointValidator_GetMin(validator: *mut c_void) -> f64 {
+    unsafe { sys::wxFloatingPointValidator_GetMin(validator) as f64 }
+}
+
+#[inline]
+pub fn wxFloatingPointValidator_SetMax(validator: *mut c_void, max: f64) {
+    unsafe { sys::wxFloatingPointValidator_SetMax(validator, max as c_double) }
+}
+
+#[inline]
+pub fn wxFloatingPointValidator_GetMax(validator: *mut c_void) -> f64 {
+    unsafe { sys::wxFloatingPointValidator_GetMax(validator) as f64 }
+}
+
+#[inline]
+pub fn wxFloatingPointValidator_SetRange(validator: *mut c_void, min: f64, max: f64) {
+    unsafe { sys::wxFloatingPointValidator_SetRange(validator, min as c_double, max as c_double) }
 }
 
 #[inline]
@@ -1083,7 +1145,13 @@ pub fn wxSizeRefFromVariant(variant: &impl WxVariant) -> *mut c_void {
 #[inline]
 pub fn wxStrdup(str: impl AsRef<str>) -> String {
     let str_wx = WxStr::new(str.as_ref());
-    take_string(unsafe { sys::wxStrdup(str_wx.as_ptr()) })
+    take_cstring(unsafe { sys::wxStrdup(str_wx.as_ptr()) })
+}
+
+#[inline]
+pub fn wxStrlen(str: impl AsRef<str>) -> usize {
+    let str_c = std::ffi::CString::new(str.as_ref()).unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
+    unsafe { sys::wxStrlen(str_c.as_ptr()) as usize }
 }
 
 #[inline]
@@ -1190,7 +1258,7 @@ pub fn kwxSetPixelRowRGBA(buffer: *mut c_void, width: i32, x: i32, y: i32, rgba0
 
 #[inline]
 pub fn kwxSvgStringFromBase64(base64: *mut c_void, len: usize) -> String {
-    take_string(unsafe { sys::kwxSvgStringFromBase64(base64, len) })
+    take_cstring(unsafe { sys::kwxSvgStringFromBase64(base64, len) })
 }
 
 #[inline]
@@ -1224,6 +1292,16 @@ pub fn wxDragIcon(icon: &impl WxIcon, x: i32, y: i32) -> Option<DragImage> {
 }
 
 #[inline]
+pub fn wxDragIconWithCursor(icon: &impl WxIcon, cursor: &impl WxCursor) -> Option<DragImage> {
+    let ptr = unsafe { sys::wxDragIconWithCursor(icon.as_ptr(), cursor.as_ptr()) };
+    if ptr.is_null() {
+        None
+    } else {
+        Some(DragImage::from_raw(ptr))
+    }
+}
+
+#[inline]
 pub fn wxDragListItem(list_ctrl: &impl WxListCtrl, id: i32) -> Option<DragImage> {
     let ptr = unsafe { sys::wxDragListItem(list_ctrl.as_ptr(), id as c_long) };
     if ptr.is_null() {
@@ -1237,6 +1315,17 @@ pub fn wxDragListItem(list_ctrl: &impl WxListCtrl, id: i32) -> Option<DragImage>
 pub fn wxDragString(text: impl AsRef<str>, x: i32, y: i32) -> Option<DragImage> {
     let text_wx = WxStr::new(text.as_ref());
     let ptr = unsafe { sys::wxDragString(text_wx.as_ptr(), x as c_int, y as c_int) };
+    if ptr.is_null() {
+        None
+    } else {
+        Some(DragImage::from_raw(ptr))
+    }
+}
+
+#[inline]
+pub fn wxDragStringWithCursor(text: impl AsRef<str>, cursor: &impl WxCursor) -> Option<DragImage> {
+    let text_wx = WxStr::new(text.as_ref());
+    let ptr = unsafe { sys::wxDragStringWithCursor(text_wx.as_ptr(), cursor.as_ptr()) };
     if ptr.is_null() {
         None
     } else {
@@ -1265,6 +1354,16 @@ pub fn wxGenericDragIcon(icon: &impl WxIcon) -> Option<GenericDragImage> {
 }
 
 #[inline]
+pub fn wxGenericDragIconWithCursor(icon: &impl WxIcon, cursor: &impl WxCursor) -> Option<GenericDragImage> {
+    let ptr = unsafe { sys::wxGenericDragIconWithCursor(icon.as_ptr(), cursor.as_ptr()) };
+    if ptr.is_null() {
+        None
+    } else {
+        Some(GenericDragImage::from_raw(ptr))
+    }
+}
+
+#[inline]
 pub fn wxGenericDragListItem(list_ctrl: &impl WxListCtrl, id: i32) -> Option<GenericDragImage> {
     let ptr = unsafe { sys::wxGenericDragListItem(list_ctrl.as_ptr(), id as c_long) };
     if ptr.is_null() {
@@ -1278,6 +1377,17 @@ pub fn wxGenericDragListItem(list_ctrl: &impl WxListCtrl, id: i32) -> Option<Gen
 pub fn wxGenericDragString(text: impl AsRef<str>) -> Option<GenericDragImage> {
     let text_wx = WxStr::new(text.as_ref());
     let ptr = unsafe { sys::wxGenericDragString(text_wx.as_ptr()) };
+    if ptr.is_null() {
+        None
+    } else {
+        Some(GenericDragImage::from_raw(ptr))
+    }
+}
+
+#[inline]
+pub fn wxGenericDragStringWithCursor(text: impl AsRef<str>, cursor: &impl WxCursor) -> Option<GenericDragImage> {
+    let text_wx = WxStr::new(text.as_ref());
+    let ptr = unsafe { sys::wxGenericDragStringWithCursor(text_wx.as_ptr(), cursor.as_ptr()) };
     if ptr.is_null() {
         None
     } else {
@@ -1385,6 +1495,11 @@ pub fn kwxConsoleInitialize(argc: i32, argv: *mut c_void) -> i32 {
 }
 
 #[inline]
+pub fn kwxConsoleInitializeFromArgs(argc: i32, argv: *mut c_void) -> i32 {
+    unsafe { sys::kwxConsoleInitializeFromArgs(argc as c_int, argv) as i32 }
+}
+
+#[inline]
 pub fn kwxConsoleRun() -> i32 {
     unsafe { sys::kwxConsoleRun() as i32 }
 }
@@ -1425,9 +1540,56 @@ pub fn kwxConsoleYield() -> i32 {
 }
 
 #[inline]
+pub fn kwxConsoleOnInitCmdLineBase(parser: &impl WxCmdLineParser) {
+    unsafe { sys::kwxConsoleOnInitCmdLineBase(parser.as_ptr()) }
+}
+
+#[inline]
+pub fn kwxConsoleOnCmdLineParsedBase(parser: &impl WxCmdLineParser) -> bool {
+    unsafe { sys::kwxConsoleOnCmdLineParsedBase(parser.as_ptr()) != 0 }
+}
+
+#[inline]
+pub fn kwxStdin() -> *mut c_void {
+    unsafe { sys::kwxStdin() }
+}
+
+#[inline]
+pub fn kwxStdout() -> *mut c_void {
+    unsafe { sys::kwxStdout() }
+}
+
+#[inline]
+pub fn kwxStderr() -> *mut c_void {
+    unsafe { sys::kwxStderr() }
+}
+
+#[inline]
+pub fn kwxConsoleCheckBuildOptions(component_name: impl AsRef<str>) -> bool {
+    let component_name_c = std::ffi::CString::new(component_name.as_ref()).unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
+    unsafe { sys::kwxConsoleCheckBuildOptions(component_name_c.as_ptr()) != 0 }
+}
+
+#[inline]
+pub fn kwxDialogOnTransferDataFromWindowBase(p_object: &impl WxDialog) -> bool {
+    unsafe { sys::kwxDialogOnTransferDataFromWindowBase(p_object.as_ptr()) != 0 }
+}
+
+#[inline]
+pub fn kwxDialogOnTransferDataToWindowBase(p_object: &impl WxDialog) -> bool {
+    unsafe { sys::kwxDialogOnTransferDataToWindowBase(p_object.as_ptr()) != 0 }
+}
+
+#[inline]
 pub fn wxPrintf(text: impl AsRef<str>) -> i32 {
     let text_wx = WxStr::new(text.as_ref());
     unsafe { sys::wxPrintf(text_wx.as_ptr()) as i32 }
+}
+
+#[inline]
+pub fn wxPrintfLen(text: impl AsRef<str>, len: i32) -> i32 {
+    let text_c = std::ffi::CString::new(text.as_ref()).unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
+    unsafe { sys::wxPrintfLen(text_c.as_ptr(), len as c_int) as i32 }
 }
 
 #[inline]
@@ -1443,6 +1605,11 @@ pub fn kwxMessageOutputUseStdout() {
 #[inline]
 pub fn kwxMessageOutputReset() {
     unsafe { sys::kwxMessageOutputReset() }
+}
+
+#[inline]
+pub fn kwxLogUseStderr() {
+    unsafe { sys::kwxLogUseStderr() }
 }
 
 #[inline]
@@ -1646,6 +1813,11 @@ pub fn expPROPSHEET_TREEBOOK() -> i32 {
 #[inline]
 pub fn expPROPSHEET_SHRINKTOFIT() -> i32 {
     unsafe { sys::expPROPSHEET_SHRINKTOFIT() as i32 }
+}
+
+#[inline]
+pub fn wxCreateSVGBitmapEmbedHandler() -> *mut c_void {
+    unsafe { sys::wxCreateSVGBitmapEmbedHandler() }
 }
 
 #[inline]

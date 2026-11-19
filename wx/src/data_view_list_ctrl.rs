@@ -4,16 +4,16 @@
 
 use std::os::raw::*;
 
-use crate::object::Object;
+use crate::data_view_ctrl::DataViewCtrl;
 use crate::sys;
 use crate::traits::*;
 
 #[derive(Copy, Clone)]
-pub struct DataViewListCtrl(pub(crate) Object);
+pub struct DataViewListCtrl(pub(crate) DataViewCtrl);
 
 impl DataViewListCtrl {
     pub(crate) const fn from_raw(ptr: *mut c_void) -> Self {
-        Self(Object::from_raw(ptr))
+        Self(DataViewCtrl::from_raw(ptr))
     }
 
     /// Wraps a raw pointer without taking ownership of the native object.
@@ -29,9 +29,9 @@ impl DataViewListCtrl {
 }
 
 impl std::ops::Deref for DataViewListCtrl {
-    type Target = Object;
+    type Target = DataViewCtrl;
 
-    fn deref(&self) -> &Object {
+    fn deref(&self) -> &DataViewCtrl {
         &self.0
     }
 }
@@ -42,7 +42,12 @@ impl WxObject for DataViewListCtrl {
     }
 }
 
+impl WxDataViewCtrl for DataViewListCtrl {}
+impl WxControl for DataViewListCtrl {}
+impl WxWindow for DataViewListCtrl {}
+impl WxEvtHandler for DataViewListCtrl {}
 impl WxDataViewListCtrl for DataViewListCtrl {}
+
 use crate::data_view_column::DataViewColumn;
 use crate::data_view_list_store::DataViewListStore;
 use crate::support::WxStr;

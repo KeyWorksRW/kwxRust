@@ -100,5 +100,17 @@ impl RichTextAttr {
         unsafe { sys::wxRichTextAttr_HasTextBoxAttr(self.as_ptr()) != 0 }
     }
 
+    pub fn set_background_colour(&self, colour: &impl WxColour) {
+        unsafe { sys::wxRichTextAttr_SetBackgroundColour(self.as_ptr(), colour.as_ptr()) }
+    }
+
+    pub fn set_paragraph_spacing_after(&self, spacing: i32) {
+        unsafe { sys::wxRichTextAttr_SetParagraphSpacingAfter(self.as_ptr(), spacing as c_int) }
+    }
+
+    pub fn set_line_spacing(&self, spacing: i32) {
+        unsafe { sys::wxRichTextAttr_SetLineSpacing(self.as_ptr(), spacing as c_int) }
+    }
+
 }
 

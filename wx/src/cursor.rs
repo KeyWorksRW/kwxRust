@@ -76,5 +76,12 @@ impl Cursor {
         Self::from_raw(ptr)
     }
 
+    pub fn create_from_xpm_string(xpm: impl AsRef<str>) -> Self {
+        let xpm_c = std::ffi::CString::new(xpm.as_ref()).unwrap_or_else(|_| std::ffi::CString::new("").unwrap());
+        let ptr = unsafe { sys::Cursor_CreateFromXPMString(xpm_c.as_ptr()) };
+        assert!(!ptr.is_null(), "Cursor_CreateFromXPMString returned null");
+        Self::from_raw(ptr)
+    }
+
 }
 

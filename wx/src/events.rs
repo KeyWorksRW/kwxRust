@@ -123,6 +123,11 @@ pub fn EVT_AUI_FIND_MANAGER() -> i32 {
 }
 
 #[inline]
+pub fn EVT_AUI_PANE_ACTIVATED() -> i32 {
+    unsafe { sys::exp_wxEVT_AUI_PANE_ACTIVATED() as i32 }
+}
+
+#[inline]
 pub fn EVT_AUI_PANE_BUTTON() -> i32 {
     unsafe { sys::exp_wxEVT_AUI_PANE_BUTTON() as i32 }
 }
@@ -135,6 +140,11 @@ pub fn EVT_AUI_PANE_CLOSE() -> i32 {
 #[inline]
 pub fn EVT_AUI_PANE_MAXIMIZE() -> i32 {
     unsafe { sys::exp_wxEVT_AUI_PANE_MAXIMIZE() as i32 }
+}
+
+#[inline]
+pub fn EVT_AUI_PANE_MINIMIZE() -> i32 {
+    unsafe { sys::exp_wxEVT_AUI_PANE_MINIMIZE() as i32 }
 }
 
 #[inline]
@@ -2062,9 +2072,11 @@ mod drift {
         assert!(EVT_AUITOOLBAR_RIGHT_CLICK() >= 10000, "EVT_AUITOOLBAR_RIGHT_CLICK is not a wx event type");
         assert!(EVT_AUITOOLBAR_TOOL_DROPDOWN() >= 10000, "EVT_AUITOOLBAR_TOOL_DROPDOWN is not a wx event type");
         assert!(EVT_AUI_FIND_MANAGER() >= 10000, "EVT_AUI_FIND_MANAGER is not a wx event type");
+        assert!(EVT_AUI_PANE_ACTIVATED() >= 10000, "EVT_AUI_PANE_ACTIVATED is not a wx event type");
         assert!(EVT_AUI_PANE_BUTTON() >= 10000, "EVT_AUI_PANE_BUTTON is not a wx event type");
         assert!(EVT_AUI_PANE_CLOSE() >= 10000, "EVT_AUI_PANE_CLOSE is not a wx event type");
         assert!(EVT_AUI_PANE_MAXIMIZE() >= 10000, "EVT_AUI_PANE_MAXIMIZE is not a wx event type");
+        assert!(EVT_AUI_PANE_MINIMIZE() >= 10000, "EVT_AUI_PANE_MINIMIZE is not a wx event type");
         assert!(EVT_AUI_PANE_RESTORE() >= 10000, "EVT_AUI_PANE_RESTORE is not a wx event type");
         assert!(EVT_AUI_RENDER() >= 10000, "EVT_AUI_RENDER is not a wx event type");
         assert!(EVT_AUX1_DCLICK() >= 10000, "EVT_AUX1_DCLICK is not a wx event type");

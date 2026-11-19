@@ -159,6 +159,10 @@ impl SizerFlags {
         unsafe { sys::wxSizerFlags_GetDefaultBorderFractional() as f64 }
     }
 
+    pub fn get_default_border() -> i32 {
+        unsafe { sys::wxSizerFlags_GetDefaultBorder() as i32 }
+    }
+
     pub fn disable_consistency_checks() {
         unsafe { sys::wxSizerFlags_DisableConsistencyChecks() }
     }

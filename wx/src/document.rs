@@ -77,6 +77,10 @@ impl Document {
         }
     }
 
+    pub fn is_modified(&self) -> bool {
+        unsafe { sys::wxDocument_IsModified(self.as_ptr()) != 0 }
+    }
+
     pub fn set_filename(&self, filename: impl AsRef<str>, notify_views: bool) {
         let filename_wx = WxStr::new(filename.as_ref());
         unsafe { sys::wxDocument_SetFilename(self.as_ptr(), filename_wx.as_ptr(), notify_views as c_int) }
@@ -84,6 +88,30 @@ impl Document {
 
     pub fn update_all_views(&self, sender: *mut c_void, hint: *mut c_void) {
         unsafe { sys::wxDocument_UpdateAllViews(self.as_ptr(), sender, hint) }
+    }
+
+    pub fn close(&self) -> bool {
+        unsafe { sys::wxDocument_Close(self.as_ptr()) != 0 }
+    }
+
+    pub fn save(&self) -> bool {
+        unsafe { sys::wxDocument_Save(self.as_ptr()) != 0 }
+    }
+
+    pub fn save_as(&self) -> bool {
+        unsafe { sys::wxDocument_SaveAs(self.as_ptr()) != 0 }
+    }
+
+    pub fn revert(&self) -> bool {
+        unsafe { sys::wxDocument_Revert(self.as_ptr()) != 0 }
+    }
+
+    pub fn already_saved(&self) -> bool {
+        unsafe { sys::wxDocument_AlreadySaved(self.as_ptr()) != 0 }
+    }
+
+    pub fn can_close(&self) -> bool {
+        unsafe { sys::wxDocument_CanClose(self.as_ptr()) != 0 }
     }
 
     pub fn set_on_do_open_document(&self, p_function: *mut c_void) {
@@ -112,6 +140,74 @@ impl Document {
 
     pub fn set_on_on_open_document(&self, p_function: *mut c_void) {
         unsafe { sys::wxDocument_SetOnOnOpenDocument(self.as_ptr(), p_function) }
+    }
+
+    pub fn set_on_do_open_document_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxDocument_SetOnDoOpenDocumentWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_do_open_document_result(&self, result: bool) {
+        unsafe { sys::wxDocument_SetDoOpenDocumentResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_on_do_save_document_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxDocument_SetOnDoSaveDocumentWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_do_save_document_result(&self, result: bool) {
+        unsafe { sys::wxDocument_SetDoSaveDocumentResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_on_is_modified_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxDocument_SetOnIsModifiedWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_is_modified_result(&self, result: bool) {
+        unsafe { sys::wxDocument_SetIsModifiedResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_on_modify_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxDocument_SetOnModifyWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_on_create_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxDocument_SetOnOnCreateWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_create_result(&self, result: bool) {
+        unsafe { sys::wxDocument_SetOnCreateResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn set_on_on_open_document_with_data(&self, p_function: *mut c_void, data: *mut c_void) {
+        unsafe { sys::wxDocument_SetOnOnOpenDocumentWithData(self.as_ptr(), p_function, data) }
+    }
+
+    pub fn set_on_open_document_result(&self, result: bool) {
+        unsafe { sys::wxDocument_SetOnOpenDocumentResult(self.as_ptr(), result as c_int) }
+    }
+
+    pub fn on_create_base(&self, path: impl AsRef<str>, flags: i32) -> bool {
+        let path_wx = WxStr::new(path.as_ref());
+        unsafe { sys::wxDocument_OnCreateBase(self.as_ptr(), path_wx.as_ptr(), flags as c_long) != 0 }
+    }
+
+    pub fn on_open_document_base(&self, filename: impl AsRef<str>) -> bool {
+        let filename_wx = WxStr::new(filename.as_ref());
+        unsafe { sys::wxDocument_OnOpenDocumentBase(self.as_ptr(), filename_wx.as_ptr()) != 0 }
+    }
+
+    pub fn is_modified_base(&self) -> bool {
+        unsafe { sys::wxDocument_IsModifiedBase(self.as_ptr()) != 0 }
+    }
+
+    pub fn modify_base(&self, modified: bool) {
+        unsafe { sys::wxDocument_ModifyBase(self.as_ptr(), modified as c_int) }
+    }
+
+    pub fn create_with_parent(p_object: *mut c_void, parent: &impl WxDocument) -> Self {
+        let ptr = unsafe { sys::wxDocument_CreateWithParent(p_object, parent.as_ptr()) };
+        assert!(!ptr.is_null(), "wxDocument_CreateWithParent returned null");
+        Self::from_raw(ptr)
     }
 
     pub fn new(p_object: *mut c_void) -> Self {

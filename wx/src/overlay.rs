@@ -43,3 +43,33 @@ impl WxObject for Overlay {
 }
 
 impl WxOverlay for Overlay {}
+impl Overlay {
+    pub fn new() -> Self {
+        let ptr = unsafe { sys::wxOverlay_Create() };
+        assert!(!ptr.is_null(), "wxOverlay_Create returned null");
+        Self::from_raw(ptr)
+    }
+
+    pub fn new_full() -> Self {
+        let ptr = unsafe { sys::wxOverlay_Create() };
+        assert!(!ptr.is_null(), "wxOverlay_Create returned null");
+        Self::from_raw(ptr)
+    }
+
+    /// Deletes the native object.  Call this only when this handle owns it, i.e.
+    /// for a value returned by a factory and not handed to wxWidgets; a
+    /// wx-owned window or child is destroyed by wx.
+    pub fn delete(&self) {
+        unsafe { sys::wxOverlay_Delete(self.as_ptr()) }
+    }
+
+    pub fn reset(&self) {
+        unsafe { sys::wxOverlay_Reset(self.as_ptr()) }
+    }
+
+    pub fn set_opacity(&self, alpha: i32) {
+        unsafe { sys::wxOverlay_SetOpacity(self.as_ptr(), alpha as c_int) }
+    }
+
+}
+

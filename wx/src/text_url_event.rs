@@ -47,6 +47,7 @@ impl WxEvent for TextUrlEvent {}
 impl WxTextUrlEvent for TextUrlEvent {}
 
 use crate::mouse_event::MouseEvent;
+use crate::support::take_string;
 
 impl TextUrlEvent {
     pub fn new(winid: i32, evt_mouse: &impl WxMouseEvent, start: i32, end: i32) -> Self {
@@ -83,6 +84,10 @@ impl TextUrlEvent {
 
     pub fn get_url_end(&self) -> i64 {
         unsafe { sys::wxTextUrlEvent_GetURLEnd(self.as_ptr()) as i64 }
+    }
+
+    pub fn get_string(&self) -> String {
+        take_string(unsafe { sys::wxTextUrlEvent_GetString(self.as_ptr()) })
     }
 
 }
